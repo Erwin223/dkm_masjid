@@ -149,8 +149,8 @@ border-bottom:1px solid #eee;
 
 <h2><i class="fa-solid fa-mosque"></i> DKM</h2>
 
-<a href="#"><i class="fa fa-home"></i> Dashboard</a>
-<a href="#"><i class="fa fa-users"></i> Data Pengurus</a>
+<a href="{{ route('admin.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ route('pengurus.index') }}"><i class="fa fa-users"></i> Data Pengurus</a>
 <a href="#"><i class="fa fa-calendar"></i> Kegiatan</a>
 <a href="#"><i class="fa fa-hand-holding-dollar"></i> Donasi</a>
 <a href="#"><i class="fa fa-chart-line"></i> Laporan</a>
@@ -205,14 +205,18 @@ style="margin-top:15px;padding:8px 10px;border:none;border-radius:5px;cursor:poi
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", function(){
 
-const toggleBtn = document.getElementById("menu-toggle");
-const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.getElementById("menu-toggle");
+    const sidebar = document.getElementById("sidebar");
 
-toggleBtn.addEventListener("click", function(){
-sidebar.classList.toggle("hide");
+    if(toggleBtn && sidebar){
+        toggleBtn.addEventListener("click", function(){
+            sidebar.classList.toggle("hide");
+        });
+    }
+
 });
-
 </script>
 
 </body>
