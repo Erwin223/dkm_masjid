@@ -151,7 +151,9 @@ border-bottom:1px solid #eee;
 
 <a href="{{ route('admin.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
 <a href="{{ route('pengurus.index') }}"><i class="fa fa-users"></i> Data Pengurus</a>
-<a href="#"><i class="fa fa-calendar"></i> Kegiatan</a>
+<a href="{{ route('kegiatan.jadwal') }}">
+    <i class="fa fa-calendar"></i> Kegiatan
+</a>
 <a href="#"><i class="fa fa-hand-holding-dollar"></i> Donasi</a>
 <a href="#"><i class="fa fa-chart-line"></i> Laporan</a>
 <a href="#"><i class="fa fa-user"></i> User</a>
@@ -182,9 +184,7 @@ style="margin-top:15px;padding:8px 10px;border:none;border-radius:5px;cursor:poi
 <i class="fa fa-bars"></i>
 </button>
 
-<span>
-<i class="fa-solid fa-chart-pie"></i> Dashboard Admin
-</span>
+
 
 </div>
 
