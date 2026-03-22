@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\KasMasukController;
 use App\Http\Controllers\Admin\KasKeluarController;
 use App\Http\Controllers\Admin\PengurusController;
 use App\Http\Controllers\Admin\PenggunaController;
+use App\Http\Controllers\Admin\DonasiController;
+use App\Http\Controllers\Admin\DonaturController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,19 +34,21 @@ Route::middleware(['auth','nocache'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('admin.dashboard');
 
-    // Kas Masuk
-    Route::get('/kas-masuk/create',        [KasMasukController::class, 'create'])->name('kas.masuk.create');
-    Route::post('/kas-masuk/store',        [KasMasukController::class, 'store'])->name('kas.masuk.store');
-    Route::get('/kas-masuk/edit/{id}',     [KasMasukController::class, 'edit'])->name('kas.masuk.edit');
-    Route::put('/kas-masuk/update/{id}',   [KasMasukController::class, 'update'])->name('kas.masuk.update');
-    Route::delete('/kas-masuk/{id}',       [KasMasukController::class, 'delete'])->name('kas.masuk.delete');
+   // KAS MASUK
+Route::get('/kas-masuk',              [KasMasukController::class, 'index'])->name('kas.masuk.index');
+Route::get('/kas-masuk/create',       [KasMasukController::class, 'create'])->name('kas.masuk.create');
+Route::post('/kas-masuk/store',       [KasMasukController::class, 'store'])->name('kas.masuk.store');
+Route::get('/kas-masuk/edit/{id}',    [KasMasukController::class, 'edit'])->name('kas.masuk.edit');
+Route::put('/kas-masuk/update/{id}',  [KasMasukController::class, 'update'])->name('kas.masuk.update');
+Route::delete('/kas-masuk/{id}',      [KasMasukController::class, 'delete'])->name('kas.masuk.delete');
 
-    // Kas Keluar
-    Route::get('/kas-keluar/create',       [KasKeluarController::class, 'create'])->name('kas.keluar.create');
-    Route::post('/kas-keluar/store',       [KasKeluarController::class, 'store'])->name('kas.keluar.store');
-    Route::get('/kas-keluar/edit/{id}',    [KasKeluarController::class, 'edit'])->name('kas.keluar.edit');
-    Route::put('/kas-keluar/update/{id}',  [KasKeluarController::class, 'update'])->name('kas.keluar.update');
-    Route::delete('/kas-keluar/delete/{id}', [KasKeluarController::class, 'destroy'])->name('kas.keluar.delete');
+// KAS KELUAR
+Route::get('/kas-keluar',             [KasKeluarController::class, 'index'])->name('kas.keluar.index');
+Route::get('/kas-keluar/create',      [KasKeluarController::class, 'create'])->name('kas.keluar.create');
+Route::post('/kas-keluar/store',      [KasKeluarController::class, 'store'])->name('kas.keluar.store');
+Route::get('/kas-keluar/edit/{id}',   [KasKeluarController::class, 'edit'])->name('kas.keluar.edit');
+Route::put('/kas-keluar/update/{id}', [KasKeluarController::class, 'update'])->name('kas.keluar.update');
+Route::delete('/kas-keluar/delete/{id}', [KasKeluarController::class, 'destroy'])->name('kas.keluar.delete');
 
     // Pengurus
     Route::get('/pengurus',                [PengurusController::class, 'index'])->name('pengurus.index');
@@ -81,6 +85,32 @@ Route::put('/kegiatan/imam/data/{id}',      [AdminKegiatanController::class, 'im
 Route::delete('/kegiatan/imam/data/{id}',   [AdminKegiatanController::class, 'imamDataDelete'])->name('imam.data.delete');
     // Jadwal Sholat
     Route::get('/kegiatan/sholat',              [AdminKegiatanController::class, 'sholat'])->name('kegiatan.sholat');
+
+    // DONASI MASUK
+Route::get('/donasi/masuk',              [DonasiController::class, 'masuk'])->name('donasi.masuk');
+Route::get('/donasi/masuk/create',       [DonasiController::class, 'masukCreate'])->name('donasi.masuk.create');
+Route::post('/donasi/masuk',             [DonasiController::class, 'masukStore'])->name('donasi.masuk.store');
+Route::get('/donasi/masuk/{id}/edit',    [DonasiController::class, 'masukEdit'])->name('donasi.masuk.edit');
+Route::put('/donasi/masuk/{id}',         [DonasiController::class, 'masukUpdate'])->name('donasi.masuk.update');
+Route::delete('/donasi/masuk/{id}',      [DonasiController::class, 'masukDelete'])->name('donasi.masuk.delete');
+
+// DONASI KELUAR
+Route::get('/donasi/keluar',             [DonasiController::class, 'keluar'])->name('donasi.keluar');
+Route::get('/donasi/keluar/create',      [DonasiController::class, 'keluarCreate'])->name('donasi.keluar.create');
+Route::post('/donasi/keluar',            [DonasiController::class, 'keluarStore'])->name('donasi.keluar.store');
+Route::get('/donasi/keluar/{id}/edit',   [DonasiController::class, 'keluarEdit'])->name('donasi.keluar.edit');
+Route::put('/donasi/keluar/{id}',        [DonasiController::class, 'keluarUpdate'])->name('donasi.keluar.update');
+Route::delete('/donasi/keluar/{id}',     [DonasiController::class, 'keluarDelete'])->name('donasi.keluar.delete');
+
+//DONATUR
+Route::get('/donatur',              [DonaturController::class, 'index'])->name('donatur.index');
+Route::get('/donatur/create',       [DonaturController::class, 'create'])->name('donatur.create');
+Route::post('/donatur',             [DonaturController::class, 'store'])->name('donatur.store');
+Route::get('/donatur/{id}/edit',    [DonaturController::class, 'edit'])->name('donatur.edit');
+Route::put('/donatur/{id}',         [DonaturController::class, 'update'])->name('donatur.update');
+Route::delete('/donatur/{id}',      [DonaturController::class, 'delete'])->name('donatur.delete');
+Route::get('/donatur/list',         [DonaturController::class, 'list'])->name('donatur.list');
+
 
 });
 

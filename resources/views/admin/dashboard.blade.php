@@ -6,7 +6,7 @@
     .notif-success { position:fixed; top:20px; right:20px; background:#28a745; color:white; padding:12px 18px; border-radius:8px; z-index:999; animation:fadeIn 0.5s; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
 
-    .cards { display:grid; grid-template-columns:repeat(5,1fr); gap:15px; margin-bottom:25px; }
+    .cards { display:grid; grid-template-columns:repeat(7,1fr); gap:12px; margin-bottom:25px; }
     .card { padding:20px; border-radius:8px; color:white; display:flex; justify-content:space-between; align-items:center; }
     .card h3 { font-size:13px; margin-bottom:6px; opacity:.9; font-weight:500; }
     .card .card-value { font-size:18px; font-weight:700; margin:0; }
@@ -19,6 +19,7 @@
     .teal   { background:#0f8b6d; }
 
     .dashboard-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .dashboard-grid-3 { display:grid; grid-template-columns:1fr 380px; gap:20px; align-items:start; }
     .table-box { background:white; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
     .table-box h3 { font-size:15px; margin-bottom:5px; }
     .table-responsive { overflow-x:auto; }
@@ -30,14 +31,24 @@
     .btn-tambah:hover { background:#0c6d55; color:white; }
     .widget-box { background:white; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,.1); font-size:13px; }
     .saldo-positif { color:#28a745; font-weight:700; }
+    .badge-akan    { background:#fff3cd; color:#856404; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-selesai { background:#d1e7dd; color:#0f5132; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-berjalan{ background:#cfe2ff; color:#084298; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-anggaran{ background:#faeeda; color:#633806; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+    .pgr-avatar-sm { width:38px; height:38px; border-radius:50%; background:#e1f5ee; border:2px solid #9fe1cb; display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:#0f6e56; flex-shrink:0; object-fit:cover; }
+    .status-tetap-sm { background:#e1f5ee; color:#085041; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; display:inline-block; }
+    .status-tamu-sm  { background:#fff3cd; color:#856404; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; display:inline-block; }
     .saldo-negatif { color:#dc3545; font-weight:700; }
     td i { transition:0.2s; }
     .fa-edit:hover  { color:darkblue; transform:scale(1.2); }
     .fa-trash:hover { color:darkred;  transform:scale(1.2); }
 
-    @media(max-width:1200px){ .cards { grid-template-columns:repeat(3,1fr); } }
+    @media(max-width:1200px){ .cards { grid-template-columns:repeat(4,1fr); } .dashboard-grid-3 { grid-template-columns:1fr 360px; } }
+    @media(max-width:900px) { .dashboard-grid-3 { grid-template-columns:1fr; } }
     @media(max-width:900px) { .dashboard-grid { grid-template-columns:1fr; } .cards { grid-template-columns:repeat(2,1fr); } }
     @media(max-width:600px) { .cards { grid-template-columns:repeat(2,1fr); gap:10px; } .card { padding:14px 12px; } .card h3 { font-size:12px; } .card .card-value { font-size:15px; } .card i { font-size:22px; } .btn-tambah { width:100%; justify-content:center; margin-top:8px; } h2 { font-size:18px; } }
+    .pink   { background:#d4537e; }
+    .indigo { background:#4361ee; }
 </style>
 
 <h2><i class="fa-solid fa-chart-line"></i> Dashboard Admin</h2>
@@ -99,10 +110,29 @@
         <i class="fa-solid fa-calendar-days"></i>
     </div>
 
+    <div class="card pink">
+        <div>
+            <h3>Donasi Masuk</h3>
+            <p class="card-value">Rp.{{ number_format($totalDonasiMasuk ?? 0, 0, ',', '.') }}</p>
+            <p class="card-sub">{{ $jmlDonasiMasuk ?? 0 }} transaksi</p>
+        </div>
+        <i class="fa-solid fa-hand-holding-heart"></i>
+    </div>
+
+    <div class="card indigo">
+        <div>
+            <h3>Donasi Keluar</h3>
+            <p class="card-value">Rp.{{ number_format($totalDonasiKeluar ?? 0, 0, ',', '.') }}</p>
+            <p class="card-sub">{{ $jmlDonasiKeluar ?? 0 }} transaksi</p>
+        </div>
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+    </div>
+
 </div>
+<div class="dashboard-grid-3">
 
-<div class="dashboard-grid">
-
+    {{-- KOLOM KIRI --}}
+    <div style="display:flex;flex-direction:column;gap:20px;">
     <div class="table-box">
         <h3><i class="fa-solid fa-table"></i> Data Kas Masuk</h3>
         <div class="table-responsive">
@@ -150,8 +180,7 @@
                 <i class="fa fa-plus"></i> Tambah Data
             </a>
         </div>
-    </div>
-
+</div>
     <div class="table-box">
         <h3><i class="fa-solid fa-money-bill-wave"></i> Data Kas Keluar</h3>
         <div class="table-responsive">
@@ -202,7 +231,17 @@
         </div>
     </div>
 
-    <div class="widget-box">
+
+
+
+</div>
+
+
+    {{-- KOLOM KANAN --}}
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+        {{-- RINGKASAN KEUANGAN --}}
+        <div class="widget-box">
         <h3><i class="fa-solid fa-scale-balanced"></i> Ringkasan Keuangan</h3>
         <table style="min-width:unset;margin-top:15px;">
             <tr>
@@ -229,6 +268,226 @@
         </table>
     </div>
 
+{{-- RINGKASAN DONASI --}}
+        <div class="widget-box">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;">
+                <h3 style="margin:0;"><i class="fa-solid fa-hand-holding-heart" style="color:#d4537e;"></i> Ringkasan Donasi</h3>
+                <a href="{{ route('donasi.masuk') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat semua <i class="fa fa-arrow-right" style="font-size:10px;"></i></a>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                <div style="background:#fbeaf0;border-radius:8px;padding:12px;text-align:center;border:1px solid #f4c0d1;">
+                    <div style="font-size:18px;font-weight:700;color:#d4537e;">Rp.{{ number_format($totalDonasiMasuk ?? 0, 0, ',', '.') }}</div>
+                    <div style="font-size:11px;color:#666;margin-top:3px;">Donasi Masuk</div>
+                </div>
+                <div style="background:#eef0fd;border-radius:8px;padding:12px;text-align:center;border:1px solid #c5caf7;">
+                    <div style="font-size:18px;font-weight:700;color:#4361ee;">Rp.{{ number_format($totalDonasiKeluar ?? 0, 0, ',', '.') }}</div>
+                    <div style="font-size:11px;color:#666;margin-top:3px;">Donasi Keluar</div>
+                </div>
+            </div>
+            <table style="min-width:unset;width:100%;">
+                <tr>
+                    <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Total Donasi Masuk</td>
+                    <td style="border:none;padding:6px 0;text-align:right;color:#d4537e;font-weight:600;font-size:13px;">Rp.{{ number_format($totalDonasiMasuk ?? 0, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Total Donasi Keluar</td>
+                    <td style="border:none;padding:6px 0;text-align:right;color:#4361ee;font-weight:600;font-size:13px;">Rp.{{ number_format($totalDonasiKeluar ?? 0, 0, ',', '.') }}</td>
+                </tr>
+                <tr><td colspan="2" style="border:none;border-top:1px solid #eee;padding:0;"></td></tr>
+                <tr>
+                    <td style="border:none;padding:8px 0;font-weight:700;font-size:13px;">Saldo Donasi</td>
+                    <td style="border:none;padding:8px 0;text-align:right;font-weight:700;font-size:13px;color:{{ ($totalDonasiMasuk ?? 0) >= ($totalDonasiKeluar ?? 0) ? '#28a745' : '#dc3545' }};">
+                        Rp.{{ number_format(abs(($totalDonasiMasuk ?? 0) - ($totalDonasiKeluar ?? 0)), 0, ',', '.') }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        {{-- RINGKASAN KEGIATAN --}}
+    <div class="widget-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;flex-wrap:wrap;gap:8px;">
+            <h3 style="margin:0;"><i class="fa-solid fa-calendar-check" style="color:#0f8b6d;"></i> Ringkasan Kegiatan</h3>
+            <a href="{{ route('kegiatan.jadwal') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">
+                Lihat semua <i class="fa fa-arrow-right" style="font-size:10px;"></i>
+            </a>
+        </div>
+        {{-- STAT MINI --}}
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px;">
+            <div style="background:#f7fdf9;border-radius:8px;padding:12px;text-align:center;border:1px solid #e0f0e8;">
+                <div style="font-size:20px;font-weight:700;color:#0f8b6d;">{{ $statKegiatan['akan_datang'] ?? 0 }}</div>
+                <div style="font-size:11px;color:#666;margin-top:3px;">Akan Datang</div>
+            </div>
+            <div style="background:#f0f9ff;border-radius:8px;padding:12px;text-align:center;border:1px solid #cfe2ff;">
+                <div style="font-size:20px;font-weight:700;color:#084298;">{{ $statKegiatan['hari_ini'] ?? 0 }}</div>
+                <div style="font-size:11px;color:#666;margin-top:3px;">Hari Ini</div>
+            </div>
+            <div style="background:#f8f8f8;border-radius:8px;padding:12px;text-align:center;border:1px solid #e5e5e5;">
+                <div style="font-size:20px;font-weight:700;color:#444;">{{ $statKegiatan['selesai'] ?? 0 }}</div>
+                <div style="font-size:11px;color:#666;margin-top:3px;">Selesai</div>
+            </div>
+        </div>
+
+        {{-- LIST KEGIATAN TERDEKAT --}}
+        <div style="font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">
+            Kegiatan Terdekat
+        </div>
+        @if(isset($kegiatanTerdekat) && $kegiatanTerdekat->count())
+            @foreach($kegiatanTerdekat as $kg)
+            <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:500;font-size:13px;color:#111;">{{ $kg->nama_kegiatan }}</div>
+                        <div style="font-size:11px;color:#999;margin-top:3px;">
+                            <i class="fa fa-calendar" style="color:#0f8b6d;"></i>
+                            {{ \Carbon\Carbon::parse($kg->tanggal)->translatedFormat('d M Y') }}
+                            @if($kg->waktu) &nbsp;·&nbsp; <i class="fa fa-clock" style="color:#0f8b6d;"></i> {{ $kg->waktu }} @endif
+                            @if($kg->tempat) &nbsp;·&nbsp; <i class="fa fa-location-dot" style="color:#0f8b6d;"></i> {{ $kg->tempat }} @endif
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">
+                        @php $tgl = \Carbon\Carbon::parse($kg->tanggal); @endphp
+                        @if($tgl->isToday())
+                            <span class="badge-berjalan">Hari Ini</span>
+                        @else
+                            <span class="badge-akan">{{ $tgl->diffForHumans() }}</span>
+                        @endif
+                        @if($kg->kasKeluar)
+                            <span class="badge-anggaran">Rp.{{ number_format($kg->kasKeluar->nominal, 0, ',', '.') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endforeach
+            <div style="margin-top:12px;text-align:center;">
+                <a href="{{ route('kegiatan.jadwal.create') }}" class="btn-tambah" style="font-size:12px;padding:7px 16px;">
+                    <i class="fa fa-plus"></i> Tambah Kegiatan
+                </a>
+            </div>
+        @else
+            <div style="text-align:center;padding:1.5rem;color:#999;font-size:13px;">
+                <i class="fa fa-calendar-xmark" style="font-size:24px;display:block;margin-bottom:8px;color:#ccc;"></i>
+                Belum ada kegiatan yang akan datang
+            </div>
+            <div style="margin-top:10px;text-align:center;">
+                <a href="{{ route('kegiatan.jadwal.create') }}" class="btn-tambah" style="font-size:12px;padding:7px 16px;">
+                    <i class="fa fa-plus"></i> Tambah Kegiatan
+                </a>
+            </div>
+        @endif
+    </div>
+
+       {{-- RINGKASAN PENGURUS --}}
+<div class="widget-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;flex-wrap:wrap;gap:8px;">
+        <h3 style="margin:0;"><i class="fa-solid fa-users" style="color:#0f8b6d;"></i> Data Pengurus</h3>
+        <a href="{{ route('pengurus.index') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">
+            Lihat semua <i class="fa fa-arrow-right" style="font-size:10px;"></i>
+        </a>
+    </div>
+
+    {{-- STAT --}}
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+        <div style="background:#f7fdf9;border-radius:8px;padding:16px;text-align:center;border:1px solid #e0f0e8;">
+            <div style="font-size:32px;font-weight:700;color:#0f8b6d;">{{ $totalPengurus ?? 0 }}</div>
+            <div style="font-size:12px;color:#666;margin-top:4px;">Total Pengurus</div>
+        </div>
+        <div style="background:#f7fdf9;border-radius:8px;padding:16px;border:1px solid #e0f0e8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+            <div style="font-size:11px;color:#999;">Kelola Pengurus</div>
+            <a href="{{ route('pengurus.create') }}" class="btn-tambah" style="font-size:12px;padding:7px 14px;">
+                <i class="fa fa-plus"></i> Tambah
+            </a>
+        </div>
+    </div>
+
+    {{-- LIST --}}
+    @if(isset($dataPengurus) && $dataPengurus->count())
+    <div style="font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Daftar Pengurus</div>
+    @foreach($dataPengurus->take(4) as $pgr)
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5;">
+        @if($pgr->foto)
+            <img src="{{ asset('storage/'.$pgr->foto) }}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid #9fe1cb;flex-shrink:0;">
+        @else
+            <div style="width:34px;height:34px;border-radius:50%;background:#e1f5ee;border:2px solid #9fe1cb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0f6e56;flex-shrink:0;">
+                {{ strtoupper(substr($pgr->nama, 0, 2)) }}
+            </div>
+        @endif
+        <div style="flex:1;min-width:0;">
+            <div style="font-weight:500;font-size:13px;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $pgr->nama }}</div>
+            <div style="font-size:11px;color:#999;margin-top:1px;">{{ $pgr->jabatan ?? '-' }}</div>
+        </div>
+        @if($pgr->no_hp)
+        <div style="font-size:11px;color:#aaa;white-space:nowrap;flex-shrink:0;">
+            <i class="fa fa-phone" style="font-size:10px;color:#0f8b6d;"></i> {{ $pgr->no_hp }}
+        </div>
+        @endif
+    </div>
+    @endforeach
+    @if($dataPengurus->count() > 4)
+    <div style="text-align:center;margin-top:10px;font-size:12px;color:#999;">
+        +{{ $dataPengurus->count() - 4 }} pengurus lainnya —
+        <a href="{{ route('pengurus.index') }}" style="color:#0f8b6d;">lihat semua</a>
+    </div>
+    @endif
+    @endif
+</div>
+
+{{-- RINGKASAN IMAM --}}
+<div class="widget-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;flex-wrap:wrap;gap:8px;">
+        <h3 style="margin:0;"><i class="fa-solid fa-user-tie" style="color:#0f8b6d;"></i> Data Imam</h3>
+        <a href="{{ route('imam.data') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">
+            Lihat semua <i class="fa fa-arrow-right" style="font-size:10px;"></i>
+        </a>
+    </div>
+
+    {{-- STAT --}}
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+        <div style="background:#f7fdf9;border-radius:8px;padding:16px;text-align:center;border:1px solid #e0f0e8;">
+            <div style="font-size:32px;font-weight:700;color:#0f8b6d;">{{ $totalImam ?? 0 }}</div>
+            <div style="font-size:12px;color:#666;margin-top:4px;">Total Imam</div>
+        </div>
+        <div style="background:#f7fdf9;border-radius:8px;padding:16px;border:1px solid #e0f0e8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+                <span style="background:#e1f5ee;color:#085041;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;">
+                    Tetap: {{ isset($dataImamList) ? $dataImamList->where('status','Tetap')->count() : 0 }}
+                </span>
+                <span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;">
+                    Tamu: {{ isset($dataImamList) ? $dataImamList->where('status','Tamu')->count() : 0 }}
+                </span>
+            </div>
+            <a href="{{ route('imam.data.create') }}" class="btn-tambah" style="font-size:12px;padding:7px 14px;">
+                <i class="fa fa-plus"></i> Tambah
+            </a>
+        </div>
+    </div>
+
+    {{-- LIST --}}
+    @if(isset($dataImamList) && $dataImamList->count())
+    <div style="font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Daftar Imam</div>
+    @foreach($dataImamList->take(4) as $im)
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5;">
+        <div style="width:34px;height:34px;border-radius:50%;background:#e1f5ee;border:2px solid #9fe1cb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0f6e56;flex-shrink:0;">
+            {{ strtoupper(substr($im->nama, 0, 2)) }}
+        </div>
+        <div style="flex:1;min-width:0;">
+            <div style="font-weight:500;font-size:13px;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $im->nama }}</div>
+            <div style="font-size:11px;color:#999;margin-top:1px;">{{ $im->no_hp ?? '-' }}</div>
+        </div>
+        <span style="background:{{ $im->status == 'Tetap' ? '#e1f5ee' : '#fff3cd' }};color:{{ $im->status == 'Tetap' ? '#085041' : '#856404' }};padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;flex-shrink:0;">
+            {{ $im->status }}
+        </span>
+    </div>
+    @endforeach
+    @if($dataImamList->count() > 4)
+    <div style="text-align:center;margin-top:10px;font-size:12px;color:#999;">
+        +{{ $dataImamList->count() - 4 }} imam lainnya —
+        <a href="{{ route('imam.data') }}" style="color:#0f8b6d;">lihat semua</a>
+    </div>
+    @endif
+    @endif
+</div>
+
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

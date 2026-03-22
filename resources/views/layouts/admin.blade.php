@@ -1,223 +1,675 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
-<title>Dashboard Admin</title>
+    <title>Dashboard Admin — DKM</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
 
-<style>
+        /* ===================== SIDEBAR ===================== */
+        .sidebar {
+            width: 250px;
+            background: #0a6b53;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
 
-body{
-margin:0;
-font-family:Arial;
-display:flex;
-background:#f3f3f3;
-}
+        .sidebar.hide {
+            transform: translateX(-250px);
+        }
 
-/* SIDEBAR */
+        /* LOGO */
+        .sidebar-logo {
+            padding: 22px 20px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
 
-.sidebar{
-width:230px;
-background:#0f8b6d;
-color:white;
-min-height:100vh;
-padding:20px;
-transition:0.3s;
-}
+        .sidebar-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
 
-.sidebar.hide{
-margin-left:-230px;
-}
+        .sidebar-logo .logo-text {
+            line-height: 1.2;
+        }
 
-.sidebar h2{
-margin-bottom:20px;
-}
+        .sidebar-logo .logo-text span {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
 
-.sidebar a{
-display:block;
-color:white;
-text-decoration:none;
-padding:10px;
-margin:5px 0;
-border-radius:6px;
-}
+        .sidebar-logo .logo-text small {
+            font-size: 11px;
+            opacity: 0.65;
+        }
 
-.sidebar a i{
-margin-right:10px;
-}
+        /* NAV LABEL */
+        .nav-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            padding: 18px 20px 6px;
+        }
 
-.sidebar a:hover{
-background:#0c6d55;
-}
+        /* NAV ITEMS */
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+        }
 
-/* MAIN */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
 
-.main{
-flex:1;
-transition:0.3s;
-}
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-/* NAVBAR */
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
 
-.navbar{
-background:#0f8b6d;
-color:white;
-padding:15px 20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.82);
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 2px;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: all 0.18s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
 
-/* HAMBURGER */
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.85;
+            flex-shrink: 0;
+        }
 
-.menu-btn{
-background:none;
-border:none;
-color:white;
-font-size:20px;
-cursor:pointer;
-margin-right:10px;
-}
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
 
-.left-nav{
-display:flex;
-align-items:center;
-gap:10px;
-}
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            font-weight: 600;
+        }
 
-/* DASHBOARD */
+        /* DROPDOWN NAV */
+        .nav-dropdown {
+            display: none;
+            padding-left: 14px;
+        }
 
-.container{
-padding:20px;
-}
+        .nav-dropdown.open {
+            display: block;
+        }
 
-/* CARD */
+        .nav-dropdown .nav-item {
+            font-size: 12.5px;
+            padding: 8px 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
 
-.cards{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:15px;
-margin-bottom:20px;
-}
+        .nav-dropdown .nav-item i {
+            font-size: 12px;
+        }
 
-.card{
-padding:20px;
-color:white;
-border-radius:8px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
+        .nav-item .nav-arrow {
+            margin-left: auto;
+            font-size: 11px;
+            opacity: 0.6;
+            transition: transform 0.2s;
+        }
 
-.card i{
-font-size:30px;
-opacity:0.8;
-}
+        .nav-item.open .nav-arrow {
+            transform: rotate(90deg);
+        }
 
-.green{background:#28a745;}
-.blue{background:#17a2b8;}
-.orange{background:#fd7e14;}
-.purple{background:#6f42c1;}
+        /* DIVIDER */
+        .nav-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+        }
 
-/* TABLE */
+        /* SIDEBAR BOTTOM */
+        .sidebar-bottom {
+            padding: 14px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
 
-.table-box{
-background:white;
-padding:15px;
-border-radius:8px;
-margin-bottom:20px;
-}
+        .btn-tambah-admin {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 11px 14px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px dashed rgba(255, 255, 255, 0.35);
+            border-radius: 9px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
 
-table{
-width:100%;
-border-collapse:collapse;
-}
+        .btn-tambah-admin:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            color: white;
+        }
 
-table th, table td{
-padding:10px;
-border-bottom:1px solid #eee;
-}
+        .btn-tambah-admin .icon-circle {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
 
-</style>
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 12px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.18s;
+            text-align: left;
+        }
 
+        .btn-logout:hover {
+            background: rgba(220, 53, 69, 0.25);
+            color: #ffb3b3;
+        }
+
+        .btn-logout i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* ===================== MAIN ===================== */
+        .main {
+            flex: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main.expanded {
+            margin-left: 0;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: white;
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 18px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .navbar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-icon-btn {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-icon-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: #e74c3c;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .navbar-divider {
+            width: 1px;
+            height: 28px;
+            background: #e8e8e8;
+            margin: 0 6px;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 5px 12px 5px 5px;
+            border-radius: 30px;
+            border: 1px solid #e8e8e8;
+            cursor: pointer;
+            transition: background 0.2s;
+            background: white;
+            text-decoration: none;
+        }
+
+        .user-pill:hover {
+            background: #f8f8f8;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background: #0f8b6d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb-bar {
+            padding: 10px 24px;
+            font-size: 12px;
+            color: #999;
+            border-bottom: 1px solid #ebebeb;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumb-bar a {
+            color: #0f8b6d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* CONTENT */
+        .container {
+            padding: 24px;
+            flex: 1;
+        }
+
+        /* OVERLAY mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 90;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0 !important;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .navbar {
+                padding: 0 16px;
+            }
+
+            .navbar-title {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="sidebar" id="sidebar">
+    {{-- SIDEBAR OVERLAY (mobile) --}}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<h2><i class="fa-solid fa-mosque"></i> DKM</h2>
+    {{-- ===================== SIDEBAR ===================== --}}
+    <div class="sidebar" id="sidebar">
 
-<a href="{{ route('admin.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
-<a href="{{ route('pengurus.index') }}"><i class="fa fa-users"></i> Data Pengurus</a>
-<a href="{{ route('kegiatan.jadwal') }}">
-    <i class="fa fa-calendar"></i> Kegiatan
+        {{-- LOGO --}}
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fa-solid fa-mosque"></i></div>
+            <div class="logo-text">
+                <span>DKM Masjid Al-Musabaqoh</span>
+                <small>Panel Admin</small>
+            </div>
+        </div>
+
+        {{-- NAV --}}
+        <div class="sidebar-nav">
+
+            <div class="nav-label">Menu Utama</div>
+
+            <a href="{{ route('admin.dashboard') }}"
+                class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <i class="fa fa-home"></i> Dashboard
+            </a>
+
+            <a href="{{ route('pengurus.index') }}"
+                class="nav-item {{ request()->routeIs('pengurus*') ? 'active' : '' }}">
+                <i class="fa fa-users"></i> Data Pengurus
+            </a>
+
+            {{-- KEGIATAN DROPDOWN --}}
+            <button
+                class="nav-item {{ request()->routeIs('kegiatan*') || request()->routeIs('imam*') ? 'active open' : '' }}"
+                onclick="toggleDropdown('dd-kegiatan', this)">
+                <i class="fa fa-calendar"></i> Kegiatan
+                <i class="fa fa-chevron-right nav-arrow"></i>
+            </button>
+            <div class="nav-dropdown {{ request()->routeIs('kegiatan*') || request()->routeIs('imam*') ? 'open' : '' }}"
+                id="dd-kegiatan">
+                <a href="{{ route('kegiatan.jadwal') }}"
+                    class="nav-item {{ request()->routeIs('kegiatan.jadwal*') ? 'active' : '' }}">
+                    <i class="fa fa-calendar-check"></i> Jadwal Kegiatan
+                </a>
+                <a href="{{ route('imam.data') }}"
+                    class="nav-item {{ request()->routeIs('imam.data*') ? 'active' : '' }}">
+                    <i class="fa fa-user-tie"></i> Data Imam
+                </a>
+                <a href="{{ route('kegiatan.imam') }}"
+                    class="nav-item {{ request()->routeIs('kegiatan.imam*') ? 'active' : '' }}">
+                    <i class="fa fa-calendar-days"></i> Jadwal Imam
+                </a>
+                <a href="{{ route('kegiatan.sholat') }}"
+                    class="nav-item {{ request()->routeIs('kegiatan.sholat*') ? 'active' : '' }}">
+                    <i class="fa fa-mosque"></i> Jadwal Sholat
+                </a>
+            </div>
+
+            <div class="nav-divider"></div>
+            <div class="nav-label">Keuangan</div>
+
+            <button class="nav-item {{ request()->routeIs('kas*') ? 'active open' : '' }}"
+                onclick="toggleDropdown('dd-kas', this)">
+                <i class="fa fa-money-bill-wave"></i> Kas
+                <i class="fa fa-chevron-right nav-arrow"></i>
+            </button>
+            <div class="nav-dropdown {{ request()->routeIs('kas*') ? 'open' : '' }}" id="dd-kas">
+                <a href="{{ route('kas.masuk.index') }}"
+                    class="nav-item {{ request()->routeIs('kas.masuk*') ? 'active' : '' }}">
+                    <i class="fa fa-arrow-down"></i> Kas Masuk
+                </a>
+                <a href="{{ route('kas.keluar.index') }}"
+                    class="nav-item {{ request()->routeIs('kas.keluar*') ? 'active' : '' }}">
+                    <i class="fa fa-arrow-up"></i> Kas Keluar
+                </a>
+            </div>
+
+            <button class="nav-item {{ request()->routeIs('donasi*') ? 'active open' : '' }}"
+                onclick="toggleDropdown('dd-donasi', this)">
+                <i class="fa fa-hand-holding-dollar"></i> Donasi
+                <i class="fa fa-chevron-right nav-arrow"></i>
+            </button>
+            <div class="nav-dropdown {{ request()->routeIs('donasi*') ? 'open' : '' }}" id="dd-donasi">
+                <a href="{{ route('donasi.masuk') }}"
+                    class="nav-item {{ request()->routeIs('donasi.masuk*') ? 'active' : '' }}">
+                    <i class="fa fa-arrow-down"></i> Donasi Masuk
+                </a>
+                <a href="{{ route('donasi.keluar') }}"
+                    class="nav-item {{ request()->routeIs('donasi.keluar*') ? 'active' : '' }}">
+                    <i class="fa fa-arrow-up"></i> Donasi Keluar
+                </a>
+            </div>
+            <a href="{{ route('donatur.index') }}"
+   class="nav-item {{ request()->routeIs('donatur*') ? 'active' : '' }}">
+    <i class="fa fa-users"></i> Data Donatur
 </a>
-<a href="#"><i class="fa fa-hand-holding-dollar"></i> Donasi</a>
-<a href="#"><i class="fa fa-chart-line"></i> Laporan</a>
-<a href="#"><i class="fa fa-user"></i> User</a>
+            <a href="#" class="nav-item">
+                <i class="fa fa-chart-line"></i> Laporan
+            </a>
 
-<form method="POST" action="{{ route('logout') }}">
-@csrf
+            <div class="nav-divider"></div>
+            <div class="nav-label">Pengaturan</div>
 
-<button type="submit"
-style="margin-top:15px;padding:8px 10px;border:none;border-radius:5px;cursor:pointer">
+            <a href="#" class="nav-item">
+                <i class="fa fa-user-shield"></i> Kelola User
+            </a>
 
-<i class="fa fa-sign-out-alt"></i> Logout
+        </div>
 
-</button>
+        {{-- BOTTOM --}}
+        <div class="sidebar-bottom">
 
-</form>
+            {{-- TAMBAH ADMIN --}}
+            <a href="#" class="btn-tambah-admin">
+                <div class="icon-circle"><i class="fa fa-user-plus"></i></div>
+                Tambah Admin Baru
+            </a>
 
-</form>
+            {{-- LOGOUT --}}
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <i class="fa fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
 
-</div>
+        </div>
 
-<div class="main">
+    </div>
 
-<div class="navbar">
+    {{-- ===================== MAIN ===================== --}}
+    <div class="main" id="mainContent">
 
-<div class="left-nav">
+        {{-- NAVBAR --}}
+        <div class="navbar">
+            <div class="navbar-left">
+                <button class="menu-btn" id="menu-toggle">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <span class="navbar-title">
+                    @yield('page-title', 'Dashboard')
+                </span>
+            </div>
 
-<button class="menu-btn" id="menu-toggle">
-<i class="fa fa-bars"></i>
-</button>
+            <div class="navbar-right">
+                {{-- NOTIFIKASI --}}
+                <button class="nav-icon-btn">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="notif-dot"></span>
+                </button>
 
+                <div class="navbar-divider"></div>
 
+                {{-- USER --}}
+                <div class="user-pill">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                    </div>
+                    <span class="user-name">{{ auth()->user()->name ?? 'Admin' }}</span>
+                </div>
+            </div>
+        </div>
 
-</div>
+        {{-- CONTENT --}}
+        <div class="container">
+            @yield('content')
+        </div>
 
-<div>
-<i class="fa-solid fa-bell"></i> Notifikasi
-&nbsp;&nbsp;
-<i class="fa-solid fa-user-circle"></i> Admin
-</div>
+    </div>
 
-</div>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('mainContent');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuBtn = document.getElementById('menu-toggle');
+        const isMobile = () => window.innerWidth <= 768;
 
-<div class="container">
-
-@yield('content')
-
-</div>
-
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    const toggleBtn = document.getElementById("menu-toggle");
-    const sidebar = document.getElementById("sidebar");
-
-    if(toggleBtn && sidebar){
-        toggleBtn.addEventListener("click", function(){
-            sidebar.classList.toggle("hide");
+        menuBtn.addEventListener('click', function () {
+            if (isMobile()) {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            } else {
+                sidebar.classList.toggle('hide');
+                main.classList.toggle('expanded');
+            }
         });
-    }
 
-});
-</script>
+        function closeSidebar() {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+
+        function toggleDropdown(id, btn) {
+            const dd = document.getElementById(id);
+            const isOpen = dd.classList.contains('open');
+            dd.classList.toggle('open', !isOpen);
+            btn.classList.toggle('open', !isOpen);
+        }
+
+        // Tutup sidebar saat resize ke desktop
+        window.addEventListener('resize', function () {
+            if (!isMobile()) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            }
+        });
+    </script>
 
 </body>
+
 </html>

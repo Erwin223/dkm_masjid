@@ -5,9 +5,26 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KasMasuk;
+use Carbon\Carbon;
 
 class KasMasukController extends Controller
 {
+    public function index()
+    {
+        $data          = KasMasuk::orderBy('tanggal', 'desc')->get();
+        $totalMasuk    = KasMasuk::sum('jumlah');
+        $masukBulanIni = KasMasuk::whereMonth('tanggal', Carbon::now()->month)
+                            ->whereYear('tanggal', Carbon::now()->year)
+                            ->sum('jumlah');
+        $jmlBulanIni   = KasMasuk::whereMonth('tanggal', Carbon::now()->month)
+                            ->whereYear('tanggal', Carbon::now()->year)
+                            ->count();
+
+        return view('admin.kas_masuk.index', compact(
+            'data', 'totalMasuk', 'masukBulanIni', 'jmlBulanIni'
+        ));
+    }
+
     public function create()
     {
         return view('admin.kas_masuk.create');
@@ -16,36 +33,25 @@ class KasMasukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
-            'sumber' => 'required',
-            'jumlah' => 'required|numeric',
-            'keterangan' => 'nullable'
+            'tanggal'    => 'required|date',
+            'sumber'     => 'required',
+            'jumlah'     => 'required|numeric',
+            'keterangan' => 'nullable',
         ]);
 
-          $jumlah = str_replace('.', '', $request->jumlah);
+        $jumlah = str_replace('.', '', $request->jumlah);
 
-    KasMasuk::create([
-        'tanggal' => $request->tanggal,
-        'sumber' => $request->sumber,
-        'jumlah' => $jumlah,
-        'keterangan' => $request->keterangan,
-    ]);
+        KasMasuk::create([
+            'tanggal'    => $request->tanggal,
+            'sumber'     => $request->sumber,
+            'jumlah'     => $jumlah,
+            'keterangan' => $request->keterangan,
+        ]);
 
-
-
-        return redirect()->route('admin.dashboard')
-            ->with('success','Data kas masuk berhasil ditambahkan');
-
+        return redirect()->route('kas.masuk.index')
+            ->with('success', 'Data kas masuk berhasil ditambahkan');
     }
 
-    public function delete ($id)
-    {
-        $data = KasMasuk::findOrFail($id);
-    $data->delete();
-
-    return redirect()->route('admin.dashboard')
-        ->with('success', 'Data kas masuk berhasil dihapus');
-    }
     public function edit($id)
     {
         $data = KasMasuk::findOrFail($id);
@@ -55,24 +61,29 @@ class KasMasukController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'tanggal' => 'required|date',
-            'sumber' => 'required',
-            'jumlah' => 'required|numeric',
-            'keterangan' => 'nullable'
+            'tanggal'    => 'required|date',
+            'sumber'     => 'required',
+            'jumlah'     => 'required|numeric',
+            'keterangan' => 'nullable',
         ]);
 
-        $data = KasMasuk::findOrFail($id);
         $jumlah = str_replace('.', '', $request->jumlah);
 
-        $data->update([
-            'tanggal' => $request->tanggal,
-            'sumber' => $request->sumber,
-            'jumlah' => $jumlah,
+        KasMasuk::findOrFail($id)->update([
+            'tanggal'    => $request->tanggal,
+            'sumber'     => $request->sumber,
+            'jumlah'     => $jumlah,
             'keterangan' => $request->keterangan,
         ]);
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('kas.masuk.index')
             ->with('success', 'Data kas masuk berhasil diperbarui');
     }
 
+    public function delete($id)
+    {
+        KasMasuk::findOrFail($id)->delete();
+        return redirect()->route('kas.masuk.index')
+            ->with('success', 'Data kas masuk berhasil dihapus');
+    }
 }

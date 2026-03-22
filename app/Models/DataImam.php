@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 class DataImam extends Model
 {
     protected $table = 'data_imam';
-    protected $fillable = ['nama','alamat','no_hp','status','keterangan'];
+    protected $fillable = ['nama',
+    'alamat',
+    'no_hp',
+    'status',
+    'keterangan'];
 
     public function jadwal()
     {

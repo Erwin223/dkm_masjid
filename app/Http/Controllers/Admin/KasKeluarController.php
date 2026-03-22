@@ -5,9 +5,26 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KasKeluar;
+use Carbon\Carbon;
 
 class KasKeluarController extends Controller
 {
+    public function index()
+    {
+        $data            = KasKeluar::orderBy('tanggal', 'desc')->get();
+        $totalKeluar     = KasKeluar::sum('nominal');
+        $keluarBulanIni  = KasKeluar::whereMonth('tanggal', Carbon::now()->month)
+                               ->whereYear('tanggal', Carbon::now()->year)
+                               ->sum('nominal');
+        $jmlBulanIni     = KasKeluar::whereMonth('tanggal', Carbon::now()->month)
+                               ->whereYear('tanggal', Carbon::now()->year)
+                               ->count();
+
+        return view('admin.kas_keluar.index', compact(
+            'data', 'totalKeluar', 'keluarBulanIni', 'jmlBulanIni'
+        ));
+    }
+
     public function create()
     {
         return view('admin.kas_keluar.create');
@@ -16,61 +33,58 @@ class KasKeluarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
+            'tanggal'           => 'required|date',
             'jenis_pengeluaran' => 'required',
-            'jumlah' => 'required|numeric',
-            'nominal' => 'required|numeric',
-            'keterangan'=> 'nullable',
+            'jumlah'            => 'required|numeric',
+            'nominal'           => 'required|numeric',
+            'keterangan'        => 'nullable',
         ]);
 
         KasKeluar::create([
-            'tanggal' => $request->tanggal,
+            'tanggal'           => $request->tanggal,
             'jenis_pengeluaran' => $request->jenis_pengeluaran,
-            'jumlah' => $request->jumlah,
-            'nominal' => $request->nominal,
-            'keterangan' => $request->keterangan,
+            'jumlah'            => $request->jumlah,
+            'nominal'           => $request->nominal,
+            'keterangan'        => $request->keterangan,
         ]);
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('kas.keluar.index')
             ->with('success', 'Kas keluar berhasil ditambahkan');
     }
+
     public function edit($id)
-{
-    $data = KasKeluar::findOrFail($id);
-    return view('admin.kas_keluar.edit', compact('data'));
+    {
+        $data = KasKeluar::findOrFail($id);
+        return view('admin.kas_keluar.edit', compact('data'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'tanggal'           => 'required|date',
+            'jenis_pengeluaran' => 'required',
+            'jumlah'            => 'required|numeric',
+            'nominal'           => 'required',
+        ]);
+
+        $nominal = str_replace('.', '', $request->nominal);
+
+        KasKeluar::findOrFail($id)->update([
+            'tanggal'           => $request->tanggal,
+            'jenis_pengeluaran' => $request->jenis_pengeluaran,
+            'jumlah'            => $request->jumlah,
+            'nominal'           => $nominal,
+            'keterangan'        => $request->keterangan,
+        ]);
+
+        return redirect()->route('kas.keluar.index')
+            ->with('success', 'Data kas keluar berhasil diupdate');
+    }
+
+    public function destroy($id)
+    {
+        KasKeluar::findOrFail($id)->delete();
+        return redirect()->route('kas.keluar.index')
+            ->with('success', 'Data berhasil dihapus');
+    }
 }
-// UPDATE
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'tanggal' => 'required|date',
-        'jenis_pengeluaran' => 'required',
-        'jumlah' => 'required|numeric',
-        'nominal' => 'required',
-    ]);
-
-    $nominal = str_replace('.', '', $request->nominal);
-
-    $data = KasKeluar::findOrFail($id);
-    $data->update([
-        'tanggal' => $request->tanggal,
-        'jenis_pengeluaran' => $request->jenis_pengeluaran,
-        'jumlah' => $request->jumlah,
-        'nominal' => $nominal,
-        'keterangan' => $request->keterangan,
-    ]);
-
-    return redirect()->route('admin.dashboard')
-        ->with('success','Data kas keluar berhasil diupdate');
-}
-
-// DELETE
-public function destroy($id)
-{
-    KasKeluar::findOrFail($id)->delete();
-
-    return redirect()->route('admin.dashboard')
-        ->with('success','Data berhasil dihapus');
-}
-}
-
