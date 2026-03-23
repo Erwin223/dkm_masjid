@@ -21,7 +21,7 @@ class DonaturController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama'           => 'required',
             'no_hp'          => 'nullable',
             'email'          => 'nullable|email',
@@ -30,7 +30,7 @@ class DonaturController extends Controller
             'tanggal_daftar' => 'required|date',
         ]);
 
-        Donatur::create($request->all());
+        Donatur::create($validated);
 
         return redirect()->route('donatur.index')
             ->with('success', 'Data donatur berhasil ditambahkan');
@@ -44,14 +44,16 @@ class DonaturController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama'          => 'required',
+            'no_hp'         => 'nullable',
             'email'         => 'nullable|email',
+            'alamat'        => 'nullable',
             'jenis_donatur' => 'required|in:Individu,Lembaga',
             'tanggal_daftar'=> 'required|date',
         ]);
 
-        Donatur::findOrFail($id)->update($request->all());
+        Donatur::findOrFail($id)->update($validated);
 
         return redirect()->route('donatur.index')
             ->with('success', 'Data donatur berhasil diupdate');

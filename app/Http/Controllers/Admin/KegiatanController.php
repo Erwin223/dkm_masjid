@@ -27,7 +27,7 @@ class KegiatanController extends Controller
 
     public function jadwalStore(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_kegiatan'    => 'required',
             'tanggal'          => 'required|date',
             'waktu'            => 'nullable',
@@ -37,7 +37,7 @@ class KegiatanController extends Controller
             'kas_keluar_id'    => 'nullable|exists:kas_keluar,id',
         ]);
 
-        JadwalKegiatan::create($request->all());
+        JadwalKegiatan::create($validated);
 
         return redirect()->route('kegiatan.jadwal')
             ->with('success', 'Jadwal kegiatan berhasil ditambahkan');
@@ -52,13 +52,17 @@ class KegiatanController extends Controller
 
     public function jadwalUpdate(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_kegiatan' => 'required',
             'tanggal'       => 'required|date',
+            'waktu'         => 'nullable',
+            'tempat'        => 'nullable',
+            'penanggung_jawab' => 'nullable',
+            'keterangan'    => 'nullable',
             'kas_keluar_id' => 'nullable|exists:kas_keluar,id',
         ]);
 
-        JadwalKegiatan::findOrFail($id)->update($request->all());
+        JadwalKegiatan::findOrFail($id)->update($validated);
 
         return redirect()->route('kegiatan.jadwal')
             ->with('success', 'Jadwal kegiatan berhasil diupdate');
@@ -86,8 +90,8 @@ class KegiatanController extends Controller
 
     public function imamDataStore(Request $request)
     {
-        $request->validate(['nama' => 'required', 'status' => 'required|in:Tetap,Tamu']);
-        DataImam::create($request->all());
+        $validated = $request->validate(['nama' => 'required', 'status' => 'required|in:Tetap,Tamu']);
+        DataImam::create($validated);
         return redirect()->route('imam.data')->with('success', 'Data imam berhasil ditambahkan');
     }
 
@@ -99,8 +103,8 @@ class KegiatanController extends Controller
 
     public function imamDataUpdate(Request $request, $id)
     {
-        $request->validate(['nama' => 'required', 'status' => 'required|in:Tetap,Tamu']);
-        DataImam::findOrFail($id)->update($request->all());
+        $validated = $request->validate(['nama' => 'required', 'status' => 'required|in:Tetap,Tamu']);
+        DataImam::findOrFail($id)->update($validated);
         return redirect()->route('imam.data')->with('success', 'Data imam berhasil diupdate');
     }
 
@@ -127,14 +131,14 @@ class KegiatanController extends Controller
 
     public function imamStore(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'imam_id'      => 'required|exists:data_imam,id',
             'tanggal'      => 'required|date',
             'hari'         => 'nullable',
             'waktu_sholat' => 'required',
             'keterangan'   => 'nullable',
         ]);
-        JadwalImam::create($request->all());
+        JadwalImam::create($validated);
         return redirect()->route('kegiatan.imam')->with('success', 'Jadwal imam berhasil ditambahkan');
     }
 
@@ -147,12 +151,14 @@ class KegiatanController extends Controller
 
     public function imamUpdate(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'imam_id'      => 'required|exists:data_imam,id',
             'tanggal'      => 'required|date',
+            'hari'         => 'nullable',
             'waktu_sholat' => 'required',
+            'keterangan'   => 'nullable',
         ]);
-        JadwalImam::findOrFail($id)->update($request->all());
+        JadwalImam::findOrFail($id)->update($validated);
         return redirect()->route('kegiatan.imam')->with('success', 'Jadwal imam berhasil diupdate');
     }
 

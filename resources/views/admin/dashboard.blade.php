@@ -551,7 +551,7 @@
         @endif
     </div>
 
-       {{-- RINGKASAN PENGURUS --}}
+{{-- RINGKASAN PENGURUS --}}
 <div class="widget-box">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;flex-wrap:wrap;gap:8px;">
         <h3 style="margin:0;"><i class="fa-solid fa-users" style="color:#0f8b6d;"></i> Data Pengurus</h3>

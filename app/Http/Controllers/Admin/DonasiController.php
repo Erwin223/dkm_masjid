@@ -121,7 +121,7 @@ class DonasiController extends Controller
 
     public function keluarStore(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'tanggal'      => 'required|date',
             'jenis_donasi' => 'required',
             'tujuan'       => 'required',
@@ -129,7 +129,7 @@ class DonasiController extends Controller
             'keterangan'   => 'nullable',
         ]);
 
-        DonasiKeluar::create($request->all());
+        DonasiKeluar::create($validated);
 
         return redirect()->route('donasi.keluar')
             ->with('success', 'Data donasi keluar berhasil ditambahkan');
@@ -143,14 +143,15 @@ class DonasiController extends Controller
 
     public function keluarUpdate(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'tanggal'      => 'required|date',
             'jenis_donasi' => 'required',
             'tujuan'       => 'required',
             'jumlah'       => 'required|numeric|min:0',
+            'keterangan'   => 'nullable',
         ]);
 
-        DonasiKeluar::findOrFail($id)->update($request->all());
+        DonasiKeluar::findOrFail($id)->update($validated);
 
         return redirect()->route('donasi.keluar')
             ->with('success', 'Data donasi keluar berhasil diupdate');

@@ -29,7 +29,7 @@ Route::get('/', [HomeController::class, 'index']);
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth','nocache'])->prefix('admin')->group(function () {
+Route::middleware(['auth','admin','nocache'])->prefix('admin')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])

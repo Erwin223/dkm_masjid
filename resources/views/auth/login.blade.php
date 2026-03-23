@@ -232,6 +232,10 @@ placeholder="Password"
 required>
 </div>
 
+<div style="text-align: right; margin-bottom: 20px;">
+    <a href="{{ route('password.request') }}" style="font-size: 13px; color: #137c3b; text-decoration: none;">Lupa Password?</a>
+</div>
+
 <button type="submit">
 <i class="fa fa-right-to-bracket"></i> Login
 </button>

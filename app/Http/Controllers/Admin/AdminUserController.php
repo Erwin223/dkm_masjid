@@ -16,7 +16,7 @@ class AdminUserController extends Controller
      */
     public function index()
     {
-        $users = User::orderBy('name', 'asc')->get();
+        $users = User::where('is_admin', true)->orderBy('name', 'asc')->get();
         return view('admin.users.index', compact('users'));
     }
 
@@ -43,6 +43,7 @@ class AdminUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_admin' => true,
         ]);
 
         return redirect()->route('admin.users.index')
