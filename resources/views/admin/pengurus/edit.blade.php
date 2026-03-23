@@ -3,146 +3,91 @@
 @section('content')
 
 <style>
-
-.form-container{
-max-width:600px;
-margin:auto;
-background:white;
-padding:30px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
-}
-
-.form-title{
-font-size:20px;
-font-weight:bold;
-text-align:center;
-margin-bottom:20px;
-color:#0f8b6d;
-}
-
-.form-group{
-margin-bottom:15px;
-}
-
-.form-group label{
-display:block;
-font-weight:600;
-margin-bottom:5px;
-}
-
-.input-group{
-display:flex;
-align-items:center;
-border:1px solid #ddd;
-border-radius:8px;
-overflow:hidden;
-}
-
-.input-group i{
-background:#0f8b6d;
-color:white;
-padding:12px;
-min-width:40px;
-text-align:center;
-}
-
-.input-group input{
-border:none;
-padding:12px;
-width:100%;
-outline:none;
-}
-
-/* FOTO PREVIEW */
-.preview{
-text-align:center;
-margin-bottom:15px;
-}
-
-.preview img{
-width:90px;
-height:90px;
-border-radius:50%;
-object-fit:cover;
-border:3px solid #0f8b6d;
-}
-
-/* BUTTON */
-.btn-submit{
-width:100%;
-padding:12px;
-background:#0f8b6d;
-color:white;
-border:none;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.btn-submit:hover{
-background:#0c6d55;
-}
-
+    .form-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:28px; max-width:750px; margin:auto; }
+    .form-box h3 { font-size:16px; font-weight:600; margin-bottom:20px; color:#111; display:flex; align-items:center; gap:8px; }
+    .form-group { margin-bottom:18px; }
+    .form-group label { display:block; font-size:13px; font-weight:500; color:#444; margin-bottom:6px; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:9px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; color:#333; outline:none; background:#fff; transition:border 0.2s; box-sizing: border-box; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#0f8b6d; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-actions { display:flex; gap:10px; margin-top:24px; flex-wrap:wrap; }
+    .btn-simpan { background:#0f8b6d; color:#fff; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+    .btn-simpan:hover { background:#0c6d55; }
+    .btn-batal { background:#fff; color:#555; border:1px solid #ddd; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:7px; }
+    .btn-batal:hover { background:#f5f5f5; }
+    .error-list { background:#fff5f5; border:1px solid #feb2b2; padding:15px; border-radius:8px; margin-bottom:20px; color:#c53030; font-size:13px; }
+    .error-list ul { margin:0; padding-left:20px; }
+    /* FOTO PREVIEW */
+    .preview { display:flex; align-items:center; gap:15px; margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:8px; border:1px dashed #ddd; }
+    .preview img { width:70px; height:70px; border-radius:50%; object-fit:cover; border:2px solid #0f8b6d; }
+    .preview-info { flex:1; }
+    .preview-info div { font-size:13px; font-weight:600; color:#333; }
+    .preview-info span { font-size:11px; color:#666; }
+    @media(max-width:600px){ .form-row { grid-template-columns:1fr; } .form-box { padding:18px; } }
 </style>
 
-<div class="form-container">
+<div class="form-box">
+    <h3><i class="fa fa-user-edit" style="color:#0f8b6d;"></i> Edit Data Pengurus</h3>
 
-<div class="form-title">
-<i class="fa fa-user-edit"></i> Edit Pengurus
-</div>
+    @if($errors->any())
+    <div class="error-list">
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
-<form method="POST" action="{{ route('pengurus.update',$data->id) }}" enctype="multipart/form-data">
-@csrf
-@method('PUT')
+    <form method="POST" action="{{ route('pengurus.update',$data->id) }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-<!-- FOTO SAAT INI -->
-<div class="preview">
-@if($data->foto)
-<img src="{{ asset('storage/'.$data->foto) }}">
-@else
-<img src="https://via.placeholder.com/90">
-@endif
-</div>
+        <!-- FOTO SAAT INI -->
+        <div class="preview">
+            @if($data->foto)
+            <img src="{{ asset('storage/'.$data->foto) }}">
+            @else
+            <div style="width:70px; height:70px; border-radius:50%; background:#e1f5ee; border:2px solid #9fe1cb; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:600; color:#0f6e56;">
+                {{ strtoupper(substr($data->nama, 0, 1)) }}
+            </div>
+            @endif
+            <div class="preview-info">
+                <div>Foto Profil Saat Ini</div>
+                <span>Anda dapat membiarkan ini kosong jika tidak ingin mengubah foto.</span>
+            </div>
+        </div>
 
-<div class="form-group">
-<label>Nama</label>
-<div class="input-group">
-<i class="fa fa-user"></i>
-<input type="text" name="nama" value="{{ $data->nama }}">
-</div>
-</div>
+        <div class="form-group">
+            <label>Nama Lengkap <span style="color:red;">*</span></label>
+            <input type="text" name="nama" value="{{ old('nama', $data->nama) }}" required placeholder="Masukkan nama pengurus">
+        </div>
 
-<div class="form-group">
-<label>Jabatan</label>
-<div class="input-group">
-<i class="fa fa-briefcase"></i>
-<input type="text" name="jabatan" value="{{ $data->jabatan }}" required>
-</div>
-</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Jabatan <span style="color:red;">*</span></label>
+                <input type="text" name="jabatan" value="{{ old('jabatan', $data->jabatan) }}" required placeholder="Contoh: Ketua DKM">
+            </div>
 
-<div class="form-group">
-<label>No HP</label>
-<div class="input-group">
-<i class="fa fa-phone"></i>
-<input type="text" name="no_hp" value="{{ $data->no_hp }}">
-</div>
-</div>
+            <div class="form-group">
+                <label>No HP <span style="color:red;">*</span></label>
+                <input type="text" name="no_hp" value="{{ old('no_hp', $data->no_hp) }}" required placeholder="Contoh: 08123456789">
+            </div>
+        </div>
 
-<div class="form-group">
-<label>Ganti Foto</label>
-<div class="input-group">
-<i class="fa fa-image"></i>
-<input type="file" name="foto">
-</div>
-</div>
+        <div class="form-group">
+            <label>Ganti Foto (Opsional)</label>
+            <input type="file" name="foto" accept="image/*">
+            <div style="font-size:12px;color:#999;margin-top:6px;">
+                *Format yang didukung: JPG, JPEG, PNG. Maksimal 2MB.
+            </div>
+        </div>
 
-<button type="submit" class="btn-submit">
-<i class="fa fa-save"></i> Update Data
-</button>
-
-</form>
-
+        <div class="form-actions">
+            <button type="submit" class="btn-simpan"><i class="fa fa-save"></i> Update Data</button>
+            <a href="{{ route('pengurus.index') }}" class="btn-batal"><i class="fa fa-arrow-left"></i> Batal</a>
+        </div>
+    </form>
 </div>
 
 @endsection

@@ -3,162 +3,73 @@
 @section('content')
 
 <style>
-.form-container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.form-title {
-    font-size: 22px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #28a745;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.input-group {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: 0.3s;
-}
-
-.input-group i {
-    background: #28a745;
-    color: white;
-    padding: 12px;
-    min-width: 40px;
-    text-align: center;
-}
-
-.input-group input,
-.input-group textarea {
-    border: none;
-    padding: 12px;
-    width: 100%;
-    outline: none;
-    font-size: 14px;
-}
-
-.input-group span {
-    background: #eee;
-    padding: 12px;
-    font-weight: bold;
-}
-
-.input-group:focus-within {
-    border-color: #28a745;
-    box-shadow: 0 0 5px rgba(40, 167, 69, 0.4);
-}
-
-textarea {
-    resize: none;
-    height: 80px;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 14px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-submit:hover {
-    background: #218838;
-}
-
-/* ERROR */
-.error-box {
-    background: #ffe0e0;
-    color: #a30000;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
+    .form-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:28px; max-width:750px; margin:auto; }
+    .form-box h3 { font-size:16px; font-weight:600; margin-bottom:20px; color:#111; display:flex; align-items:center; gap:8px; }
+    .form-group { margin-bottom:18px; }
+    .form-group label { display:block; font-size:13px; font-weight:500; color:#444; margin-bottom:6px; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:9px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; color:#333; outline:none; background:#fff; transition:border 0.2s; box-sizing: border-box; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#0f8b6d; }
+    .form-group textarea { resize:vertical; min-height:80px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-actions { display:flex; gap:10px; margin-top:24px; flex-wrap:wrap; }
+    .btn-simpan { background:#0f8b6d; color:#fff; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+    .btn-simpan:hover { background:#0c6d55; }
+    .btn-batal { background:#fff; color:#555; border:1px solid #ddd; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:7px; }
+    .btn-batal:hover { background:#f5f5f5; }
+    .error-list { background:#fff5f5; border:1px solid #feb2b2; padding:15px; border-radius:8px; margin-bottom:20px; color:#c53030; font-size:13px; }
+    .error-list ul { margin:0; padding-left:20px; }
+    @media(max-width:600px){ .form-row { grid-template-columns:1fr; } .form-box { padding:18px; } }
 </style>
 
-<div class="form-container">
+<div class="form-box">
+    <h3><i class="fa fa-arrow-down" style="color:#28a745;"></i> Tambah Kas Masuk</h3>
 
-<div class="form-title">
-    <i class="fa fa-arrow-down"></i> Tambah Kas Masuk
-</div>
+    {{-- VALIDASI ERROR --}}
+    @if ($errors->any())
+    <div class="error-list">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
-{{-- VALIDASI ERROR --}}
-@if ($errors->any())
-<div class="error-box">
-    <ul>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+    <form method="POST" action="{{ route('kas.masuk.store') }}">
+        @csrf
 
-<form method="POST" action="{{ route('kas.masuk.store') }}">
-@csrf
+        <div class="form-row">
+            <div class="form-group">
+                <label>Tanggal <span style="color:red;">*</span></label>
+                <input type="date" name="tanggal" required value="{{ old('tanggal', date('Y-m-d')) }}">
+            </div>
+            
+            <div class="form-group">
+                <label>Sumber <span style="color:red;">*</span></label>
+                <input type="text" name="sumber" placeholder="Contoh: Donatur" required value="{{ old('sumber') }}">
+            </div>
+        </div>
 
-<div class="form-group">
-<label>Tanggal</label>
-<div class="input-group">
-    <i class="fa fa-calendar"></i>
-    <input type="date" name="tanggal" required>
-</div>
-</div>
+        <div class="form-group">
+            <label>Jumlah (Rp) <span style="color:red;">*</span></label>
+            <div style="position:relative;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
+                <input type="text" name="jumlah" id="jumlahInput"
+                    onkeyup="formatRupiah(this)"
+                    placeholder="0" required style="padding-left:32px;" value="{{ old('jumlah') }}">
+            </div>
+        </div>
 
-<div class="form-group">
-<label>Sumber</label>
-<div class="input-group">
-    <i class="fa fa-user"></i>
-    <input type="text" name="sumber" placeholder="Contoh: Donatur" required>
-</div>
-</div>
+        <div class="form-group">
+            <label>Keterangan</label>
+            <textarea name="keterangan" placeholder="Keterangan tambahan...">{{ old('keterangan') }}</textarea>
+        </div>
 
-<div class="form-group">
-<label>Jumlah</label>
-<div class="input-group">
-    <span>Rp</span>
-    <input type="text" name="jumlah"
-        onkeyup="formatRupiah(this)"
-        onblur="bersihkanRupiah(this)"
-        placeholder="Masukkan Jumlah Kas" required>
-</div>
-</div>
-
-<div class="form-group">
-<label>Keterangan</label>
-<div class="input-group">
-    <i class="fa fa-note-sticky"></i>
-    <textarea name="keterangan" placeholder="Opsional"></textarea>
-</div>
-</div>
-
-<button type="submit" class="btn-submit">
-    <i class="fa fa-save"></i> Simpan Data
-</button>
-
-</form>
-
+        <div class="form-actions">
+            <button type="submit" class="btn-simpan"><i class="fa fa-save"></i> Simpan Data</button>
+            <a href="{{ route('kas.masuk.index') }}" class="btn-batal"><i class="fa fa-arrow-left"></i> Batal</a>
+        </div>
+    </form>
 </div>
 
 {{-- SCRIPT FORMAT RUPIAH --}}
@@ -168,9 +79,8 @@ function formatRupiah(el){
     el.value = new Intl.NumberFormat('id-ID').format(angka);
 }
 
-function bersihkanRupiah(el){
-    el.value = el.value.replace(/\./g,'');
-}
+// Format saat disubmit akan dihandle di controller (str_replace('.', '', $request->jumlah))
+// Jadi kita tidak perlu onblur="bersihkanRupiah" karena controller sudah siap menerima format dengan titik
 </script>
 
 @endsection
