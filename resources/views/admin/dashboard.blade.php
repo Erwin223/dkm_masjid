@@ -6,7 +6,7 @@
     .notif-success { position:fixed; top:20px; right:20px; background:#28a745; color:white; padding:12px 18px; border-radius:8px; z-index:999; animation:fadeIn 0.5s; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
 
-    .cards { display:grid; grid-template-columns:repeat(7,1fr); gap:12px; margin-bottom:25px; }
+    .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:25px; }
     .card { padding:20px; border-radius:8px; color:white; display:flex; justify-content:space-between; align-items:center; }
     .card h3 { font-size:13px; margin-bottom:6px; opacity:.9; font-weight:500; }
     .card .card-value { font-size:18px; font-weight:700; margin:0; }
@@ -128,6 +128,15 @@
         <i class="fa-solid fa-hand-holding-dollar"></i>
     </div>
 
+    <div class="card teal" style="background:#20c997;">
+        <div>
+            <h3>Total Donatur</h3>
+            <p class="card-value">{{ $totalDonatur ?? 0 }}</p>
+            <p class="card-sub">donatur terdaftar</p>
+        </div>
+        <i class="fa-solid fa-people-group"></i>
+    </div>
+
 </div>
 <div class="dashboard-grid-3">
 
@@ -231,8 +240,143 @@
         </div>
     </div>
 
+    {{-- DATA DONATUR --}}
+    <div class="table-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <h3 style="margin:0;"><i class="fa-solid fa-people-group" style="color:#20c997;"></i> Data Donatur</h3>
+            <a href="{{ route('donatur.index') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat semua</a>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama Donatur</th><th>No. HP</th><th>Jenis Donatur</th><th>Tgl Daftar</th>
+                        <th style="text-align:center;">Hapus</th>
+                        <th style="text-align:center;">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(isset($dataDonatur) && $dataDonatur->count())
+                        @foreach($dataDonatur as $dtr)
+                        <tr>
+                            <td>{{ $dtr->nama }}</td>
+                            <td>{{ $dtr->no_hp ?? '-' }}</td>
+                            <td><span class="status-tetap-sm" style="background:#e6fcf5;color:#0ca678;">{{ $dtr->jenis_donatur }}</span></td>
+                            <td>{{ $dtr->tanggal_daftar ? $dtr->tanggal_daftar->translatedFormat('d M Y') : '-' }}</td>
+                            <td style="text-align:center;">
+                                <form id="delete-donatur-{{ $dtr->id }}" action="{{ route('donatur.delete', $dtr->id) }}" method="POST" style="display:inline;">
+                                    @csrf @method('DELETE')
+                                    <button type="button" onclick="confirmDeleteDonatur({{ $dtr->id }})" style="border:none;background:none;cursor:pointer;">
+                                        <i class="fa fa-trash" style="color:red;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td style="text-align:center;">
+                                <a href="{{ route('donatur.edit', $dtr->id) }}">
+                                    <i class="fa fa-edit" style="color:blue;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @else
+                        <tr><td colspan="6" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data donatur</td></tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
 
+    {{-- DATA DONASI MASUK --}}
+    <div class="table-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <h3 style="margin:0;"><i class="fa-solid fa-hand-holding-heart" style="color:#d4537e;"></i> Data Donasi Masuk</h3>
+            <a href="{{ route('donasi.masuk') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat semua</a>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th><th>Donatur</th><th>Jenis</th><th>Total</th>
+                        <th style="text-align:center;">Hapus</th>
+                        <th style="text-align:center;">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(isset($donasiMasukList) && $donasiMasukList->count())
+                        @foreach($donasiMasukList as $dm)
+                        <tr>
+                            <td>{{ $dm->tanggal->translatedFormat('d M Y') }}</td>
+                            <td>{{ $dm->nama_donatur }}</td>
+                            <td><span class="badge-berjalan" style="background:#fbeaf0;color:#d4537e;border:1px solid #f4c0d1;">{{ $dm->jenis_donasi }}</span></td>
+                            <td style="font-weight:600;color:#d4537e;">Rp.{{ number_format($dm->total, 0, ',', '.') }}</td>
+                            <td style="text-align:center;">
+                                <form id="delete-donasi-masuk-{{ $dm->id }}" action="{{ route('donasi.masuk.delete', $dm->id) }}" method="POST" style="display:inline;">
+                                    @csrf @method('DELETE')
+                                    <button type="button" onclick="confirmDeleteDonasiMasuk({{ $dm->id }})" style="border:none;background:none;cursor:pointer;">
+                                        <i class="fa fa-trash" style="color:red;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td style="text-align:center;">
+                                <a href="{{ route('donasi.masuk.edit', $dm->id) }}">
+                                    <i class="fa fa-edit" style="color:blue;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @else
+                        <tr><td colspan="6" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data donasi</td></tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
 
+    {{-- DATA DONASI KELUAR --}}
+    <div class="table-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <h3 style="margin:0;"><i class="fa-solid fa-hand-holding-dollar" style="color:#4361ee;"></i> Data Donasi Keluar</h3>
+            <a href="{{ route('donasi.keluar') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat semua</a>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th><th>Tujuan</th><th>Jenis</th><th>Jumlah</th>
+                        <th style="text-align:center;">Hapus</th>
+                        <th style="text-align:center;">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(isset($donasiKeluarList) && $donasiKeluarList->count())
+                        @foreach($donasiKeluarList as $dk)
+                        <tr>
+                            <td>{{ $dk->tanggal->translatedFormat('d M Y') }}</td>
+                            <td>{{ $dk->tujuan }}</td>
+                            <td><span class="badge-berjalan" style="background:#eef0fd;color:#4361ee;border:1px solid #c5caf7;">{{ $dk->jenis_donasi }}</span></td>
+                            <td style="font-weight:600;color:#4361ee;">Rp.{{ number_format($dk->jumlah, 0, ',', '.') }}</td>
+                            <td style="text-align:center;">
+                                <form id="delete-donasi-keluar-{{ $dk->id }}" action="{{ route('donasi.keluar.delete', $dk->id) }}" method="POST" style="display:inline;">
+                                    @csrf @method('DELETE')
+                                    <button type="button" onclick="confirmDeleteDonasiKeluar({{ $dk->id }})" style="border:none;background:none;cursor:pointer;">
+                                        <i class="fa fa-trash" style="color:red;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td style="text-align:center;">
+                                <a href="{{ route('donasi.keluar.edit', $dk->id) }}">
+                                    <i class="fa fa-edit" style="color:blue;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @else
+                        <tr><td colspan="6" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data pengeluaran donasi</td></tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </div>
 
@@ -303,6 +447,37 @@
             </table>
         </div>
 
+        {{-- RINGKASAN DONATUR --}}
+        <div class="widget-box">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;">
+                <h3 style="margin:0;"><i class="fa-solid fa-people-group" style="color:#20c997;"></i> Data Donatur Terbaru</h3>
+                <a href="{{ route('donatur.index') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat semua</a>
+            </div>
+            @if(isset($donaturList) && $donaturList->count())
+                @foreach($donaturList as $dtr)
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5;">
+                    <div style="width:34px;height:34px;border-radius:50%;background:#e6fcf5;border:2px solid #b2f2bb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0ca678;flex-shrink:0;">
+                        {{ strtoupper(substr($dtr->nama, 0, 2)) }}
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:500;font-size:13px;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $dtr->nama }}</div>
+                        <div style="font-size:11px;color:#999;margin-top:1px;">{{ $dtr->jenis_donatur }}</div>
+                    </div>
+                    <div style="font-size:11px;color:#aaa;white-space:nowrap;flex-shrink:0;">
+                        {{ $dtr->tanggal_daftar ? $dtr->tanggal_daftar->translatedFormat('d M Y') : '-' }}
+                    </div>
+                </div>
+                @endforeach
+            @else
+                <div style="text-align:center;padding:1rem;color:#999;font-size:13px;">Belum ada </div>
+            @endif
+            <div style="margin-top:12px;text-align:center;">
+                <a href="{{ route('donatur.create') }}" class="btn-tambah" style="font-size:12px;padding:7px 16px;background:#20c997;">
+                    <i class="fa fa-plus"></i> Tambah Donatur
+                </a>
+            </div>
+        </div>
+
         {{-- RINGKASAN KEGIATAN --}}
     <div class="widget-box">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;flex-wrap:wrap;gap:8px;">
@@ -314,7 +489,7 @@
         {{-- STAT MINI --}}
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px;">
             <div style="background:#f7fdf9;border-radius:8px;padding:12px;text-align:center;border:1px solid #e0f0e8;">
-                <div style="font-size:20px;font-weight:700;color:#0f8b6d;">{{ $statKegiatan['akan_datang'] ?? 0 }}</div>
+                <div style="font-size:20px;data donaturfont-weight:700;color:#0f8b6d;">{{ $statKegiatan['akan_datang'] ?? 0 }}</div>
                 <div style="font-size:11px;color:#666;margin-top:3px;">Akan Datang</div>
             </div>
             <div style="background:#f0f9ff;border-radius:8px;padding:12px;text-align:center;border:1px solid #cfe2ff;">
@@ -496,6 +671,18 @@
 <script>Swal.fire({ icon:'success', title:'Berhasil!', text:'{{ session("success") }}', timer:2000, showConfirmButton:false });</script>
 @endif
 
+@if(session('welcome_message'))
+<script>
+    Swal.fire({
+        title: 'Selamat Datang!',
+        text: '{{ session("welcome_message") }}',
+        icon: 'success',
+        confirmButtonColor: '#0f8b6d',
+        confirmButtonText: 'Terima Kasih'
+    });
+</script>
+@endif
+
 <script>
 function confirmDelete(id){
     Swal.fire({ title:'Yakin hapus?', icon:'warning', showCancelButton:true, confirmButtonColor:'#0f8b6d', cancelButtonColor:'#d33', confirmButtonText:'Ya, hapus!', cancelButtonText:'Batal' })
@@ -504,6 +691,18 @@ function confirmDelete(id){
 function confirmDeleteKeluar(id){
     Swal.fire({ title:'Yakin hapus?', icon:'warning', showCancelButton:true, confirmButtonColor:'#0f8b6d', cancelButtonColor:'#d33', confirmButtonText:'Ya, hapus!', cancelButtonText:'Batal' })
     .then(r=>{ if(r.isConfirmed) document.getElementById('delete-keluar-'+id).submit(); });
+}
+function confirmDeleteDonatur(id){
+    Swal.fire({ title:'Yakin hapus donatur?', text:'Menghapus donatur akan mempengaruhi data donasi terkait.', icon:'warning', showCancelButton:true, confirmButtonColor:'#0f8b6d', cancelButtonColor:'#d33', confirmButtonText:'Ya, hapus!', cancelButtonText:'Batal' })
+    .then(r=>{ if(r.isConfirmed) document.getElementById('delete-donatur-'+id).submit(); });
+}
+function confirmDeleteDonasiMasuk(id){
+    Swal.fire({ title:'Yakin hapus donasi masuk?', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33', cancelButtonColor:'#6c757d', confirmButtonText:'Ya, hapus!', cancelButtonText:'Batal' })
+    .then(r=>{ if(r.isConfirmed) document.getElementById('delete-donasi-masuk-'+id).submit(); });
+}
+function confirmDeleteDonasiKeluar(id){
+    Swal.fire({ title:'Yakin hapus donasi keluar?', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33', cancelButtonColor:'#6c757d', confirmButtonText:'Ya, hapus!', cancelButtonText:'Batal' })
+    .then(r=>{ if(r.isConfirmed) document.getElementById('delete-donasi-keluar-'+id).submit(); });
 }
 </script>
 

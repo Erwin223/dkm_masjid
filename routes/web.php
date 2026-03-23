@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PengurusController;
 use App\Http\Controllers\Admin\PenggunaController;
 use App\Http\Controllers\Admin\DonasiController;
 use App\Http\Controllers\Admin\DonaturController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +112,13 @@ Route::put('/donatur/{id}',         [DonaturController::class, 'update'])->name(
 Route::delete('/donatur/{id}',      [DonaturController::class, 'delete'])->name('donatur.delete');
 Route::get('/donatur/list',         [DonaturController::class, 'list'])->name('donatur.list');
 
+    // MANAJEMEN ADMIN (USERS)
+    Route::get('/users',                [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::get('/users/create',         [AdminUserController::class, 'create'])->name('admin.users.create');
+    Route::post('/users',               [AdminUserController::class, 'store'])->name('admin.users.store');
+    Route::get('/users/{id}/edit',      [AdminUserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{id}',           [AdminUserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}',        [AdminUserController::class, 'destroy'])->name('admin.users.delete');
 
 });
 

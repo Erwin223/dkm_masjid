@@ -565,8 +565,8 @@
             <div class="nav-divider"></div>
             <div class="nav-label">Pengaturan</div>
 
-            <a href="#" class="nav-item">
-                <i class="fa fa-user-shield"></i> Kelola User
+            <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+                <i class="fa fa-user-shield"></i> Kelola Admin
             </a>
 
         </div>
@@ -575,7 +575,7 @@
         <div class="sidebar-bottom">
 
             {{-- TAMBAH ADMIN --}}
-            <a href="#" class="btn-tambah-admin">
+            <a href="{{ route('admin.users.create') }}" class="btn-tambah-admin">
                 <div class="icon-circle"><i class="fa fa-user-plus"></i></div>
                 Tambah Admin Baru
             </a>

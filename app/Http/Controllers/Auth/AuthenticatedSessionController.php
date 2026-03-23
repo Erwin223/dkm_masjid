@@ -28,6 +28,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Tambahkan pesan selamat datang
+        $user = Auth::user();
+        $request->session()->flash('welcome_message', "Selamat datang " . $user->name . " pada halaman admin DKM Masjid Al-Musabaqoh");
+
         return redirect()->intended('/admin/dashboard');
 
     }

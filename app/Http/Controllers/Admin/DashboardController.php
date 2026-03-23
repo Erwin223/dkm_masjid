@@ -10,6 +10,7 @@ use App\Models\Pengurus;
 use App\Models\DataImam;
 use App\Models\DonasiMasuk;
 use App\Models\DonasiKeluar;
+use App\Models\Donatur;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -57,6 +58,15 @@ class DashboardController extends Controller
         $jmlDonasiMasuk    = DonasiMasuk::count();
         $jmlDonasiKeluar   = DonasiKeluar::count();
 
+        // DATA TERBARU DONASI
+        $donasiMasukList  = DonasiMasuk::with('donatur')->orderBy('tanggal', 'desc')->limit(5)->get();
+        $donasiKeluarList = DonasiKeluar::orderBy('tanggal', 'desc')->limit(5)->get();
+
+        // DONATUR
+        $totalDonatur = Donatur::count();
+        $donaturList  = Donatur::orderBy('tanggal_daftar', 'desc')->limit(4)->get(); // untuk widget
+        $dataDonatur  = Donatur::orderBy('tanggal_daftar', 'desc')->limit(10)->get(); // untuk tabel utama
+
         return view('admin.dashboard', compact(
             'kasMasuk',
             'kasKeluar',
@@ -74,6 +84,11 @@ class DashboardController extends Controller
             'totalDonasiKeluar',
             'jmlDonasiMasuk',
             'jmlDonasiKeluar',
+            'donasiMasukList',
+            'donasiKeluarList',
+            'totalDonatur',
+            'donaturList',
+            'dataDonatur',
         ));
     }
 }

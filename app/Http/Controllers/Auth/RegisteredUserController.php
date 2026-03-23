@@ -46,6 +46,9 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Tambahkan pesan selamat datang
+        $request->session()->flash('welcome_message', "Selamat datang " . $user->name . " pada halaman admin DKM Masjid Al-Musabaqoh");
+
+        return redirect(route('admin.dashboard', absolute: false));
     }
 }
