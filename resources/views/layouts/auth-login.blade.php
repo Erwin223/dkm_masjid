@@ -78,9 +78,15 @@
             color: #777;
         }
 
+        .input-group i.toggle-password {
+            left: auto;
+            right: 12px;
+            cursor: pointer;
+        }
+
         .input-group input {
             width: 100%;
-            padding: 12px 12px 12px 40px;
+            padding: 12px 40px 12px 40px;
             border-radius: 6px;
             border: 1px solid #ccc;
             font-size: 16px;
@@ -210,6 +216,20 @@
             </div>
         </div>
     </div>
+    <script>
+    function togglePasswordVisibility(inputId, iconElement) {
+        const passwordInput = document.getElementById(inputId);
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            iconElement.classList.remove("fa-eye");
+            iconElement.classList.add("fa-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            iconElement.classList.remove("fa-eye-slash");
+            iconElement.classList.add("fa-eye");
+        }
+    }
+    </script>
 </body>
 
 </html>

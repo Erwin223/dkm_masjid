@@ -18,6 +18,9 @@
     .invalid-feedback { font-size:12px; color:#dc3545; margin-top:4px; display:block; }
     .error-list { background:#fff5f5; border:1px solid #feb2b2; padding:15px; border-radius:8px; margin-bottom:20px; color:#c53030; font-size:13px; }
     .error-list ul { margin:0; padding-left:20px; }
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 40px !important; }
+    .password-wrapper .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #777; }
     @media(max-width:600px){ .form-row { grid-template-columns:1fr; } .form-box { padding:18px; } }
 </style>
 
@@ -50,12 +53,18 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Password <span style="color:red;">*</span></label>
-                <input type="password" name="password" required placeholder="Buat password">
+                <div class="password-wrapper">
+                    <input type="password" name="password" id="password" required placeholder="Buat password">
+                    <i class="fa fa-eye toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
+                </div>
             </div>
 
             <div class="form-group">
                 <label>Konfirmasi Password <span style="color:red;">*</span></label>
-                <input type="password" name="password_confirmation" required placeholder="Ulangi password">
+                <div class="password-wrapper">
+                    <input type="password" name="password_confirmation" id="password_confirmation" required placeholder="Ulangi password">
+                    <i class="fa fa-eye toggle-password" onclick="togglePasswordVisibility('password_confirmation', this)"></i>
+                </div>
             </div>
         </div>
 
@@ -65,5 +74,20 @@
         </div>
     </form>
 </div>
+
+<script>
+function togglePasswordVisibility(inputId, iconElement) {
+    const passwordInput = document.getElementById(inputId);
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        iconElement.classList.remove("fa-eye");
+        iconElement.classList.add("fa-eye-slash");
+    } else {
+        passwordInput.type = "password";
+        iconElement.classList.remove("fa-eye-slash");
+        iconElement.classList.add("fa-eye");
+    }
+}
+</script>
 
 @endsection

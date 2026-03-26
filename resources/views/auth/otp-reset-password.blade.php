@@ -22,12 +22,14 @@
             <i class="fa fa-lock"></i>
             <input id="password" type="password" name="password" placeholder="Password Baru" required
                 autocomplete="new-password">
+            <i class="fa fa-eye toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
         </div>
 
         <div class="input-group">
             <i class="fa fa-shield-halved"></i>
             <input id="password_confirmation" type="password" name="password_confirmation"
                 placeholder="Konfirmasi Password Baru" required autocomplete="new-password">
+            <i class="fa fa-eye toggle-password" onclick="togglePasswordVisibility('password_confirmation', this)"></i>
         </div>
 
         <button type="submit"><i class="fa fa-save"></i> Simpan Password Baru</button>

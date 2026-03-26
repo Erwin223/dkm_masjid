@@ -668,14 +668,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @if(session('success'))
-<script>Swal.fire({ icon:'success', title:'Berhasil!', text:'{{ session("success") }}', timer:2000, showConfirmButton:false });</script>
+<script>Swal.fire({ icon:'success', title:'Berhasil!', text: @json(session('success')), timer:2000, showConfirmButton:false });</script>
 @endif
 
 @if(session('welcome_message'))
 <script>
     Swal.fire({
         title: 'Selamat Datang!',
-        text: '{{ session("welcome_message") }}',
+        text: @json(session('welcome_message')),
         icon: 'success',
         confirmButtonColor: '#0f8b6d',
         confirmButtonText: 'Terima Kasih'
