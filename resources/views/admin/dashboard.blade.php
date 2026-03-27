@@ -137,6 +137,15 @@
         <i class="fa-solid fa-people-group"></i>
     </div>
 
+    <div class="card" style="background:#34495e;">
+        <div>
+            <h3>Kelola Website</h3>
+            <p class="card-value">{{ $totalBerita ?? 0 }} Berita</p>
+            <p class="card-sub">{{ $totalGaleri ?? 0 }} Foto Galeri</p>
+        </div>
+        <i class="fa-solid fa-globe"></i>
+    </div>
+
 </div>
 <div class="dashboard-grid-3">
 
@@ -373,6 +382,86 @@
                     @else
                         <tr><td colspan="6" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data pengeluaran donasi</td></tr>
                     @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0;"><i class="fa-solid fa-newspaper" style="color:#f39c12;"></i> Data Berita Terbaru</h3>
+            <a href="{{ route('berita.index') }}" style="font-size:12px; color:#0f8b6d; text-decoration:none; font-weight:500;">Lihat semua &rarr;</a>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Judul</th>
+                        <th>Penulis</th>
+                        <th style="text-align:center;">Hapus</th>
+                        <th style="text-align:center;">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($beritaTerbaru as $b)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($b->tanggal)->translatedFormat('d M Y') }}</td>
+                        <td style="font-weight:600; color:#333;">{{ Str::limit($b->judul, 40) }}</td>
+                        <td><span class="badge-selesai">{{ $b->penulis }}</span></td>
+                        <td style="text-align:center;">
+                            <form action="{{ route('berita.delete', $b->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin hapus berita ini?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                            </form>
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ route('berita.edit', $b->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" style="text-align:center;color:#999;padding:1.5rem;">Belum ada berita</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0;"><i class="fa-solid fa-images" style="color:#3498db;"></i> Data Galeri Terbaru</h3>
+            <a href="{{ route('galeri.index') }}" style="font-size:12px; color:#0f8b6d; text-decoration:none; font-weight:500;">Lihat semua &rarr;</a>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Gambar</th>
+                        <th>Judul</th>
+                        <th style="text-align:center;">Hapus</th>
+                        <th style="text-align:center;">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($galeriTerbaru as $g)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($g->tanggal)->translatedFormat('d M Y') }}</td>
+                        <td><img src="{{ asset('storage/'.$g->gambar) }}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ddd;"></td>
+                        <td style="font-weight:600; color:#333;">{{ Str::limit($g->judul, 40) }}</td>
+                        <td style="text-align:center;">
+                            <form action="{{ route('galeri.delete', $g->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin hapus galeri ini?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                            </form>
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ route('galeri.edit', $g->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" style="text-align:center;color:#999;padding:1.5rem;">Belum ada galeri</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

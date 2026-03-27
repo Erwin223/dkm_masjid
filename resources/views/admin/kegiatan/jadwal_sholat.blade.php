@@ -104,31 +104,33 @@
 <div class="kota-selector">
     <label style="font-size:13px;font-weight:500;color:#555;">Pilih Kota:</label>
     <select id="kotaSelect" onchange="gantiKota()">
-        <option value="1301" data-nama="Kota Bandung">Kota Bandung</option>
-        <option value="1302" data-nama="Kab. Bandung">Kab. Bandung</option>
-        <option value="1303" data-nama="Kota Bogor">Kota Bogor</option>
-        <option value="1304" data-nama="Kab. Bogor">Kab. Bogor</option>
-        <option value="1305" data-nama="Kota Bekasi">Kota Bekasi</option>
-        <option value="1306" data-nama="Kab. Bekasi">Kab. Bekasi</option>
-        <option value="1307" data-nama="Kota Depok">Kota Depok</option>
-        <option value="1308" data-nama="Kota Cimahi">Kota Cimahi</option>
-        <option value="1309" data-nama="Kab. Cianjur">Kab. Cianjur</option>
-        <option value="1310" data-nama="Kab. Sukabumi">Kab. Sukabumi</option>
-        <option value="1311" data-nama="Kota Sukabumi">Kota Sukabumi</option>
-        <option value="1312" data-nama="Kab. Garut">Kab. Garut</option>
-        <option value="1313" data-nama="Kab. Tasikmalaya">Kab. Tasikmalaya</option>
-        <option value="1314" data-nama="Kota Tasikmalaya">Kota Tasikmalaya</option>
-        <option value="1315" data-nama="Kab. Ciamis">Kab. Ciamis</option>
-        <option value="1316" data-nama="Kab. Kuningan">Kab. Kuningan</option>
-        <option value="1317" data-nama="Kab. Cirebon">Kab. Cirebon</option>
-        <option value="1318" data-nama="Kota Cirebon">Kota Cirebon</option>
-        <option value="1319" data-nama="Kab. Majalengka">Kab. Majalengka</option>
-        <option value="1320" data-nama="Kab. Sumedang">Kab. Sumedang</option>
-        <option value="1321" data-nama="Kab. Indramayu">Kab. Indramayu</option>
-        <option value="1322" data-nama="Kab. Subang">Kab. Subang</option>
-        <option value="1323" data-nama="Kab. Purwakarta">Kab. Purwakarta</option>
-        <option value="1324" data-nama="Kab. Karawang">Kab. Karawang</option>
-        <option value="1325" data-nama="Kab. Pangandaran">Kab. Pangandaran</option>
+        <option value="1201" data-nama="Kab. Bandung">Kab. Bandung</option>
+        <option value="1202" data-nama="Kab. Bandung Barat">Kab. Bandung Barat</option>
+        <option value="1203" data-nama="Kab. Bekasi">Kab. Bekasi</option>
+        <option value="1204" data-nama="Kab. Bogor">Kab. Bogor</option>
+        <option value="1205" data-nama="Kab. Ciamis">Kab. Ciamis</option>
+        <option value="1206" data-nama="Kab. Cianjur">Kab. Cianjur</option>
+        <option value="1207" data-nama="Kab. Cirebon">Kab. Cirebon</option>
+        <option value="1208" data-nama="Kab. Garut">Kab. Garut</option>
+        <option value="1209" data-nama="Kab. Indramayu">Kab. Indramayu</option>
+        <option value="1210" data-nama="Kab. Karawang">Kab. Karawang</option>
+        <option value="1211" data-nama="Kab. Kuningan">Kab. Kuningan</option>
+        <option value="1212" data-nama="Kab. Majalengka">Kab. Majalengka</option>
+        <option value="1213" data-nama="Kab. Pangandaran">Kab. Pangandaran</option>
+        <option value="1214" data-nama="Kab. Purwakarta">Kab. Purwakarta</option>
+        <option value="1215" data-nama="Kab. Subang">Kab. Subang</option>
+        <option value="1216" data-nama="Kab. Sukabumi">Kab. Sukabumi</option>
+        <option value="1217" data-nama="Kab. Sumedang">Kab. Sumedang</option>
+        <option value="1218" data-nama="Kab. Tasikmalaya">Kab. Tasikmalaya</option>
+        <option value="1219" data-nama="Kota Bandung" selected>Kota Bandung</option>
+        <option value="1220" data-nama="Kota Banjar">Kota Banjar</option>
+        <option value="1221" data-nama="Kota Bekasi">Kota Bekasi</option>
+        <option value="1222" data-nama="Kota Bogor">Kota Bogor</option>
+        <option value="1223" data-nama="Kota Cimahi">Kota Cimahi</option>
+        <option value="1224" data-nama="Kota Cirebon">Kota Cirebon</option>
+        <option value="1225" data-nama="Kota Depok">Kota Depok</option>
+        <option value="1226" data-nama="Kota Sukabumi">Kota Sukabumi</option>
+        <option value="1227" data-nama="Kota Tasikmalaya">Kota Tasikmalaya</option>
     </select>
     <button class="btn-refresh" onclick="muatJadwal()">
         <i class="fa fa-rotate-right"></i> Muat Ulang

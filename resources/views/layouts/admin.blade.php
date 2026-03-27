@@ -493,6 +493,28 @@
                 <i class="fa fa-users"></i> Data Pengurus
             </a>
 
+            <button
+                class="nav-item {{ request()->routeIs('profil_masjid*') || request()->routeIs('berita*') || request()->routeIs('galeri*') ? 'active open' : '' }}"
+                onclick="toggleDropdown('dd-konten', this)">
+                <i class="fa fa-globe"></i> Kelola Website
+                <i class="fa fa-chevron-right nav-arrow"></i>
+            </button>
+            <div class="nav-dropdown {{ request()->routeIs('profil_masjid*') || request()->routeIs('berita*') || request()->routeIs('galeri*') ? 'open' : '' }}"
+                id="dd-konten">
+                <a href="{{ route('profil_masjid.index') }}"
+                    class="nav-item {{ request()->routeIs('profil_masjid*') ? 'active' : '' }}">
+                    <i class="fa fa-mosque"></i> Profil Masjid
+                </a>
+                <a href="{{ route('berita.index') }}"
+                    class="nav-item {{ request()->routeIs('berita*') ? 'active' : '' }}">
+                    <i class="fa fa-newspaper"></i> Berita
+                </a>
+                <a href="{{ route('galeri.index') }}"
+                    class="nav-item {{ request()->routeIs('galeri*') ? 'active' : '' }}">
+                    <i class="fa fa-images"></i> Galeri
+                </a>
+            </div>
+
             {{-- KEGIATAN DROPDOWN --}}
             <button
                 class="nav-item {{ request()->routeIs('kegiatan*') || request()->routeIs('imam*') ? 'active open' : '' }}"

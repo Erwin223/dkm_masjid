@@ -11,6 +11,8 @@ use App\Models\DataImam;
 use App\Models\DonasiMasuk;
 use App\Models\DonasiKeluar;
 use App\Models\Donatur;
+use App\Models\Berita;
+use App\Models\Galeri;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -67,6 +69,12 @@ class DashboardController extends Controller
         $donaturList  = Donatur::orderBy('tanggal_daftar', 'desc')->limit(4)->get(); // untuk widget
         $dataDonatur  = Donatur::orderBy('tanggal_daftar', 'desc')->limit(10)->get(); // untuk tabel utama
 
+        // KONTEN WEBSITE
+        $totalBerita = Berita::count();
+        $totalGaleri = Galeri::count();
+        $beritaTerbaru = Berita::orderBy('tanggal', 'desc')->limit(5)->get();
+        $galeriTerbaru = Galeri::orderBy('tanggal', 'desc')->limit(5)->get();
+
         return view('admin.dashboard', compact(
             'kasMasuk',
             'kasKeluar',
@@ -89,6 +97,10 @@ class DashboardController extends Controller
             'totalDonatur',
             'donaturList',
             'dataDonatur',
+            'totalBerita',
+            'totalGaleri',
+            'beritaTerbaru',
+            'galeriTerbaru'
         ));
     }
 }

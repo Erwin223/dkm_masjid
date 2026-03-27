@@ -13,6 +13,9 @@ use App\Http\Controllers\Admin\PenggunaController;
 use App\Http\Controllers\Admin\DonasiController;
 use App\Http\Controllers\Admin\DonaturController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\ProfilMasjidController;
+use App\Http\Controllers\Admin\BeritaController;
+use App\Http\Controllers\Admin\GaleriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -119,6 +122,29 @@ Route::get('/donatur/list',         [DonaturController::class, 'list'])->name('d
     Route::get('/users/{id}/edit',      [AdminUserController::class, 'edit'])->name('admin.users.edit');
     Route::put('/users/{id}',           [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{id}',        [AdminUserController::class, 'destroy'])->name('admin.users.delete');
+
+    // ===== KONTEN WEBSITE =====
+    Route::get('/profil-masjid',             [ProfilMasjidController::class, 'index'])->name('profil_masjid.index');
+    Route::get('/profil-masjid/create',      [ProfilMasjidController::class, 'create'])->name('profil_masjid.create');
+    Route::post('/profil-masjid/store',      [ProfilMasjidController::class, 'store'])->name('profil_masjid.store');
+    Route::get('/profil-masjid/edit/{id}',   [ProfilMasjidController::class, 'edit'])->name('profil_masjid.edit');
+    Route::put('/profil-masjid/update/{id}', [ProfilMasjidController::class, 'update'])->name('profil_masjid.update');
+
+    // Berita
+    Route::get('/berita',                [BeritaController::class, 'index'])->name('berita.index');
+    Route::get('/berita/create',         [BeritaController::class, 'create'])->name('berita.create');
+    Route::post('/berita/store',         [BeritaController::class, 'store'])->name('berita.store');
+    Route::get('/berita/edit/{id}',      [BeritaController::class, 'edit'])->name('berita.edit');
+    Route::put('/berita/update/{id}',    [BeritaController::class, 'update'])->name('berita.update');
+    Route::delete('/berita/delete/{id}', [BeritaController::class, 'destroy'])->name('berita.delete');
+
+    // GALERI
+    Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri.index');
+    Route::get('/galeri/create', [GaleriController::class, 'create'])->name('galeri.create');
+    Route::post('/galeri/store', [GaleriController::class, 'store'])->name('galeri.store');
+    Route::get('/galeri/edit/{id}', [GaleriController::class, 'edit'])->name('galeri.edit');
+    Route::put('/galeri/update/{id}', [GaleriController::class, 'update'])->name('galeri.update');
+    Route::delete('/galeri/delete/{id}', [GaleriController::class, 'delete'])->name('galeri.delete');
 
 });
 
