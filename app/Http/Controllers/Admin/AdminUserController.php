@@ -55,7 +55,7 @@ class AdminUserController extends Controller
      */
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('is_admin', true)->findOrFail($id);
         return view('admin.users.edit', compact('user'));
     }
 
@@ -64,7 +64,7 @@ class AdminUserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('is_admin', true)->findOrFail($id);
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
@@ -102,7 +102,7 @@ class AdminUserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('is_admin', true)->findOrFail($id);
 
         // Mencegah admin menghapus dirinya sendiri
         if (Auth::id() == $user->id) {

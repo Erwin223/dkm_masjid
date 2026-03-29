@@ -37,7 +37,7 @@ Route::middleware(['auth','admin','nocache'])->prefix('admin')->group(function (
 
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
-->name('admin.dashboard');
+    ->name('admin.dashboard');
 
 // KAS MASUK
 Route::get('/kas-masuk',              [KasMasukController::class, 'index'])->name('kas.masuk.index');
