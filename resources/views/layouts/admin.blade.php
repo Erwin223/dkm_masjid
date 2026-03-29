@@ -580,6 +580,29 @@
    class="nav-item {{ request()->routeIs('donatur*') ? 'active' : '' }}">
     <i class="fa fa-users"></i> Data Donatur
 </a>
+            <button class="nav-item {{ request()->routeIs('zakat*') ? 'active open' : '' }}"
+                onclick="toggleDropdown('dd-zakat', this)">
+                <i class="fa fa-hand-holding-heart"></i> Zakat
+                <i class="fa fa-chevron-right nav-arrow"></i>
+            </button>
+            <div class="nav-dropdown {{ request()->routeIs('zakat*') ? 'open' : '' }}" id="dd-zakat">
+                <a href="{{ route('zakat.muzakki.index') }}"
+                    class="nav-item {{ request()->routeIs('zakat.muzakki*') ? 'active' : '' }}">
+                    <i class="fa fa-user-plus"></i> Muzakki
+                </a>
+                <a href="{{ route('zakat.penerimaan.index') }}"
+                    class="nav-item {{ request()->routeIs('zakat.penerimaan*') ? 'active' : '' }}">
+                    <i class="fa fa-arrow-down"></i> Penerimaan
+                </a>
+                <a href="{{ route('zakat.mustahik.index') }}"
+                    class="nav-item {{ request()->routeIs('zakat.mustahik*') ? 'active' : '' }}">
+                    <i class="fa fa-users"></i> Mustahik
+                </a>
+                <a href="{{ route('zakat.distribusi.index') }}"
+                    class="nav-item {{ request()->routeIs('zakat.distribusi*') ? 'active' : '' }}">
+                    <i class="fa fa-arrow-up"></i> Distribusi
+                </a>
+            </div>
             <a href="#" class="nav-item">
                 <i class="fa fa-chart-line"></i> Laporan
             </a>
