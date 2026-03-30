@@ -362,16 +362,15 @@
             <i class="fa-solid fa-money-bill-wave"></i>
         </div>
 
-        <div class="card orange">
-            <div>
-                <h3>Total Kas Keluar</h3>
-                <p class="card-value">Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</p>
-                <p class="card-sub">{{ $jmlKeluar }} transaksi</p>
-            </div>
-            <i class="fa-solid fa-money-bill-transfer"></i>
-        </div>
+<div class="card orange"> <div>
+        <h3>Total Kas Keluar</h3>
+        <p class="card-value">Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</p>
+        <p class="card-sub">{{ $jmlKeluar }} transaksi</p>
+    </div>
+    <i class="fa-solid fa-money-bill-transfer"></i>
+</div>
 
-        <div class="card {{ $saldo >= 0 ? 'blue' : 'red' }}">
+        <div class="card blue {{ $saldo >= 0 ? 'blue' : 'red' }}">
             <div>
                 <h3>Saldo Kas</h3>
                 <p class="card-value">Rp.{{ number_format(abs($saldo), 0, ',', '.') }}</p>

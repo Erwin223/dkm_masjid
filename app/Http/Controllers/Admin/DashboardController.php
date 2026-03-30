@@ -20,8 +20,8 @@ class DashboardController extends Controller
     public function index()
     {
         // KAS
-        $kasMasuk       = KasMasuk::orderBy('tanggal', 'desc')->get();
-        $kasKeluar      = KasKeluar::orderBy('tanggal', 'desc')->get();
+        $kasMasuk  = KasMasuk::orderBy('tanggal', 'desc')->limit(5)->get();
+        $kasKeluar = KasKeluar::orderBy('tanggal', 'desc')->limit(5)->get();    
         $totalKasMasuk  = KasMasuk::sum('jumlah');
         $totalKasKeluar = KasKeluar::sum('nominal');
 
@@ -47,8 +47,8 @@ class DashboardController extends Controller
             ->get();
 
         // PENGURUS
-        $dataPengurus  = Pengurus::orderBy('nama', 'asc')->get();
-        $totalPengurus = $dataPengurus->count();
+        $dataPengurus = Pengurus::orderBy('nama', 'asc')->limit(3)->get();
+        $totalPengurus = Pengurus::count();
 
         // IMAM
         $totalImam   = DataImam::count();

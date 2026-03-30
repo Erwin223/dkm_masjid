@@ -43,11 +43,17 @@
                 <label>Tanggal <span style="color:red;">*</span></label>
                 <input type="date" name="tanggal" required value="{{ old('tanggal', date('Y-m-d')) }}">
             </div>
-            
+
             <div class="form-group">
                 <label>Sumber <span style="color:red;">*</span></label>
-                <input type="text" name="sumber" placeholder="Contoh: Donatur" required value="{{ old('sumber') }}">
+                  <select name="sumber" class="form-control" required>
+                    <option value="" disabled {{ old('sumber') ? '' : 'selected' }}> Pilih Sumber </option>
+                    <option value="Infaq Langsung" {{ old('sumber') == 'Infaq Langsung' ? 'selected' : '' }}>Infaq Langsung</option>
+                    <option value="Transfer" {{ old('sumber') == 'Transfer' ? 'selected' : '' }}>Transfer</option>
+                    <option value="Donasi" {{ old('sumber') == 'Donasi' ? 'selected' : '' }}>Donasi</option>
+                </select>
             </div>
+            
         </div>
 
         <div class="form-group">
