@@ -79,6 +79,10 @@
             background: #fd7e14;
         }
 
+        .red {
+            background: #dc3545;
+        }
+
         .purple {
             background: #6f42c1;
         }
@@ -345,6 +349,8 @@
         $totalMasuk = $totalKasMasuk ?? 0;
         $totalKeluar = $totalKasKeluar ?? 0;
         $saldo = $totalMasuk - $totalKeluar;
+        $saldoDonasi = ($totalDonasiMasuk ?? 0) - ($totalDonasiKeluar ?? 0);
+        $saldoBersihTotal = $saldo + $saldoDonasi;
         $jmlMasuk = isset($kasMasuk) ? $kasMasuk->count() : 0;
         $jmlKeluar = isset($kasKeluar) ? $kasKeluar->count() : 0;
         $anggaranKeg = $totalAnggaranKegiatan ?? 0;
@@ -352,6 +358,24 @@
     @endphp
 
     <div class="cards">
+
+        <div class="card {{ $saldo >= 0 ? 'blue' : 'red' }}">
+            <div>
+                <h3>Saldo Kas</h3>
+                <p class="card-value">{{ $saldo < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldo), 0, ',', '.') }}</p>
+                <p class="card-sub">{{ $saldo >= 0 ? 'Kas positif' : 'Kas minus' }}</p>
+            </div>
+            <i class="fa-solid fa-wallet"></i>
+        </div>
+
+        <div class="card {{ $saldoDonasi >= 0 ? 'pink' : 'red' }}">
+            <div>
+                <h3>Saldo Donasi</h3>
+                <p class="card-value">{{ $saldoDonasi < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldoDonasi), 0, ',', '.') }}</p>
+                <p class="card-sub">{{ $saldoDonasi >= 0 ? 'Donasi positif' : 'Donasi minus' }}</p>
+            </div>
+            <i class="fa-solid fa-scale-balanced"></i>
+        </div>
 
         <div class="card green">
             <div>
@@ -362,39 +386,13 @@
             <i class="fa-solid fa-money-bill-wave"></i>
         </div>
 
-<div class="card orange"> <div>
-        <h3>Total Kas Keluar</h3>
-        <p class="card-value">Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</p>
-        <p class="card-sub">{{ $jmlKeluar }} transaksi</p>
-    </div>
-    <i class="fa-solid fa-money-bill-transfer"></i>
-</div>
-
-        <div class="card blue {{ $saldo >= 0 ? 'blue' : 'red' }}">
+        <div class="card orange">
             <div>
-                <h3>Saldo Kas</h3>
-                <p class="card-value">Rp.{{ number_format(abs($saldo), 0, ',', '.') }}</p>
-                <p class="card-sub">{{ $saldo >= 0 ? 'Kas positif' : 'Kas minus' }}</p>
+                <h3>Total Kas Keluar</h3>
+                <p class="card-value">Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</p>
+                <p class="card-sub">{{ $jmlKeluar }} transaksi</p>
             </div>
-            <i class="fa-solid fa-wallet"></i>
-        </div>
-
-        <div class="card teal">
-            <div>
-                <h3>Anggaran Kegiatan</h3>
-                <p class="card-value">Rp.{{ number_format($anggaranKeg, 0, ',', '.') }}</p>
-                <p class="card-sub">dari kas keluar</p>
-            </div>
-            <i class="fa-solid fa-calendar-check"></i>
-        </div>
-
-        <div class="card purple">
-            <div>
-                <h3>Jadwal Kegiatan</h3>
-                <p class="card-value">{{ $jmlJadwal }}</p>
-                <p class="card-sub">kegiatan akan datang</p>
-            </div>
-            <i class="fa-solid fa-calendar-days"></i>
+            <i class="fa-solid fa-money-bill-transfer"></i>
         </div>
 
         <div class="card pink">
@@ -415,6 +413,15 @@
             <i class="fa-solid fa-hand-holding-dollar"></i>
         </div>
 
+        <div class="card teal">
+            <div>
+                <h3>Anggaran Kegiatan</h3>
+                <p class="card-value">Rp.{{ number_format($anggaranKeg, 0, ',', '.') }}</p>
+                <p class="card-sub">dari kas keluar</p>
+            </div>
+            <i class="fa-solid fa-calendar-check"></i>
+        </div>
+
         <div class="card teal" style="background:#20c997;">
             <div>
                 <h3>Total Donatur</h3>
@@ -422,6 +429,15 @@
                 <p class="card-sub">donatur terdaftar</p>
             </div>
             <i class="fa-solid fa-people-group"></i>
+        </div>
+
+        <div class="card purple">
+            <div>
+                <h3>Jadwal Kegiatan</h3>
+                <p class="card-value">{{ $jmlJadwal }}</p>
+                <p class="card-sub">kegiatan akan datang</p>
+            </div>
+            <i class="fa-solid fa-calendar-days"></i>
         </div>
 
         <div class="card" style="background:#34495e;">
@@ -848,12 +864,83 @@
                             Rp.{{ number_format($anggaranKeg, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
+                        <td style="border:none;padding:8px 0;color:#555;">Donasi Masuk</td>
+                        <td style="border:none;padding:8px 0;text-align:right;color:#d4537e;font-weight:600;">
+                            Rp.{{ number_format($totalDonasiMasuk ?? 0, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:8px 0;color:#555;">Donasi Keluar</td>
+                        <td style="border:none;padding:8px 0;text-align:right;color:#4361ee;font-weight:600;">
+                            Rp.{{ number_format($totalDonasiKeluar ?? 0, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
                         <td colspan="2" style="border:none;border-top:1px solid #eee;padding:0;"></td>
                     </tr>
                     <tr>
                         <td style="border:none;padding:10px 0;font-weight:700;">Saldo Bersih</td>
                         <td style="border:none;padding:10px 0;text-align:right;"
-                            class="{{ $saldo >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
+                            class="{{ $saldoBersihTotal >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
+                            {{ $saldoBersihTotal >= 0 ? '' : '-' }}Rp.{{ number_format(abs($saldoBersihTotal), 0, ',', '.') }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            {{-- RINGKASAN KAS --}}
+            <div class="widget-box">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;">
+                    <h3 style="margin:0;"><i class="fa-solid fa-wallet" style="color:#17a2b8;"></i> Ringkasan Kas</h3>
+                    <a href="{{ route('kas.keluar.index') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat
+                        semua <i class="fa fa-arrow-right" style="font-size:10px;"></i></a>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <div
+                        style="background:#eaf7ee;border-radius:8px;padding:12px;text-align:center;border:1px solid #b9e3c6;">
+                        <div style="font-size:18px;font-weight:700;color:#28a745;">
+                            Rp.{{ number_format($totalMasuk, 0, ',', '.') }}</div>
+                        <div style="font-size:11px;color:#666;margin-top:3px;">Kas Masuk</div>
+                    </div>
+                    <div
+                        style="background:#fff1e7;border-radius:8px;padding:12px;text-align:center;border:1px solid #ffd2b3;">
+                        <div style="font-size:18px;font-weight:700;color:#fd7e14;">
+                            Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</div>
+                        <div style="font-size:11px;color:#666;margin-top:3px;">Kas Keluar</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <div
+                        style="background:#e7f7f3;border-radius:8px;padding:12px;text-align:center;border:1px solid #b8e7d9;">
+                        <div style="font-size:18px;font-weight:700;color:#0f8b6d;">
+                            Rp.{{ number_format($anggaranKeg, 0, ',', '.') }}</div>
+                        <div style="font-size:11px;color:#666;margin-top:3px;">Anggaran</div>
+                    </div>
+                </div>
+                <table style="min-width:unset;width:100%;">
+                    <tr>
+                        <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Total Kas Masuk</td>
+                        <td
+                            style="border:none;padding:6px 0;text-align:right;color:#28a745;font-weight:600;font-size:13px;">
+                            Rp.{{ number_format($totalMasuk, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Total Kas Keluar</td>
+                        <td
+                            style="border:none;padding:6px 0;text-align:right;color:#fd7e14;font-weight:600;font-size:13px;">
+                            Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Anggaran Kegiatan</td>
+                        <td
+                            style="border:none;padding:6px 0;text-align:right;color:#0f8b6d;font-weight:600;font-size:13px;">
+                            Rp.{{ number_format($anggaranKeg, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border:none;border-top:1px solid #eee;padding:0;"></td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:8px 0;font-weight:700;font-size:13px;">Saldo Kas</td>
+                        <td
+                            style="border:none;padding:8px 0;text-align:right;font-weight:700;font-size:13px;color:{{ $saldo >= 0 ? '#28a745' : '#dc3545' }};">
                             {{ $saldo >= 0 ? '' : '-' }}Rp.{{ number_format(abs($saldo), 0, ',', '.') }}
                         </td>
                     </tr>

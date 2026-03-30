@@ -15,6 +15,13 @@
             padding: 0;
         }
 
+        html,
+        body {
+            min-height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
@@ -27,7 +34,7 @@
             width: 250px;
             background: #0a6b53;
             color: white;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             position: fixed;
@@ -35,6 +42,7 @@
             left: 0;
             z-index: 100;
             transition: transform 0.3s ease;
+            overflow: hidden;
         }
 
         .sidebar.hide {
@@ -91,6 +99,7 @@
         .sidebar-nav {
             flex: 1;
             overflow-y: auto;
+            min-height: 0;
             padding: 8px 12px;
         }
 
@@ -417,6 +426,7 @@
         .container {
             padding: 24px;
             flex: 1;
+            min-width: 0;
         }
 
         /* OVERLAY mobile */
