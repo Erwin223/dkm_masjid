@@ -88,7 +88,6 @@
                     <th>No</th>
                     <th>Tanggal</th>
                     <th>Jenis Pengeluaran</th>
-                    <th>Jumlah</th>
                     <th>Nominal</th>
                     <th>Keterangan</th>
                     <th style="text-align:center;">Hapus</th>
@@ -101,7 +100,6 @@
                     <td>{{ $i+1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($kas->tanggal)->translatedFormat('d M Y') }}</td>
                     <td><span class="jenis-pill">{{ $kas->jenis_pengeluaran }}</span></td>
-                    <td>{{ $kas->jumlah }}</td>
                     <td style="font-weight:600;color:#fd7e14;">Rp.{{ number_format($kas->nominal, 0, ',', '.') }}</td>
                     <td>{{ $kas->keterangan ?? '-' }}</td>
                     <td style="text-align:center;">
@@ -120,7 +118,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align:center;padding:2.5rem;color:#999;">
+                    <td colspan="7" style="text-align:center;padding:2.5rem;color:#999;">
                         <i class="fa fa-inbox" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>
                         Belum ada data kas keluar
                     </td>

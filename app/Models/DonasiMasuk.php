@@ -15,6 +15,7 @@ class DonasiMasuk extends Model
         'jenis_donasi',
         'kategori_donasi',
         'jumlah',
+        'satuan',
         'total',
         'keterangan',
     ];
@@ -24,6 +25,25 @@ class DonasiMasuk extends Model
         'jumlah'  => 'decimal:2',
         'total'   => 'decimal:2',
     ];
+
+    public function getIsBarangAttribute()
+    {
+        return in_array($this->jenis_donasi, ['Barang', 'Makanan', 'Pakaian'], true);
+    }
+
+    public function getNilaiDanaAttribute()
+    {
+        return (float) ($this->total ?? 0);
+    }
+
+    public function getLabelJumlahAttribute()
+    {
+        if ($this->is_barang) {
+            return $this->formatNumber($this->jumlah) . ' ' . trim((string) $this->satuan);
+        }
+
+        return 'Rp.' . number_format((float) $this->jumlah, 0, ',', '.');
+    }
 
     // Relasi ke donatur
     public function donatur()
@@ -35,5 +55,11 @@ class DonasiMasuk extends Model
     public function getNamaDonaturAttribute()
     {
         return $this->donatur ? $this->donatur->nama : ($this->donatur_nama ?? 'Hamba Allah');
+    }
+
+    private function formatNumber($value)
+    {
+        $formatted = number_format((float) $value, 2, ',', '.');
+        return rtrim(rtrim($formatted, '0'), ',');
     }
 }

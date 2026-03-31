@@ -55,8 +55,8 @@ class DashboardController extends Controller
         $dataImamList = DataImam::orderBy('nama', 'asc')->get();
 
         // DONASI
-        $totalDonasiMasuk  = DonasiMasuk::sum('total');
-        $totalDonasiKeluar = DonasiKeluar::sum('jumlah');
+        $totalDonasiMasuk  = DonasiMasuk::get()->sum('nilai_dana');
+        $totalDonasiKeluar = DonasiKeluar::get()->sum('nilai_dana');
         $jmlDonasiMasuk    = DonasiMasuk::count();
         $jmlDonasiKeluar   = DonasiKeluar::count();
 

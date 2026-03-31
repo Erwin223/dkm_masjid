@@ -119,8 +119,8 @@
                     </td>
                     <td><span class="badge-jenis">{{ $d->jenis_donasi }}</span></td>
                     <td><span class="badge-kategori">{{ $d->kategori_donasi }}</span></td>
-                    <td>Rp.{{ number_format($d->jumlah, 0, ',', '.') }}</td>
-                    <td style="font-weight:600;color:#0f8b6d;">Rp.{{ number_format($d->total, 0, ',', '.') }}</td>
+                    <td>{{ $d->label_jumlah }}</td>
+                    <td style="font-weight:600;color:#0f8b6d;">Rp.{{ number_format($d->nilai_dana, 0, ',', '.') }}</td>
                     <td>{{ $d->keterangan ?? '-' }}</td>
                     <td style="text-align:center;">
                         <form id="del-dm-{{ $d->id }}" action="{{ route('donasi.masuk.delete', $d->id) }}" method="POST" style="display:inline;">

@@ -90,6 +90,7 @@
                     <th>Jenis Donasi</th>
                     <th>Tujuan</th>
                     <th>Jumlah</th>
+                    <th>Nominal</th>
                     <th>Keterangan</th>
                     <th style="text-align:center;">Hapus</th>
                     <th style="text-align:center;">Edit</th>
@@ -102,7 +103,8 @@
                     <td>{{ \Carbon\Carbon::parse($d->tanggal)->translatedFormat('d M Y') }}</td>
                     <td><span class="badge-jenis">{{ $d->jenis_donasi }}</span></td>
                     <td style="font-weight:500;color:#111;">{{ $d->tujuan }}</td>
-                    <td style="font-weight:600;color:#fd7e14;">Rp.{{ number_format($d->jumlah, 0, ',', '.') }}</td>
+                    <td>{{ $d->label_jumlah }}</td>
+                    <td style="font-weight:600;color:#fd7e14;">Rp.{{ number_format($d->nilai_dana, 0, ',', '.') }}</td>
                     <td>{{ $d->keterangan ?? '-' }}</td>
                     <td style="text-align:center;">
                         <form id="del-dk-{{ $d->id }}" action="{{ route('donasi.keluar.delete', $d->id) }}" method="POST" style="display:inline;">
@@ -120,7 +122,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align:center;padding:2.5rem;color:#999;">
+                    <td colspan="9" style="text-align:center;padding:2.5rem;color:#999;">
                         <i class="fa fa-inbox" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>
                         Belum ada data donasi keluar
                     </td>

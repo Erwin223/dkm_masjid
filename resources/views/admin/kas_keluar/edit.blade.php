@@ -50,20 +50,13 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Jumlah <span style="color:red;">*</span></label>
-                <input type="number" name="jumlah" value="{{ old('jumlah', $data->jumlah) }}" required>
-            </div>
-
-            <div class="form-group">
-                <label>Nominal (Rp) <span style="color:red;">*</span></label>
-                <div style="position:relative;">
-                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
-                    <input type="text" name="nominal" 
-                        value="{{ old('nominal', number_format($data->nominal,0,',','.')) }}"
-                        onkeyup="formatRupiah(this)" required style="padding-left:32px;">
-                </div>
+        <div class="form-group">
+            <label>Nominal (Rp) <span style="color:red;">*</span></label>
+            <div style="position:relative;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
+                <input type="text" name="nominal" 
+                    value="{{ old('nominal', number_format($data->nominal,0,',','.')) }}"
+                    onkeyup="formatRupiah(this)" required style="padding-left:32px;">
             </div>
         </div>
 

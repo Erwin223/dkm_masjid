@@ -49,18 +49,11 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Jumlah <span style="color:red;">*</span></label>
-                <input type="number" name="jumlah" placeholder="Jumlah item/kegiatan" required value="{{ old('jumlah') }}">
-            </div>
-
-            <div class="form-group">
-                <label>Nominal (Rp) <span style="color:red;">*</span></label>
-                <div style="position:relative;">
-                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
-                    <input type="text" name="nominal" onkeyup="formatRupiah(this)" required style="padding-left:32px;" value="{{ old('nominal') }}">
-                </div>
+        <div class="form-group">
+            <label>Nominal (Rp) <span style="color:red;">*</span></label>
+            <div style="position:relative;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
+                <input type="text" name="nominal" onkeyup="formatRupiah(this)" required style="padding-left:32px;" value="{{ old('nominal') }}">
             </div>
         </div>
 

@@ -153,7 +153,7 @@ Route::get('/users/{id}/edit',      [AdminUserController::class, 'edit'])->name(
 Route::put('/users/{id}',           [AdminUserController::class, 'update'])->name('admin.users.update');
 Route::delete('/users/{id}',        [AdminUserController::class, 'destroy'])->name('admin.users.delete');
 
-// ===== KONTEN WEBSITE =====
+// KONTEN WEBSITE
 Route::get('/profil-masjid',             [ProfilMasjidController::class, 'index'])->name('profil_masjid.index');
 Route::get('/profil-masjid/create',      [ProfilMasjidController::class, 'create'])->name('profil_masjid.create');
 Route::post('/profil-masjid/store',      [ProfilMasjidController::class, 'store'])->name('profil_masjid.store');

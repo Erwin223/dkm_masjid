@@ -32,10 +32,13 @@ class KasKeluarController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'nominal' => str_replace('.', '', (string) $request->nominal),
+        ]);
+
         $request->validate([
             'tanggal'           => 'required|date',
             'jenis_pengeluaran' => 'required',
-            'jumlah'            => 'required|numeric',
             'nominal'           => 'required|numeric',
             'keterangan'        => 'nullable',
         ]);
@@ -43,7 +46,6 @@ class KasKeluarController extends Controller
         KasKeluar::create([
             'tanggal'           => $request->tanggal,
             'jenis_pengeluaran' => $request->jenis_pengeluaran,
-            'jumlah'            => $request->jumlah,
             'nominal'           => $request->nominal,
             'keterangan'        => $request->keterangan,
         ]);
@@ -60,20 +62,21 @@ class KasKeluarController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'nominal' => str_replace('.', '', (string) $request->nominal),
+        ]);
+
         $request->validate([
             'tanggal'           => 'required|date',
             'jenis_pengeluaran' => 'required',
-            'jumlah'            => 'required|numeric',
-            'nominal'           => 'required',
+            'nominal'           => 'required|numeric',
+            'keterangan'        => 'nullable',
         ]);
-
-        $nominal = str_replace('.', '', $request->nominal);
 
         KasKeluar::findOrFail($id)->update([
             'tanggal'           => $request->tanggal,
             'jenis_pengeluaran' => $request->jenis_pengeluaran,
-            'jumlah'            => $request->jumlah,
-            'nominal'           => $nominal,
+            'nominal'           => $request->nominal,
             'keterangan'        => $request->keterangan,
         ]);
 

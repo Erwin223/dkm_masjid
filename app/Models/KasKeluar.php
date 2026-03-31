@@ -11,7 +11,6 @@ class KasKeluar extends Model
     protected $fillable = [
         'tanggal',
         'jenis_pengeluaran',
-        'jumlah',
         'nominal',
         'keterangan',
     ];
