@@ -5,6 +5,8 @@
 @php
     $selectedJenis = old('jenis_donasi', $donasi->jenis_donasi);
     $isBarang = in_array($selectedJenis, ['Barang', 'Makanan', 'Pakaian'], true);
+    $jumlahValue = (float) old('jumlah', $donasi->jumlah);
+    $nominalValue = (float) old('nominal', $donasi->nominal ?? 0);
 @endphp
 
 <div class="don-nav">
@@ -48,7 +50,7 @@
                 <div style="position:relative;">
                     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
                     <input type="text" id="jumlahUangKeluarDisplay"
-                        value="{{ $isBarang ? '' : number_format(old('jumlah', $donasi->jumlah), 0, ',', '.') }}"
+                        value="{{ $isBarang ? '' : number_format($jumlahValue, 0, ',', '.') }}"
                         placeholder="0" style="padding-left:32px;" oninput="formatRupiahKeluar(this, 'jumlahKeluarHidden')">
                 </div>
             </div>
@@ -60,7 +62,7 @@
                 <div class="form-group">
                     <label>Jumlah Barang <span style="color:red;">*</span></label>
                     <input type="number" step="0.01" min="0" id="jumlahBarangKeluarDisplay"
-                        value="{{ $isBarang ? old('jumlah', $donasi->jumlah) : '' }}" placeholder="Contoh: 5" oninput="syncDonasiKeluarBarang()">
+                        value="{{ $isBarang ? $jumlahValue : '' }}" placeholder="Contoh: 5" oninput="syncDonasiKeluarBarang()">
                 </div>
                 <div class="form-group">
                     <label>Satuan <span style="color:red;">*</span></label>
@@ -74,15 +76,15 @@
                 <div style="position:relative;">
                     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
                     <input type="text" id="nominalBarangKeluarDisplay"
-                        value="{{ $isBarang ? number_format(old('nominal', $donasi->nominal), 0, ',', '.') : '' }}"
+                        value="{{ $isBarang ? number_format($nominalValue, 0, ',', '.') : '' }}"
                         placeholder="0" style="padding-left:32px;" oninput="formatRupiahKeluar(this, 'nominalKeluarHidden')">
                 </div>
                 <div class="mode-note"><i class="fa fa-box-open"></i> Catat jumlah fisik barang dan nilai nominal penyalurannya.</div>
             </div>
         </div>
 
-        <input type="hidden" name="jumlah" id="jumlahKeluarHidden" value="{{ old('jumlah', $donasi->jumlah) }}">
-        <input type="hidden" name="nominal" id="nominalKeluarHidden" value="{{ old('nominal', $donasi->nominal ?? 0) }}">
+        <input type="hidden" name="jumlah" id="jumlahKeluarHidden" value="{{ $isBarang ? $jumlahValue : round($jumlahValue) }}">
+        <input type="hidden" name="nominal" id="nominalKeluarHidden" value="{{ round($nominalValue) }}">
         @error('jumlah') <span class="invalid-feedback">{{ $message }}</span> @enderror
         @error('nominal') <span class="invalid-feedback">{{ $message }}</span> @enderror
 
@@ -104,13 +106,21 @@ function isBarangJenisKeluar() {
 }
 
 function formatRupiahKeluar(el, hiddenId) {
-    let raw = el.value.replace(/[^0-9]/g, '');
+    let val = el.value.toString();
+    val = val.split(',')[0];
+    val = val.replace(/\.\d{1,2}$/, '');
+
+    let raw = val.replace(/[^0-9]/g, '');
     let num = parseInt(raw || '0', 10);
-    el.value = raw ? num.toLocaleString('id-ID') : '';
+    el.value = raw ? num.toLocaleString('id-ID', { maximumFractionDigits: 0 }) : '';
     document.getElementById(hiddenId).value = num;
 }
 
 function syncDonasiKeluarBarang() {
+    if (!isBarangJenisKeluar()) {
+        return;
+    }
+
     document.getElementById('jumlahKeluarHidden').value = document.getElementById('jumlahBarangKeluarDisplay').value || 0;
 }
 
@@ -125,15 +135,18 @@ function toggleDonasiKeluarMode() {
         document.getElementById('satuanKeluar').value = '';
         document.getElementById('jumlahBarangKeluarDisplay').value = '';
         document.getElementById('nominalBarangKeluarDisplay').value = '';
-        const uangRaw = document.getElementById('jumlahUangKeluarDisplay').value.replace(/[^0-9]/g, '');
-        document.getElementById('jumlahKeluarHidden').value = uangRaw || 0;
+
+        let displayVal = document.getElementById('jumlahUangKeluarDisplay').value.toString();
+        displayVal = displayVal.split(',')[0].replace(/\.\d{1,2}$/, '');
+
+        const uangRaw = parseInt(displayVal.replace(/[^0-9]/g, '') || '0', 10);
+        document.getElementById('jumlahKeluarHidden').value = uangRaw;
         document.getElementById('nominalKeluarHidden').value = 0;
     }
 }
 
 window.onload = function() {
     toggleDonasiKeluarMode();
-    syncDonasiKeluarBarang();
 };
 </script>
 

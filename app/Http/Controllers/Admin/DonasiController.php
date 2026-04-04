@@ -250,9 +250,35 @@ class DonasiController extends Controller
             return 0;
         }
 
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+
         if (is_string($value)) {
-            $value = str_replace('.', '', $value);
-            $value = str_replace(',', '.', $value);
+            $value = trim($value);
+
+            if ($value === '') {
+                return 0;
+            }
+
+            $hasDot = str_contains($value, '.');
+            $hasComma = str_contains($value, ',');
+
+            if ($hasDot && $hasComma) {
+                $value = str_replace('.', '', $value);
+                $value = str_replace(',', '.', $value);
+            } elseif ($hasComma) {
+                $value = str_replace('.', '', $value);
+                $value = str_replace(',', '.', $value);
+            } elseif ($hasDot) {
+                $parts = explode('.', $value);
+
+                if (count($parts) > 2) {
+                    $value = str_replace('.', '', $value);
+                } elseif (isset($parts[1]) && strlen($parts[1]) === 3) {
+                    $value = str_replace('.', '', $value);
+                }
+            }
         }
 
         return (float) $value;

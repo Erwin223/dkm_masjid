@@ -16,6 +16,7 @@ class PenerimaanZakat extends Model
         'jumlah_zakat',
         'satuan',
         'nominal',
+        'nominal_pembagian',
         'jumlah_tanggungan',
         'standar_per_jiwa',
         'metode_pembayaran',
@@ -26,6 +27,7 @@ class PenerimaanZakat extends Model
         'tanggal' => 'date',
         'jumlah_zakat' => 'decimal:2',
         'nominal' => 'decimal:2',
+        'nominal_pembagian' => 'decimal:2',
         'jumlah_tanggungan' => 'integer',
         'standar_per_jiwa' => 'decimal:2',
     ];
@@ -71,6 +73,21 @@ class PenerimaanZakat extends Model
     public function getNilaiDanaAttribute()
     {
         return (float) ($this->nominal ?? ($this->is_barang ? 0 : $this->jumlah_zakat));
+    }
+
+    public function getIsFitrahUangAttribute()
+    {
+        return str_contains(strtolower((string) $this->jenis_zakat), 'fitrah')
+            && $this->bentuk_zakat === 'Uang';
+    }
+
+    public function getLabelPembagianAttribute()
+    {
+        if (! $this->is_fitrah_uang || ! $this->nominal_pembagian) {
+            return '-';
+        }
+
+        return 'Rp ' . number_format((float) $this->nominal_pembagian, 0, ',', '.') . ' / jiwa';
     }
 
     private function formatNumber($value)

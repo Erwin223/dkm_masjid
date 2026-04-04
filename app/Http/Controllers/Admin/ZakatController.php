@@ -90,6 +90,7 @@ class ZakatController extends Controller
             'jumlah_zakat' => 'nullable|numeric|min:0',
             'satuan' => 'nullable|string|max:50',
             'nominal' => 'nullable|numeric|min:0',
+            'nominal_pembagian' => 'nullable|numeric|min:0',
             'jumlah_tanggungan' => 'nullable|integer|min:0',
             'standar_per_jiwa' => 'nullable|numeric|min:0',
             'metode_pembayaran' => 'nullable|string|max:255',
@@ -122,6 +123,7 @@ class ZakatController extends Controller
             'jumlah_zakat' => 'nullable|numeric|min:0',
             'satuan' => 'nullable|string|max:50',
             'nominal' => 'nullable|numeric|min:0',
+            'nominal_pembagian' => 'nullable|numeric|min:0',
             'jumlah_tanggungan' => 'nullable|integer|min:0',
             'standar_per_jiwa' => 'nullable|numeric|min:0',
             'metode_pembayaran' => 'nullable|string|max:255',
@@ -276,6 +278,7 @@ class ZakatController extends Controller
     private function preparePenerimaanPayload(array $validated): array
     {
         $validated['nominal'] = $this->normalizeNumber($validated['nominal'] ?? null);
+        $validated['nominal_pembagian'] = $this->normalizeNumber($validated['nominal_pembagian'] ?? null);
         $validated['jumlah_zakat'] = $this->normalizeNumber($validated['jumlah_zakat'] ?? null);
         $validated['standar_per_jiwa'] = $this->normalizeNumber($validated['standar_per_jiwa'] ?? null);
         $validated['jumlah_tanggungan'] = $validated['jumlah_tanggungan'] ?? null;
@@ -285,10 +288,28 @@ class ZakatController extends Controller
             $validated['nominal'] = $validated['jumlah_zakat'];
             $validated['satuan'] = null;
             $validated['standar_per_jiwa'] = null;
+
+            if ($this->isZakatFitrah($validated['jenis_zakat'])) {
+                $jumlahTanggungan = (int) ($validated['jumlah_tanggungan'] ?? 0);
+                $nominalPembagian = $validated['nominal_pembagian']
+                    ?: ($jumlahTanggungan > 0 ? (float) $validated['nominal'] / $jumlahTanggungan : null);
+
+                $validated['nominal_pembagian'] = $nominalPembagian;
+
+                if ($nominalPembagian !== null && $jumlahTanggungan > 0) {
+                    $validated['nominal'] = (float) $nominalPembagian * $jumlahTanggungan;
+                    $validated['jumlah_zakat'] = $validated['nominal'];
+                }
+            } else {
+                $validated['jumlah_tanggungan'] = null;
+                $validated['nominal_pembagian'] = null;
+            }
+
             return $validated;
         }
 
         $validated['metode_pembayaran'] = null;
+        $validated['nominal_pembagian'] = null;
 
         if ($this->isZakatFitrah($validated['jenis_zakat'])) {
             $validated['standar_per_jiwa'] = $validated['standar_per_jiwa'] ?: self::STANDAR_FITRAH_DEFAULT;
@@ -346,9 +367,18 @@ class ZakatController extends Controller
     private function validatePenerimaanBusinessRules(Request $request): void
     {
         if ($request->bentuk_zakat === self::BENTUK_UANG) {
-            $request->validate([
+            $rules = [
                 'nominal' => 'required|numeric|min:0',
                 'metode_pembayaran' => 'required|string|max:255',
+            ];
+
+            if ($this->isZakatFitrah((string) $request->jenis_zakat)) {
+                $rules['jumlah_tanggungan'] = 'required|integer|min:1';
+                $rules['nominal_pembagian'] = 'required|numeric|min:1';
+            }
+
+            $request->validate([
+                ...$rules,
             ]);
             return;
         }

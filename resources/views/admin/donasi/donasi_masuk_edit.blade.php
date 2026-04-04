@@ -31,6 +31,8 @@
 @php
     $selectedJenis = old('jenis_donasi', $donasi->jenis_donasi);
     $isBarang = in_array($selectedJenis, ['Barang', 'Makanan', 'Pakaian'], true);
+    $jumlahValue = (float) old('jumlah', $donasi->jumlah);
+    $totalValue = (float) old('total', $donasi->total);
 @endphp
 
 <div class="don-nav">
@@ -101,7 +103,7 @@
                 <div style="position:relative;">
                     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
                     <input type="text" id="jumlahUangMasukDisplay"
-                        value="{{ $isBarang ? '' : number_format(old('jumlah', $donasi->jumlah), 0, ',', '.') }}"
+                        value="{{ $isBarang ? '' : number_format($jumlahValue, 0, ',', '.') }}"
                         placeholder="0" style="padding-left:32px;" oninput="formatRupiah(this, 'jumlahMasukHidden')">
                 </div>
                 <div class="mode-note"><i class="fa fa-circle-info"></i> Untuk donasi uang, total otomatis sama dengan jumlah.</div>
@@ -114,7 +116,7 @@
                 <div class="form-group">
                     <label>Jumlah Barang <span style="color:red;">*</span></label>
                     <input type="number" step="0.01" min="0" id="jumlahBarangMasukDisplay"
-                        value="{{ $isBarang ? old('jumlah', $donasi->jumlah) : '' }}" placeholder="Contoh: 10" oninput="syncDonasiMasukBarang()">
+                        value="{{ $isBarang ? $jumlahValue : '' }}" placeholder="Contoh: 10" oninput="syncDonasiMasukBarang()">
                 </div>
                 <div class="form-group">
                     <label>Satuan <span style="color:red;">*</span></label>
@@ -128,15 +130,15 @@
                 <div style="position:relative;">
                     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
                     <input type="text" id="nominalBarangMasukDisplay"
-                        value="{{ $isBarang ? number_format(old('total', $donasi->total), 0, ',', '.') : '' }}"
+                        value="{{ $isBarang ? number_format($totalValue, 0, ',', '.') : '' }}"
                         placeholder="0" style="padding-left:32px;" oninput="formatRupiah(this, 'totalMasukHidden')">
                 </div>
                 <div class="mode-note"><i class="fa fa-box"></i> Simpan jumlah fisik barang beserta estimasi nilai rupiahnya.</div>
             </div>
         </div>
 
-        <input type="hidden" name="jumlah" id="jumlahMasukHidden" value="{{ old('jumlah', $donasi->jumlah) }}">
-        <input type="hidden" name="total" id="totalMasukHidden" value="{{ old('total', $donasi->total) }}">
+        <input type="hidden" name="jumlah" id="jumlahMasukHidden" value="{{ $isBarang ? $jumlahValue : round($jumlahValue) }}">
+        <input type="hidden" name="total" id="totalMasukHidden" value="{{ round($totalValue) }}">
         @error('jumlah') <span class="invalid-feedback">{{ $message }}</span> @enderror
         @error('total') <span class="invalid-feedback">{{ $message }}</span> @enderror
 
@@ -151,32 +153,47 @@
         </div>
     </form>
 </div>
-
 <script>
 function pilihDonatur() {
     const sel = document.getElementById('donaturSelect');
     const opt = sel.options[sel.selectedIndex];
     const info = document.getElementById('donaturInfo');
-    const nama = document.getElementById('donaturNama');
+    const namaInput = document.getElementById('donaturNama');
+    
     if (sel.value) {
         const hp = opt.dataset.hp ? ' · ' + opt.dataset.hp : '';
-        info.innerHTML = '<i class="fa fa-circle-check" style="color:#0f8b6d;"></i> <b>' + opt.dataset.nama + '</b> (' + opt.dataset.jenis + ')' + hp;
+        info.innerHTML = `<i class="fa fa-circle-check" style="color:#0f8b6d;"></i> <b>${opt.dataset.nama}</b> (${opt.dataset.jenis})${hp}`;
         info.style.display = 'block';
-        nama.value = opt.dataset.nama;
+        
+        namaInput.value = opt.dataset.nama;
+        namaInput.readOnly = true;
+        namaInput.style.background = '#f0f0f0';
     } else {
         info.style.display = 'none';
-        nama.value = 'Hamba Allah';
+        namaInput.value = 'Hamba Allah';
+        namaInput.readOnly = false;
+        namaInput.style.background = '#fff';
     }
 }
 
-function isBarangJenisMasuk() {
-    return ['Barang', 'Makanan', 'Pakaian'].includes(document.getElementById('jenisDonasiMasuk').value);
-}
-
 function formatRupiah(el, hiddenId) {
-    let raw = el.value.replace(/[^0-9]/g, '');
+    // 1. Ambil nilai string dari input
+    let val = el.value.toString();
+    
+    // 2. POTONG DESIMAL (Ini kunci agar tidak membengkak)
+    // Hapus desimal koma (format ID, misal: 50.000,00 -> 50.000)
+    val = val.split(',')[0]; 
+    // Hapus desimal titik jika ada dari raw database (misal: 50000.00 -> 50000)
+    val = val.replace(/\.\d{1,2}$/, ''); 
+
+    // 3. Bersihkan karakter non-angka dan parsing
+    let raw = val.replace(/[^0-9]/g, '');
     let num = parseInt(raw || '0', 10);
-    el.value = raw ? num.toLocaleString('id-ID') : '';
+    
+    // 4. Format kembali ke Rupiah, paksa tanpa desimal
+    el.value = raw ? num.toLocaleString('id-ID', { maximumFractionDigits: 0 }) : '';
+    
+    // 5. Simpan nilai murni ke form yang disembunyikan
     document.getElementById(hiddenId).value = num;
     if (hiddenId === 'jumlahMasukHidden' && !isBarangJenisMasuk()) {
         document.getElementById('totalMasukHidden').value = num;
@@ -184,13 +201,15 @@ function formatRupiah(el, hiddenId) {
 }
 
 function syncDonasiMasukBarang() {
-    document.getElementById('jumlahMasukHidden').value = document.getElementById('jumlahBarangMasukDisplay').value || 0;
+    const qty = document.getElementById('jumlahBarangMasukDisplay').value;
+    document.getElementById('jumlahMasukHidden').value = qty || 0;
 }
 
 function toggleDonasiMasukMode() {
     const isBarang = isBarangJenisMasuk();
     document.getElementById('uangBoxMasuk').hidden = isBarang;
     document.getElementById('barangBoxMasuk').hidden = !isBarang;
+    
     if (isBarang) {
         document.getElementById('jumlahUangMasukDisplay').value = '';
         syncDonasiMasukBarang();
@@ -198,17 +217,25 @@ function toggleDonasiMasukMode() {
         document.getElementById('satuanMasuk').value = '';
         document.getElementById('jumlahBarangMasukDisplay').value = '';
         document.getElementById('nominalBarangMasukDisplay').value = '';
-        const uangRaw = document.getElementById('jumlahUangMasukDisplay').value.replace(/[^0-9]/g, '');
-        document.getElementById('jumlahMasukHidden').value = uangRaw || 0;
-        document.getElementById('totalMasukHidden').value = uangRaw || 0;
+        
+        // POTONG DESIMAL saat pindah mode/load pertama kali
+        let displayVal = document.getElementById('jumlahUangMasukDisplay').value.toString();
+        displayVal = displayVal.split(',')[0].replace(/\.\d{1,2}$/, '');
+        
+        let uangRaw = parseInt(displayVal.replace(/[^0-9]/g, '') || '0', 10);
+        document.getElementById('jumlahMasukHidden').value = uangRaw;
+        document.getElementById('totalMasukHidden').value = uangRaw;
     }
+}
+
+function isBarangJenisMasuk() {
+    return ['Barang', 'Makanan', 'Pakaian'].includes(document.getElementById('jenisDonasiMasuk').value);
 }
 
 window.onload = function() {
     const sel = document.getElementById('donaturSelect');
     if (sel && sel.value) pilihDonatur();
     toggleDonasiMasukMode();
-    syncDonasiMasukBarang();
 };
 </script>
 

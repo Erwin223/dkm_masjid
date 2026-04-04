@@ -10,6 +10,7 @@
         $totalKeluar = $totalKasKeluar ?? 0;
         $saldo = $totalMasuk - $totalKeluar;
         $saldoDonasi = ($totalDonasiMasuk ?? 0) - ($totalDonasiKeluar ?? 0);
+        $saldoZakat = ($totalZakatMasuk ?? 0) - ($totalZakatKeluar ?? 0);
         $saldoBersihTotal = $saldo + $saldoDonasi;
         $jmlMasuk = isset($kasMasuk) ? $kasMasuk->count() : 0;
         $jmlKeluar = isset($kasKeluar) ? $kasKeluar->count() : 0;
@@ -71,6 +72,33 @@
                 <p class="card-sub">{{ $jmlDonasiKeluar ?? 0 }} transaksi</p>
             </div>
             <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+
+        <div class="card" style="background:#198754;">
+            <div>
+                <h3>Penerimaan Zakat</h3>
+                <p class="card-value">Rp.{{ number_format($totalZakatMasuk ?? 0, 0, ',', '.') }}</p>
+                <p class="card-sub">{{ $jmlPenerimaanZakat ?? 0 }} transaksi</p>
+            </div>
+            <i class="fa-solid fa-mosque"></i>
+        </div>
+
+        <div class="card" style="background:#b02a37;">
+            <div>
+                <h3>Distribusi Zakat</h3>
+                <p class="card-value">Rp.{{ number_format($totalZakatKeluar ?? 0, 0, ',', '.') }}</p>
+                <p class="card-sub">{{ $jmlDistribusiZakat ?? 0 }} transaksi</p>
+            </div>
+            <i class="fa-solid fa-hand-holding-medical"></i>
+        </div>
+
+        <div class="card {{ $saldoZakat >= 0 ? 'green' : 'red' }}">
+            <div>
+                <h3>Saldo Zakat</h3>
+                <p class="card-value">{{ $saldoZakat < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldoZakat), 0, ',', '.') }}</p>
+                <p class="card-sub">{{ ($totalMuzakki ?? 0) }} muzakki • {{ ($totalMustahik ?? 0) }} mustahik</p>
+            </div>
+            <i class="fa-solid fa-scale-balanced"></i>
         </div>
 
         <div class="card teal">
@@ -409,6 +437,140 @@
                 </div>
             </div>
 
+            {{-- DATA PENERIMAAN ZAKAT --}}
+            <div class="table-box">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <h3 style="margin:0;"><i class="fa-solid fa-mosque" style="color:#198754;"></i> Data Penerimaan Zakat</h3>
+                    <a href="{{ route('zakat.penerimaan.index') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat
+                        semua</a>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Muzakki</th>
+                                <th>Jenis</th>
+                                <th>Nilai</th>
+                                <th style="text-align:center;">Hapus</th>
+                                <th style="text-align:center;">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(isset($penerimaanZakatList) && $penerimaanZakatList->count())
+                                @foreach($penerimaanZakatList as $pz)
+                                    <tr>
+                                        <td>{{ $pz->tanggal->translatedFormat('d M Y') }}</td>
+                                        <td>{{ $pz->muzakki->nama ?? '-' }}</td>
+                                        <td>
+                                            <span class="badge-berjalan" style="background:#e8f6ee;color:#198754;border:1px solid #b7e4c7;">
+                                                {{ $pz->jenis_zakat }}
+                                            </span>
+                                        </td>
+                                        <td style="font-weight:600;color:#198754;">
+                                            Rp.{{ number_format($pz->nilai_dana, 0, ',', '.') }}
+                                            <div style="font-size:11px;color:#999;font-weight:400;">
+                                                @if($pz->is_barang)
+                                                    {{ $pz->label_jumlah }}
+                                                @elseif($pz->label_pembagian !== '-')
+                                                    {{ $pz->label_pembagian }}
+                                                @else
+                                                    {{ $pz->metode_pembayaran ?? 'Uang' }}
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <form id="delete-penerimaan-zakat-{{ $pz->id }}"
+                                                action="{{ route('zakat.penerimaan.delete', $pz->id) }}" method="POST"
+                                                style="display:inline;">
+                                                @csrf @method('DELETE')
+                                                <button type="button" onclick="confirmDeletePenerimaanZakat({{ $pz->id }})"
+                                                    style="border:none;background:none;cursor:pointer;">
+                                                    <i class="fa fa-trash" style="color:red;"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <a href="{{ route('zakat.penerimaan.edit', $pz->id) }}">
+                                                <i class="fa fa-edit" style="color:blue;"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="6" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data penerimaan zakat</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- DATA DISTRIBUSI ZAKAT --}}
+            <div class="table-box">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <h3 style="margin:0;"><i class="fa-solid fa-hand-holding-medical" style="color:#b02a37;"></i> Data Distribusi Zakat</h3>
+                    <a href="{{ route('zakat.distribusi.index') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat
+                        semua</a>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Mustahik</th>
+                                <th>Jenis</th>
+                                <th>Nilai</th>
+                                <th style="text-align:center;">Hapus</th>
+                                <th style="text-align:center;">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(isset($distribusiZakatList) && $distribusiZakatList->count())
+                                @foreach($distribusiZakatList as $dz)
+                                    <tr>
+                                        <td>{{ $dz->tanggal->translatedFormat('d M Y') }}</td>
+                                        <td>{{ $dz->mustahik->nama ?? '-' }}</td>
+                                        <td>
+                                            <span class="badge-berjalan" style="background:#fdecec;color:#b02a37;border:1px solid #f5c2c7;">
+                                                {{ $dz->jenis_zakat }}
+                                            </span>
+                                        </td>
+                                        <td style="font-weight:600;color:#b02a37;">
+                                            Rp.{{ number_format($dz->nilai_dana, 0, ',', '.') }}
+                                            <div style="font-size:11px;color:#999;font-weight:400;">
+                                                {{ $dz->is_barang ? $dz->label_jumlah : ($dz->mustahik->kategori_mustahik ?? 'Uang') }}
+                                            </div>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <form id="delete-distribusi-zakat-{{ $dz->id }}"
+                                                action="{{ route('zakat.distribusi.delete', $dz->id) }}" method="POST"
+                                                style="display:inline;">
+                                                @csrf @method('DELETE')
+                                                <button type="button" onclick="confirmDeleteDistribusiZakat({{ $dz->id }})"
+                                                    style="border:none;background:none;cursor:pointer;">
+                                                    <i class="fa fa-trash" style="color:red;"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <a href="{{ route('zakat.distribusi.edit', $dz->id) }}">
+                                                <i class="fa fa-edit" style="color:blue;"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="6" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data distribusi zakat</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="table-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <h3 style="margin:0;"><i class="fa-solid fa-newspaper" style="color:#f39c12;"></i> Data Berita Terbaru
@@ -505,8 +667,6 @@
             </div>
 
         </div>
-
-
         {{-- KOLOM KANAN --}}
         <div style="display:flex;flex-direction:column;gap:20px;">
 
@@ -540,13 +700,29 @@
                             Rp.{{ number_format($totalDonasiKeluar ?? 0, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
+                        <td style="border:none;padding:8px 0;color:#555;">Penerimaan Zakat</td>
+                        <td style="border:none;padding:8px 0;text-align:right;color:#198754;font-weight:600;">
+                            Rp.{{ number_format($totalZakatMasuk ?? 0, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:8px 0;color:#555;">Distribusi Zakat</td>
+                        <td style="border:none;padding:8px 0;text-align:right;color:#b02a37;font-weight:600;">
+                            Rp.{{ number_format($totalZakatKeluar ?? 0, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
                         <td colspan="2" style="border:none;border-top:1px solid #eee;padding:0;"></td>
                     </tr>
                     <tr>
-                        <td style="border:none;padding:10px 0;font-weight:700;">Saldo Bersih</td>
+                        <td style="border:none;padding:10px 0;font-weight:700;">Saldo Kas + Donasi</td>
                         <td style="border:none;padding:10px 0;text-align:right;"
                             class="{{ $saldoBersihTotal >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
                             {{ $saldoBersihTotal >= 0 ? '' : '-' }}Rp.{{ number_format(abs($saldoBersihTotal), 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:4px 0 0;font-weight:700;">Saldo Zakat</td>
+                        <td style="border:none;padding:4px 0 0;text-align:right;font-weight:700;color:{{ $saldoZakat >= 0 ? '#198754' : '#dc3545' }};">
+                            {{ $saldoZakat >= 0 ? '' : '-' }}Rp.{{ number_format(abs($saldoZakat), 0, ',', '.') }}
                         </td>
                     </tr>
                 </table>
@@ -659,6 +835,71 @@
                         </td>
                     </tr>
                 </table>
+            </div>
+
+            {{-- RINGKASAN ZAKAT --}}
+            <div class="widget-box">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;">
+                    <h3 style="margin:0;"><i class="fa-solid fa-mosque" style="color:#198754;"></i> Ringkasan Zakat</h3>
+                    <a href="{{ route('zakat.penerimaan.index') }}" style="font-size:12px;color:#0f8b6d;text-decoration:none;">Lihat
+                        semua <i class="fa fa-arrow-right" style="font-size:10px;"></i></a>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                    <div style="background:#e8f6ee;border-radius:8px;padding:12px;text-align:center;border:1px solid #b7e4c7;">
+                        <div style="font-size:18px;font-weight:700;color:#198754;">
+                            Rp.{{ number_format($totalZakatMasuk ?? 0, 0, ',', '.') }}</div>
+                        <div style="font-size:11px;color:#666;margin-top:3px;">Penerimaan Zakat</div>
+                    </div>
+                    <div style="background:#fdecec;border-radius:8px;padding:12px;text-align:center;border:1px solid #f5c2c7;">
+                        <div style="font-size:18px;font-weight:700;color:#b02a37;">
+                            Rp.{{ number_format($totalZakatKeluar ?? 0, 0, ',', '.') }}</div>
+                        <div style="font-size:11px;color:#666;margin-top:3px;">Distribusi Zakat</div>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                    <div style="background:#f8fbf9;border-radius:8px;padding:12px;text-align:center;border:1px solid #dbeae2;">
+                        <div style="font-size:18px;font-weight:700;color:#198754;">{{ $totalMuzakki ?? 0 }}</div>
+                        <div style="font-size:11px;color:#666;margin-top:3px;">Muzakki</div>
+                    </div>
+                    <div style="background:#f8fbf9;border-radius:8px;padding:12px;text-align:center;border:1px solid #dbeae2;">
+                        <div style="font-size:18px;font-weight:700;color:#b02a37;">{{ $totalMustahik ?? 0 }}</div>
+                        <div style="font-size:11px;color:#666;margin-top:3px;">Mustahik</div>
+                    </div>
+                </div>
+                <table style="min-width:unset;width:100%;">
+                    <tr>
+                        <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Total Penerimaan</td>
+                        <td style="border:none;padding:6px 0;text-align:right;color:#198754;font-weight:600;font-size:13px;">
+                            Rp.{{ number_format($totalZakatMasuk ?? 0, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Total Distribusi</td>
+                        <td style="border:none;padding:6px 0;text-align:right;color:#b02a37;font-weight:600;font-size:13px;">
+                            Rp.{{ number_format($totalZakatKeluar ?? 0, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:6px 0;color:#555;font-size:13px;">Transaksi</td>
+                        <td style="border:none;padding:6px 0;text-align:right;color:#666;font-weight:600;font-size:13px;">
+                            {{ $jmlPenerimaanZakat ?? 0 }} masuk • {{ $jmlDistribusiZakat ?? 0 }} keluar</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border:none;border-top:1px solid #eee;padding:0;"></td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;padding:8px 0;font-weight:700;font-size:13px;">Saldo Zakat</td>
+                        <td style="border:none;padding:8px 0;text-align:right;font-weight:700;font-size:13px;color:{{ ($saldoZakat ?? 0) >= 0 ? '#198754' : '#dc3545' }};">
+                            {{ ($saldoZakat ?? 0) >= 0 ? '' : '-' }}Rp.{{ number_format(abs($saldoZakat ?? 0), 0, ',', '.') }}
+                        </td>
+                    </tr>
+                </table>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+                    <a href="{{ route('zakat.penerimaan.create') }}" class="btn-tambah" style="font-size:12px;padding:7px 12px;background:#198754;">
+                        <i class="fa fa-plus"></i> Penerimaan
+                    </a>
+                    <a href="{{ route('zakat.distribusi.create') }}" class="btn-tambah" style="font-size:12px;padding:7px 12px;background:#b02a37;">
+                        <i class="fa fa-plus"></i> Distribusi
+                    </a>
+                </div>
             </div>
 
             {{-- RINGKASAN DONATUR --}}
@@ -957,6 +1198,14 @@
         function confirmDeleteDonasiKeluar(id) {
             Swal.fire({ title: 'Yakin hapus donasi keluar?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Ya, hapus!', cancelButtonText: 'Batal' })
                 .then(r => { if (r.isConfirmed) document.getElementById('delete-donasi-keluar-' + id).submit(); });
+        }
+        function confirmDeletePenerimaanZakat(id) {
+            Swal.fire({ title: 'Yakin hapus penerimaan zakat?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Ya, hapus!', cancelButtonText: 'Batal' })
+                .then(r => { if (r.isConfirmed) document.getElementById('delete-penerimaan-zakat-' + id).submit(); });
+        }
+        function confirmDeleteDistribusiZakat(id) {
+            Swal.fire({ title: 'Yakin hapus distribusi zakat?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Ya, hapus!', cancelButtonText: 'Batal' })
+                .then(r => { if (r.isConfirmed) document.getElementById('delete-distribusi-zakat-' + id).submit(); });
         }
     </script>
 

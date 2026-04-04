@@ -11,6 +11,10 @@ use App\Models\DataImam;
 use App\Models\DonasiMasuk;
 use App\Models\DonasiKeluar;
 use App\Models\Donatur;
+use App\Models\Muzakki;
+use App\Models\Mustahik;
+use App\Models\PenerimaanZakat;
+use App\Models\DistribusiZakat;
 use App\Models\Berita;
 use App\Models\Galeri;
 use Carbon\Carbon;
@@ -64,6 +68,16 @@ class DashboardController extends Controller
         $donasiMasukList  = DonasiMasuk::with('donatur')->orderBy('tanggal', 'desc')->limit(5)->get();
         $donasiKeluarList = DonasiKeluar::orderBy('tanggal', 'desc')->limit(5)->get();
 
+        // ZAKAT
+        $penerimaanZakatList = PenerimaanZakat::with('muzakki')->orderBy('tanggal', 'desc')->limit(5)->get();
+        $distribusiZakatList = DistribusiZakat::with('mustahik')->orderBy('tanggal', 'desc')->limit(5)->get();
+        $totalZakatMasuk = PenerimaanZakat::get()->sum('nilai_dana');
+        $totalZakatKeluar = DistribusiZakat::get()->sum('nilai_dana');
+        $jmlPenerimaanZakat = PenerimaanZakat::count();
+        $jmlDistribusiZakat = DistribusiZakat::count();
+        $totalMuzakki = Muzakki::count();
+        $totalMustahik = Mustahik::count();
+
         // DONATUR
         $totalDonatur = Donatur::count();
         $donaturList  = Donatur::orderBy('tanggal_daftar', 'desc')->limit(4)->get(); // untuk widget
@@ -94,6 +108,14 @@ class DashboardController extends Controller
             'jmlDonasiKeluar',
             'donasiMasukList',
             'donasiKeluarList',
+            'penerimaanZakatList',
+            'distribusiZakatList',
+            'totalZakatMasuk',
+            'totalZakatKeluar',
+            'jmlPenerimaanZakat',
+            'jmlDistribusiZakat',
+            'totalMuzakki',
+            'totalMustahik',
             'totalDonatur',
             'donaturList',
             'dataDonatur',

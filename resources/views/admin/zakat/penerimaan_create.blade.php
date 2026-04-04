@@ -3,11 +3,17 @@
 @include('admin.zakat._styles')
 @include('admin.zakat._nav')
 
+@php
+    $nominalValue = (float) old('nominal', 0);
+    $pembagianValue = (float) old('nominal_pembagian', 50000);
+@endphp
+
 <div class="form-box">
     <h3><i class="fa fa-plus-circle" style="color:#0f8b6d;"></i> Tambah Penerimaan Zakat</h3>
     <form action="{{ route('zakat.penerimaan.store') }}" method="POST" id="formPenerimaan">
         @csrf
         <input type="hidden" name="nominal" id="nominalHidden">
+        <input type="hidden" name="nominal_pembagian" id="nominalPembagianHidden">
 
         <div class="form-row">
             <div class="form-group">
@@ -53,6 +59,11 @@
             <div class="form-group" id="standarPerJiwaWrapper">
                 <label>Standar per Jiwa (kg)</label>
                 <input type="number" step="0.01" min="0" name="standar_per_jiwa" id="standarPerJiwaPenerimaan" value="{{ old('standar_per_jiwa', 2.5) }}" oninput="hitungFitrahOtomatis()">
+            </div>
+            <div class="form-group" id="pembagianPerJiwaWrapper" style="display:none;">
+                <label>Pembagian per Jiwa (Rp)</label>
+                <input type="text" id="pembagianFitrahUangDisplay" value="{{ number_format($pembagianValue, 0, ',', '.') }}" oninput="formatNominalRupiah(this); hitungFitrahOtomatis()">
+                @error('nominal_pembagian') <span class="invalid-feedback">{{ $message }}</span> @enderror
             </div>
         </div>
 
@@ -104,14 +115,14 @@
         <div class="form-row">
             <div class="form-group" id="nominalFieldPenerimaan">
                 <label>Nilai Rupiah (Rp)</label>
-                <input type="text" id="nominalDisplay" oninput="formatNominalRupiah(this)">
+                <input type="text" id="nominalDisplay" value="{{ $nominalValue ? number_format($nominalValue, 0, ',', '.') : '' }}" oninput="formatNominalRupiah(this); hitungPembagianFitrahUang()">
             </div>
             <div class="form-group" id="metodePembayaranFieldPenerimaan">
                 <label>Metode Pembayaran</label>
                 <select name="metode_pembayaran" id="metodePembayaranPenerimaan">
-                    <option value="Tunai">Tunai</option>
-                    <option value="Transfer">Transfer</option>
-                    <option value="QRIS">QRIS</option>
+                    <option value="Tunai" {{ old('metode_pembayaran', 'Tunai') == 'Tunai' ? 'selected' : '' }}>Tunai</option>
+                    <option value="Transfer" {{ old('metode_pembayaran') == 'Transfer' ? 'selected' : '' }}>Transfer</option>
+                    <option value="QRIS" {{ old('metode_pembayaran') == 'QRIS' ? 'selected' : '' }}>QRIS</option>
                 </select>
             </div>
         </div>
@@ -129,7 +140,7 @@
 </div>
 
 <script>
-const STANDAR_UANG_FITRAH = 40000;
+const STANDAR_UANG_FITRAH = 50000;
 const KADAR_ZAKAT_MAAL = 0.025;
 
 function isFitrahPenerimaan() { return document.getElementById('jenisZakatPenerimaan').value.toLowerCase().includes('fitrah'); }
@@ -201,12 +212,28 @@ function hitungFitrahOtomatis() {
     if (!isFitrahPenerimaan()) return;
     const jiwa = parseFloat(document.getElementById('jumlahTanggunganPenerimaan').value || 0);
     if (isBarangPenerimaan()) {
-        const std = parseFloat(document.getElementById('standarPerJiwaPenerimaan').value || 0);
+        const std = parseFloat(document.getElementById('standarPerJiwaPenerimaan').value || 2.5);
         document.getElementById('jumlahZakatPenerimaan').value = jiwa > 0 ? (jiwa * std).toFixed(2) : '';
         document.getElementById('satuanPenerimaan').value = 'kg';
     } else {
-        document.getElementById('nominalDisplay').value = jiwa > 0 ? (jiwa * STANDAR_UANG_FITRAH).toLocaleString('id-ID') : '';
+        const pembagian = getAngkaMurni(document.getElementById('pembagianFitrahUangDisplay').value || '');
+        const nominalPerJiwa = pembagian || STANDAR_UANG_FITRAH;
+        document.getElementById('nominalDisplay').value = jiwa > 0 ? (jiwa * nominalPerJiwa).toLocaleString('id-ID') : '';
+        hitungPembagianFitrahUang();
     }
+}
+
+function hitungPembagianFitrahUang() {
+    const pembagianDisplay = document.getElementById('pembagianFitrahUangDisplay');
+
+    if (!isFitrahPenerimaan() || isBarangPenerimaan()) {
+        pembagianDisplay.value = '';
+        return;
+    }
+
+    const pembagian = getAngkaMurni(pembagianDisplay.value || '') || STANDAR_UANG_FITRAH;
+
+    pembagianDisplay.value = pembagian.toLocaleString('id-ID');
 }
 
 function togglePenerimaanZakatMode(isUserAction = false) {
@@ -216,9 +243,14 @@ function togglePenerimaanZakatMode(isUserAction = false) {
 
     document.getElementById('fitrahConfigBox').style.display = fitrah ? '' : 'none';
     document.getElementById('standarPerJiwaWrapper').style.display = (fitrah && barang) ? '' : 'none';
+    document.getElementById('pembagianPerJiwaWrapper').style.display = (fitrah && !barang) ? '' : 'none';
     document.getElementById('barangFieldsPenerimaan').style.display = barang ? '' : 'none';
     document.getElementById('nominalFieldPenerimaan').style.display = barang ? 'none' : '';
     document.getElementById('metodePembayaranFieldPenerimaan').style.display = barang ? 'none' : '';
+
+    const nominalDisplay = document.getElementById('nominalDisplay');
+    nominalDisplay.readOnly = fitrah && !barang;
+    nominalDisplay.style.background = fitrah && !barang ? '#f5f5f5' : '#fff';
 
     const maalBox = document.getElementById('maalConfigBox');
     if (jenisZakat === 'Zakat Maal' || jenisZakat === 'Zakat Penghasilan') {
@@ -228,12 +260,15 @@ function togglePenerimaanZakatMode(isUserAction = false) {
         maalBox.style.display = 'none';
         setTombolSimpan(true);
     }
-    if (isUserAction && fitrah) hitungFitrahOtomatis();
+    if (fitrah) hitungFitrahOtomatis();
+    hitungPembagianFitrahUang();
 }
 
 document.getElementById('formPenerimaan').addEventListener('submit', function (e) {
     const val = document.getElementById('nominalDisplay').value;
     document.getElementById('nominalHidden').value = val.replace(/\./g, '').replace(/[^0-9]/g, '');
+    const pembagianVal = document.getElementById('pembagianFitrahUangDisplay').value;
+    document.getElementById('nominalPembagianHidden').value = pembagianVal.replace(/\./g, '').replace(/[^0-9]/g, '');
 });
 
 window.onload = () => togglePenerimaanZakatMode(false);

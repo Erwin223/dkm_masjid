@@ -61,6 +61,7 @@
                     <th>Bentuk</th>
                     <th>Jumlah Zakat (Barang)</th>
                     <th>Nominal (Uang)</th>
+                    <th>Pembagian Fitrah Uang</th>
                     <th>Jml Tanggungan</th>
                     <th>Metode</th>
                     <th>Keterangan</th>
@@ -96,6 +97,7 @@
                     </td>
 
                     <td>{{ $item->nominal ? 'Rp ' . number_format($item->nominal, 0, ',', '.') : '-' }}</td>
+                    <td>{{ $item->label_pembagian }}</td>
 
                     <td>{{ $item->jumlah_tanggungan ?? '-' }}</td>
                     <td>{{ $item->metode_pembayaran ?? '-' }}</td>
@@ -117,7 +119,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="12" style="text-align:center;padding:2.5rem;color:#999;">
+                    <td colspan="13" style="text-align:center;padding:2.5rem;color:#999;">
                         <i class="fa fa-arrow-down" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>
                         Belum ada penerimaan zakat
                     </td>

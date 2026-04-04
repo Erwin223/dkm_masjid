@@ -37,7 +37,7 @@ class DonasiKeluar extends Model
     public function getLabelJumlahAttribute()
     {
         if (! $this->is_barang) {
-            return '-';
+            return 'Rp.' . number_format((float) $this->jumlah, 0, ',', '.');
         }
 
         return $this->formatNumber($this->jumlah) . ' ' . trim((string) $this->satuan);
