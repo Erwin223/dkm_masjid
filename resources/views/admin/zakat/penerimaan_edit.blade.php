@@ -9,16 +9,26 @@
     $selectedBentuk = old('bentuk_zakat', $penerimaan->bentuk_zakat);
     $nominalValue = (float) old('nominal', $penerimaan->nominal ?? 0);
     $pembagianValue = (float) old('nominal_pembagian', $penerimaan->nominal_pembagian ?? 50000);
+    $hargaBarangFitrahValue = (float) old('harga_barang_fitrah', $penerimaan->harga_barang_fitrah ?? 0);
     $jumlahTanggunganValue = old('jumlah_tanggungan', $penerimaan->jumlah_tanggungan);
     $standarPerJiwaValue = old('standar_per_jiwa', $penerimaan->standar_per_jiwa ?? 2.5);
 @endphp
 
 <div class="form-box">
     <h3><i class="fa fa-edit" style="color:#0f8b6d;"></i> Edit Penerimaan Zakat</h3>
+    
+    <div style="background: #f3e5f5; border-left: 4px solid #7b1fa2; padding: 12px; margin-bottom: 20px; border-radius: 4px; font-size: 11px; color: #4a148c;">
+        <i class="fa fa-history"></i> <strong>Catatan Audit:</strong> 
+        Input by <strong>{{ $penerimaan->createdByUser->name ?? 'User #' . $penerimaan->created_by }}</strong> 
+        on {{ optional($penerimaan->created_at)->format('d M Y H:i') }} | 
+        Last updated {{ optional($penerimaan->updated_at)->format('d M Y H:i') }}
+    </div>
+
     <form action="{{ route('zakat.penerimaan.update', $penerimaan->id) }}" method="POST" id="formPenerimaan">
         @csrf @method('PUT')
         <input type="hidden" name="nominal" id="nominalHidden">
         <input type="hidden" name="nominal_pembagian" id="nominalPembagianHidden">
+        <input type="hidden" name="harga_barang_fitrah" id="hargaBarangFitrahHidden">
         <div class="form-row">
             <div class="form-group">
                 <label>Muzakki <span style="color:red;">*</span></label>
@@ -30,7 +40,7 @@
             </div>
             <div class="form-group">
                 <label>Tanggal</label>
-                <input type="date" name="tanggal" value="{{ old('tanggal', $penerimaan->tanggal->format('Y-m-d')) }}" required>
+                <input type="date" name="tanggal" value="{{ old('tanggal', optional($penerimaan->tanggal)->format('Y-m-d')) }}" required>
             </div>
         </div>
         <div class="form-row">
@@ -50,6 +60,20 @@
                 </select>
             </div>
         </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Status Penerimaan <span style="color:red;">*</span></label>
+                <select name="status">
+                    <option value="pending" {{ $penerimaan->status === 'pending' ? 'selected' : '' }}>Menunggu</option>
+                    <option value="verified" {{ $penerimaan->status === 'verified' ? 'selected' : '' }}>Diverifikasi</option>
+                    <option value="distributed" {{ $penerimaan->status === 'distributed' ? 'selected' : '' }}>Didistribusikan</option>
+                    <option value="cancelled" {{ $penerimaan->status === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                </select>
+            </div>
+            <div class="form-group"></div> {{-- Spacer --}}
+        </div>
+
         {{-- Section Fitrah --}}
         <div class="form-row" id="fitrahConfigBox" style="display:none;">
             <div class="form-group">
@@ -59,6 +83,11 @@
             <div class="form-group" id="standarPerJiwaWrapper">
                 <label>Standar per Jiwa (kg)</label>
                 <input type="number" step="0.01" name="standar_per_jiwa" id="standarPerJiwaPenerimaan" value="{{ $standarPerJiwaValue }}" oninput="hitungFitrahOtomatis()">
+            </div>
+            <div class="form-group" id="hargaBarangFitrahWrapper" style="display:none;">
+                <label>Harga Barang per kg (Rp)</label>
+                <input type="text" id="hargaBarangFitrahDisplay" value="{{ $hargaBarangFitrahValue ? number_format($hargaBarangFitrahValue, 0, ',', '.') : '' }}" placeholder="Contoh: 15.000" oninput="formatNominalRupiah(this); hitungFitrahOtomatis()">
+                <small style="color: #7a7a7a;">Untuk menghitung nilai rupiah zakat fitrah</small>
             </div>
             <div class="form-group" id="pembagianPerJiwaWrapper" style="display:none;">
                 <label>Pembagian per Jiwa (Rp)</label>
@@ -193,7 +222,18 @@ function hitungFitrahOtomatis() {
     const jiwa = parseFloat(document.getElementById('jumlahTanggunganPenerimaan').value || 0);
     if (isBarangPenerimaan()) {
         const std = parseFloat(document.getElementById('standarPerJiwaPenerimaan').value || 2.5);
-        document.getElementById('jumlahZakatPenerimaan').value = jiwa > 0 ? (jiwa * std).toFixed(2) : '';
+        const jumlahZakat = jiwa > 0 ? (jiwa * std).toFixed(2) : '';
+        document.getElementById('jumlahZakatPenerimaan').value = jumlahZakat;
+
+        // Hitung total nilai rupiah berdasarkan harga barang
+        const hargaBarang = getAngkaMurni(document.getElementById('hargaBarangFitrahDisplay').value || '');
+        if (hargaBarang > 0 && jumlahZakat > 0) {
+            const totalRupiah = parseFloat(jumlahZakat) * hargaBarang;
+            document.getElementById('nominalDisplay').value = totalRupiah.toLocaleString('id-ID');
+        } else {
+            document.getElementById('nominalDisplay').value = '';
+        }
+
         document.getElementById('satuanPenerimaan').value = 'kg';
     } else {
         const pembagian = getAngkaMurni(document.getElementById('pembagianFitrahUangDisplay').value || '');
@@ -223,6 +263,7 @@ function togglePenerimaanZakatMode(isUserAction = false) {
 
     document.getElementById('fitrahConfigBox').style.display = fitrah ? '' : 'none';
     document.getElementById('standarPerJiwaWrapper').style.display = (fitrah && barang) ? '' : 'none';
+    document.getElementById('hargaBarangFitrahWrapper').style.display = (fitrah && barang) ? '' : 'none';
     document.getElementById('pembagianPerJiwaWrapper').style.display = (fitrah && !barang) ? '' : 'none';
     document.getElementById('barangFieldsPenerimaan').style.display = barang ? '' : 'none';
     document.getElementById('nominalFieldPenerimaan').style.display = barang ? 'none' : '';
@@ -253,6 +294,8 @@ document.getElementById('formPenerimaan').addEventListener('submit', function (e
     if (val) document.getElementById('nominalHidden').value = val.replace(/\./g, '').replace(/[^0-9]/g, '');
     const pembagianVal = document.getElementById('pembagianFitrahUangDisplay').value;
     document.getElementById('nominalPembagianHidden').value = pembagianVal.replace(/\./g, '').replace(/[^0-9]/g, '');
+    const hargaBarangVal = document.getElementById('hargaBarangFitrahDisplay').value;
+    document.getElementById('hargaBarangFitrahHidden').value = hargaBarangVal.replace(/\./g, '').replace(/[^0-9]/g, '');
 });
 
 window.onload = () => togglePenerimaanZakatMode(false);

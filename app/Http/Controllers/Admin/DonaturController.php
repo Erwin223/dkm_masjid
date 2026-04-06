@@ -62,6 +62,7 @@ class DonaturController extends Controller
     public function delete($id)
     {
         Donatur::findOrFail($id)->delete();
+
         return redirect()->route('donatur.index')
             ->with('success', 'Data donatur berhasil dihapus');
     }

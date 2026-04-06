@@ -4,6 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $tanggal
+ * @property bool $is_barang
+ * @property float $nilai_dana
+ * @property string $label_jumlah
+ */
 class DistribusiZakat extends Model
 {
     protected $table = 'distribusi_zakat';
@@ -11,11 +17,13 @@ class DistribusiZakat extends Model
     protected $fillable = [
         'tanggal',
         'mustahik_id',
+        'penerimaan_zakat_id',
         'jenis_zakat',
         'bentuk_zakat',
         'jumlah_zakat',
         'satuan',
         'nominal',
+        'harga_barang_fitrah',
         'keterangan',
     ];
 
@@ -23,11 +31,17 @@ class DistribusiZakat extends Model
         'tanggal' => 'date',
         'jumlah_zakat' => 'decimal:2',
         'nominal' => 'decimal:2',
+        'harga_barang_fitrah' => 'decimal:2',
     ];
 
     public function mustahik()
     {
         return $this->belongsTo(Mustahik::class, 'mustahik_id');
+    }
+
+    public function penerimaanZakat()
+    {
+        return $this->belongsTo(PenerimaanZakat::class, 'penerimaan_zakat_id');
     }
 
     public function getIsBarangAttribute()

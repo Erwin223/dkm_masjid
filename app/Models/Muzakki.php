@@ -12,6 +12,13 @@ class Muzakki extends Model
         'nama',
         'alamat',
         'no_hp',
+        'email',
+        'status',
+        'tahun_daftar',
+    ];
+
+    protected $casts = [
+        'tahun_daftar' => 'integer',
     ];
 
     public function penerimaanZakat()

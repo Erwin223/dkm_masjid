@@ -4,6 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $tanggal
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property bool $is_barang
+ * @property float $nilai_dana
+ * @property string $label_jumlah
+ * @property bool $is_fitrah_uang
+ */
 class PenerimaanZakat extends Model
 {
     protected $table = 'penerimaan_zakat';
@@ -17,10 +26,15 @@ class PenerimaanZakat extends Model
         'satuan',
         'nominal',
         'nominal_pembagian',
+        'harga_barang_fitrah',
         'jumlah_tanggungan',
         'standar_per_jiwa',
         'metode_pembayaran',
         'keterangan',
+        'status',
+        'created_by',
+        'updated_by',
+        'verified_date',
     ];
 
     protected $casts = [
@@ -28,13 +42,30 @@ class PenerimaanZakat extends Model
         'jumlah_zakat' => 'decimal:2',
         'nominal' => 'decimal:2',
         'nominal_pembagian' => 'decimal:2',
+        'harga_barang_fitrah' => 'decimal:2',
         'jumlah_tanggungan' => 'integer',
         'standar_per_jiwa' => 'decimal:2',
+        'verified_date' => 'datetime',
     ];
 
     public function muzakki()
     {
         return $this->belongsTo(Muzakki::class, 'muzakki_id');
+    }
+
+    public function createdByUser()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function distribusiZakat()
+    {
+        return $this->hasMany(DistribusiZakat::class, 'penerimaan_zakat_id');
     }
 
     public function getIsBarangAttribute()

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ProfilMasjidController;
 use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\GaleriController;
+use App\Http\Controllers\Admin\StatistikController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,10 @@ Route::middleware(['auth','admin','nocache'])->prefix('admin')->group(function (
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('admin.dashboard');
+
+// Statistik
+Route::get('/statistik', [StatistikController::class, 'index'])
+    ->name('admin.statistik');
 
 // KAS MASUK
 Route::get('/kas-masuk',              [KasMasukController::class, 'index'])->name('kas.masuk.index');

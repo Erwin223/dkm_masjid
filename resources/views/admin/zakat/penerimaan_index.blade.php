@@ -64,6 +64,8 @@
                     <th>Pembagian Fitrah Uang</th>
                     <th>Jml Tanggungan</th>
                     <th>Metode</th>
+                    <th>Status</th>
+                    <th>Input By</th>
                     <th>Keterangan</th>
                     <th style="text-align:center;">Hapus</th>
                     <th style="text-align:center;">Edit</th>
@@ -101,6 +103,31 @@
 
                     <td>{{ $item->jumlah_tanggungan ?? '-' }}</td>
                     <td>{{ $item->metode_pembayaran ?? '-' }}</td>
+                    
+                    <td>
+                        <span class="badge-status" style="
+                            padding: 4px 8px; 
+                            border-radius: 4px; 
+                            font-size: 11px; 
+                            font-weight: 600;
+                            @if($item->status === 'pending') background: #fff3cd; color: #856404;
+                            @elseif($item->status === 'verified') background: #d1ecf1; color: #0c5460;
+                            @elseif($item->status === 'distributed') background: #d4edda; color: #155724;
+                            @elseif($item->status === 'cancelled') background: #f8d7da; color: #721c24;
+                            @endif
+                        ">
+                            {{ ['pending' => 'Menunggu', 'verified' => 'Diverifikasi', 'distributed' => 'Didistribusikan', 'cancelled' => 'Dibatalkan'][$item->status ?? 'pending'] ?? ucfirst($item->status ?? 'pending') }}
+                        </span>
+                    </td>
+                    
+                    <td style="font-size: 11px; color: #666;">
+                        @if($item->createdByUser)
+                            {{ $item->createdByUser->name }}
+                        @else
+                            <span style="color: #999;">User #{{ $item->created_by }}</span>
+                        @endif
+                    </td>
+                    
                     <td>{{ $item->keterangan ?? '-' }}</td>
 
                     <td style="text-align:center;">
@@ -119,7 +146,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="13" style="text-align:center;padding:2.5rem;color:#999;">
+                    <td colspan="15" style="text-align:center;padding:2.5rem;color:#999;">
                         <i class="fa fa-arrow-down" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>
                         Belum ada penerimaan zakat
                     </td>

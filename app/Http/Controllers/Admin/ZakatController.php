@@ -8,6 +8,7 @@ use App\Models\Mustahik;
 use App\Models\Muzakki;
 use App\Models\PenerimaanZakat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ZakatController extends Controller
 {
@@ -32,6 +33,8 @@ class ZakatController extends Controller
             'nama' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'no_hp' => 'nullable|string|max:30',
+            'email' => 'nullable|email|unique:muzakki,email',
+            'status' => 'required|in:active,inactive,suspended',
         ]);
 
         Muzakki::create($validated);
@@ -48,13 +51,17 @@ class ZakatController extends Controller
 
     public function muzakkiUpdate(Request $request, $id)
     {
+        $muzakki = Muzakki::findOrFail($id);
+
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'no_hp' => 'nullable|string|max:30',
+            'email' => 'nullable|email|unique:muzakki,email,' . $muzakki->id,
+            'status' => 'required|in:active,inactive,suspended',
         ]);
 
-        Muzakki::findOrFail($id)->update($validated);
+        $muzakki->update($validated);
 
         return redirect()->route('zakat.muzakki.index')
             ->with('success', 'Data muzakki berhasil diupdate');
@@ -91,6 +98,7 @@ class ZakatController extends Controller
             'satuan' => 'nullable|string|max:50',
             'nominal' => 'nullable|numeric|min:0',
             'nominal_pembagian' => 'nullable|numeric|min:0',
+            'harga_barang_fitrah' => 'nullable|numeric|min:0',
             'jumlah_tanggungan' => 'nullable|integer|min:0',
             'standar_per_jiwa' => 'nullable|numeric|min:0',
             'metode_pembayaran' => 'nullable|string|max:255',
@@ -99,6 +107,11 @@ class ZakatController extends Controller
 
         $this->validatePenerimaanBusinessRules($request);
         $validated = $this->preparePenerimaanPayload($validated);
+
+        // Add audit trail
+        $validated['created_by'] = Auth::id();
+        $validated['updated_by'] = Auth::id();
+        $validated['status'] = 'pending';
 
         PenerimaanZakat::create($validated);
 
@@ -124,14 +137,19 @@ class ZakatController extends Controller
             'satuan' => 'nullable|string|max:50',
             'nominal' => 'nullable|numeric|min:0',
             'nominal_pembagian' => 'nullable|numeric|min:0',
+            'harga_barang_fitrah' => 'nullable|numeric|min:0',
             'jumlah_tanggungan' => 'nullable|integer|min:0',
             'standar_per_jiwa' => 'nullable|numeric|min:0',
             'metode_pembayaran' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
+            'status' => 'nullable|in:pending,verified,distributed,cancelled',
         ]);
 
         $this->validatePenerimaanBusinessRules($request);
         $validated = $this->preparePenerimaanPayload($validated);
+
+        // Update audit trail
+        $validated['updated_by'] = Auth::id();
 
         PenerimaanZakat::findOrFail($id)->update($validated);
 
@@ -213,7 +231,11 @@ class ZakatController extends Controller
     public function distribusiCreate()
     {
         $mustahikList = Mustahik::orderBy('nama', 'asc')->get();
-        return view('admin.zakat.distribusi_create', compact('mustahikList'));
+        $penerimaanList = PenerimaanZakat::with('muzakki')
+            ->whereIn('status', ['pending', 'verified'])
+            ->orderBy('tanggal', 'desc')
+            ->get();
+        return view('admin.zakat.distribusi_create', compact('mustahikList', 'penerimaanList'));
     }
 
     public function distribusiStore(Request $request)
@@ -221,6 +243,7 @@ class ZakatController extends Controller
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'mustahik_id' => 'required|exists:mustahik,id',
+            'penerimaan_zakat_id' => 'nullable|exists:penerimaan_zakat,id',
             'jenis_zakat' => 'required|string|max:255',
             'bentuk_zakat' => 'required|in:Uang,Barang',
             'jumlah_zakat' => 'nullable|numeric|min:0',
@@ -242,7 +265,11 @@ class ZakatController extends Controller
     {
         $distribusi = DistribusiZakat::findOrFail($id);
         $mustahikList = Mustahik::orderBy('nama', 'asc')->get();
-        return view('admin.zakat.distribusi_edit', compact('distribusi', 'mustahikList'));
+        $penerimaanList = PenerimaanZakat::with('muzakki')
+            ->whereIn('status', ['pending', 'verified'])
+            ->orderBy('tanggal', 'desc')
+            ->get();
+        return view('admin.zakat.distribusi_edit', compact('distribusi', 'mustahikList', 'penerimaanList'));
     }
 
     public function distribusiUpdate(Request $request, $id)
@@ -250,11 +277,13 @@ class ZakatController extends Controller
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'mustahik_id' => 'required|exists:mustahik,id',
+            'penerimaan_zakat_id' => 'nullable|exists:penerimaan_zakat,id',
             'jenis_zakat' => 'required|string|max:255',
             'bentuk_zakat' => 'required|in:Uang,Barang',
             'jumlah_zakat' => 'nullable|numeric|min:0',
             'satuan' => 'nullable|string|max:50',
             'nominal' => 'nullable|numeric|min:0',
+            'harga_barang_fitrah' => 'nullable|numeric|min:0',
             'keterangan' => 'nullable|string',
         ]);
 
@@ -330,12 +359,18 @@ class ZakatController extends Controller
     {
         $validated['nominal'] = $this->normalizeNumber($validated['nominal'] ?? null);
         $validated['jumlah_zakat'] = $this->normalizeNumber($validated['jumlah_zakat'] ?? null);
+        $validated['harga_barang_fitrah'] = $this->normalizeNumber($validated['harga_barang_fitrah'] ?? null);
 
         if ($validated['bentuk_zakat'] === self::BENTUK_UANG) {
             $validated['jumlah_zakat'] = $validated['nominal'] ?? $validated['jumlah_zakat'];
             $validated['nominal'] = $validated['jumlah_zakat'];
             $validated['satuan'] = null;
+            $validated['harga_barang_fitrah'] = null;
             return $validated;
+        }
+
+        if ($this->isZakatFitrah($validated['jenis_zakat']) && $validated['harga_barang_fitrah'] !== null && $validated['jumlah_zakat'] !== null) {
+            $validated['nominal'] = (float) $validated['jumlah_zakat'] * (float) $validated['harga_barang_fitrah'];
         }
 
         if (empty($validated['satuan'])) {

@@ -13,6 +13,7 @@ class Berita extends Model
         'penulis',
         'gambar',
         'judul',
+        'sinopsis',
         'isi_berita',
     ];
 }

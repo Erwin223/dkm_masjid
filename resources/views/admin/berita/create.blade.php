@@ -54,16 +54,20 @@
         </div>
 
         <div class="form-group">
-            <label>Gambar (Opsional)</label>
-            <input type="file" name="gambar" accept="image/*">
-            <div style="font-size:12px;color:#999;margin-top:6px;">
-                *Format yang didukung: JPG, JPEG, PNG. Maksimal 2MB.
-            </div>
+            <label>Sinopsis</label>
+            <textarea name="sinopsis" placeholder="Ringkas isi berita dalam satu atau dua kalimat">{{ old('sinopsis') }}</textarea>
         </div>
 
         <div class="form-group">
             <label>Isi Berita <span style="color:red;">*</span></label>
             <textarea name="isi_berita" required placeholder="Tuliskan isi berita">{{ old('isi_berita') }}</textarea>
+        </div>
+ <div class="form-group">
+            <label>Gambar (Opsional)</label>
+            <input type="file" name="gambar" accept="image/*">
+            <div style="font-size:12px;color:#999;margin-top:6px;">
+                *Format yang didukung: JPG, JPEG, PNG. Maksimal 2MB.
+            </div>
         </div>
 
         <div class="form-actions">

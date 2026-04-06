@@ -89,7 +89,7 @@
                 <label>Kategori Donasi <span style="color:red;">*</span></label>
                 <select name="kategori_donasi" required>
                     <option value="">-- Pilih Kategori --</option>
-                    @foreach(['Infak','Sedekah','Zakat Fitrah','Zakat Maal','Wakaf','Donasi Umum','Lainnya'] as $k)
+                    @foreach(['Infak','Sedekah','Wakaf','Donasi Umum','Lainnya'] as $k)
                         <option value="{{ $k }}" {{ old('kategori_donasi') == $k ? 'selected' : '' }}>{{ $k }}</option>
                     @endforeach
                 </select>
@@ -161,12 +161,12 @@ function pilihDonatur() {
     const opt = sel.options[sel.selectedIndex];
     const info = document.getElementById('donaturInfo');
     const namaInput = document.getElementById('donaturNama');
-    
+
     if (sel.value) {
         const hp = opt.dataset.hp ? ' · ' + opt.dataset.hp : '';
         info.innerHTML = `<i class="fa fa-circle-check" style="color:#0f8b6d;"></i> <b>${opt.dataset.nama}</b> (${opt.dataset.jenis})${hp}`;
         info.style.display = 'block';
-        
+
         namaInput.value = opt.dataset.nama;
         namaInput.readOnly = true;
         namaInput.style.background = '#f0f0f0';
@@ -179,23 +179,16 @@ function pilihDonatur() {
 }
 
 function formatRupiah(el, hiddenId) {
-    // 1. Ambil nilai string dari input
     let val = el.value.toString();
-    
-    // 2. POTONG DESIMAL (Ini kunci agar tidak membengkak)
-    // Hapus desimal koma (format ID, misal: 50.000,00 -> 50.000)
-    val = val.split(',')[0]; 
-    // Hapus desimal titik jika ada dari raw database (misal: 50000.00 -> 50000)
-    val = val.replace(/\.\d{1,2}$/, ''); 
 
-    // 3. Bersihkan karakter non-angka dan parsing
+    val = val.split(',')[0];
+    val = val.replace(/\.\d{1,2}$/, '');
+
     let raw = val.replace(/[^0-9]/g, '');
     let num = parseInt(raw || '0', 10);
-    
-    // 4. Format kembali ke Rupiah, paksa tanpa desimal
+
     el.value = raw ? num.toLocaleString('id-ID', { maximumFractionDigits: 0 }) : '';
-    
-    // 5. Simpan nilai murni ke form yang disembunyikan
+
     document.getElementById(hiddenId).value = num;
     if (hiddenId === 'jumlahMasukHidden' && !isBarangJenisMasuk()) {
         document.getElementById('totalMasukHidden').value = num;
@@ -211,7 +204,7 @@ function toggleDonasiMasukMode() {
     const isBarang = isBarangJenisMasuk();
     document.getElementById('uangBoxMasuk').hidden = isBarang;
     document.getElementById('barangBoxMasuk').hidden = !isBarang;
-    
+
     if (isBarang) {
         document.getElementById('jumlahUangMasukDisplay').value = '';
         syncDonasiMasukBarang();
@@ -219,11 +212,10 @@ function toggleDonasiMasukMode() {
         document.getElementById('satuanMasuk').value = '';
         document.getElementById('jumlahBarangMasukDisplay').value = '';
         document.getElementById('nominalBarangMasukDisplay').value = '';
-        
-        // POTONG DESIMAL saat pindah mode/load pertama kali
+
         let displayVal = document.getElementById('jumlahUangMasukDisplay').value.toString();
         displayVal = displayVal.split(',')[0].replace(/\.\d{1,2}$/, '');
-        
+
         let uangRaw = parseInt(displayVal.replace(/[^0-9]/g, '') || '0', 10);
         document.getElementById('jumlahMasukHidden').value = uangRaw;
         document.getElementById('totalMasukHidden').value = uangRaw;

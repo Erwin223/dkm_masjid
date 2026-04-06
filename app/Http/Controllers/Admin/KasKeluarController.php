@@ -91,3 +91,4 @@ class KasKeluarController extends Controller
             ->with('success', 'Data berhasil dihapus');
     }
 }
+

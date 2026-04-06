@@ -4,6 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $tanggal
+ * @property bool $is_barang
+ * @property float $nilai_dana
+ * @property string $label_jumlah
+ */
 class DonasiMasuk extends Model
 {
     protected $table = 'donasi_masuk';

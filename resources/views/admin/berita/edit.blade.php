@@ -56,6 +56,16 @@
         </div>
 
         <div class="form-group">
+            <label>Sinopsis</label>
+            <textarea name="sinopsis" placeholder="Ringkas isi berita dalam satu atau dua kalimat">{{ old('sinopsis', $data->sinopsis) }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Isi Berita <span style="color:red;">*</span></label>
+            <textarea name="isi_berita" required>{{ old('isi_berita', $data->isi_berita) }}</textarea>
+        </div>
+
+        <div class="form-group">
             <label>Gambar</label>
             @if($data->gambar)
                 <div style="margin-bottom:10px;">
@@ -66,11 +76,6 @@
             <div style="font-size:12px;color:#999;margin-top:6px;">
                 *Kosongkan jika tidak ingin mengganti gambar.
             </div>
-        </div>
-
-        <div class="form-group">
-            <label>Isi Berita <span style="color:red;">*</span></label>
-            <textarea name="isi_berita" required>{{ old('isi_berita', $data->isi_berita) }}</textarea>
         </div>
 
         <div class="form-actions">

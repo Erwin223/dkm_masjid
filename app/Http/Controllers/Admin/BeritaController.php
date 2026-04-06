@@ -41,6 +41,7 @@ class BeritaController extends Controller
             'penulis' => $validated['penulis'],
             'gambar' => $gambar,
             'judul' => $validated['judul'],
+            'sinopsis' => $validated['sinopsis'] ?? null,
             'isi_berita' => $validated['isi_berita'],
         ]);
 
@@ -61,6 +62,7 @@ class BeritaController extends Controller
             'penulis' => 'required|string|max:255',
             'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             'judul' => 'required|string|max:255',
+            'sinopsis' => 'nullable|string|max:500',
             'isi_berita' => 'required|string',
         ]);
 
@@ -79,6 +81,7 @@ class BeritaController extends Controller
             'penulis' => $validated['penulis'],
             'gambar' => $gambar,
             'judul' => $validated['judul'],
+            'sinopsis' => $validated['sinopsis'] ?? null,
             'isi_berita' => $validated['isi_berita'],
         ]);
 

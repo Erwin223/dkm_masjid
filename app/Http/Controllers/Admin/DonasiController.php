@@ -29,6 +29,8 @@ class DonasiController extends Controller
 
     public function masukStore(Request $request)
     {
+        $request->merge($this->normalizeDonasiMasukPayload($request));
+
         $payload = $request->validate([
             'tanggal'         => 'required|date',
             'donatur_id'      => 'nullable|exists:donatur,id',
@@ -87,6 +89,8 @@ class DonasiController extends Controller
 
     public function masukUpdate(Request $request, $id)
     {
+        $request->merge($this->normalizeDonasiMasukPayload($request));
+
         $payload = $request->validate([
             'tanggal'         => 'required|date',
             'donatur_id'      => 'nullable|exists:donatur,id',
@@ -158,6 +162,8 @@ class DonasiController extends Controller
 
     public function keluarStore(Request $request)
     {
+        $request->merge($this->normalizeDonasiKeluarPayload($request));
+
         $payload = $request->validate([
             'tanggal'      => 'required|date',
             'jenis_donasi' => 'required',
@@ -199,6 +205,8 @@ class DonasiController extends Controller
 
     public function keluarUpdate(Request $request, $id)
     {
+        $request->merge($this->normalizeDonasiKeluarPayload($request));
+
         $payload = $request->validate([
             'tanggal'      => 'required|date',
             'jenis_donasi' => 'required',
@@ -242,6 +250,22 @@ class DonasiController extends Controller
     private function isJenisBarang(?string $jenisDonasi): bool
     {
         return in_array($jenisDonasi, self::JENIS_BARANG, true);
+    }
+
+    private function normalizeDonasiMasukPayload(Request $request): array
+    {
+        return [
+            'jumlah' => $this->normalizeNumber($request->input('jumlah')),
+            'total' => $this->normalizeNumber($request->input('total')),
+        ];
+    }
+
+    private function normalizeDonasiKeluarPayload(Request $request): array
+    {
+        return [
+            'jumlah' => $this->normalizeNumber($request->input('jumlah')),
+            'nominal' => $this->normalizeNumber($request->input('nominal')),
+        ];
     }
 
     private function normalizeNumber($value): float

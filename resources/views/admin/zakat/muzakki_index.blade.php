@@ -3,6 +3,13 @@
 @include('admin.zakat._styles')
 @include('admin.zakat._nav')
 <div class="table-box">
+    @php
+        $statusLabels = [
+            'active' => 'Aktif',
+            'inactive' => 'Tidak aktif',
+            'suspended' => 'Ditangguhkan',
+        ];
+    @endphp
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-user-plus" style="color:#0f8b6d;"></i> Data Muzakki</h3>
@@ -21,6 +28,7 @@
                     <th>Nama</th>
                     <th>Alamat</th>
                     <th>No HP</th>
+                    <th>Status</th>
                     <th>Total Penerimaan</th>
                     <th style="text-align:center;">Hapus</th>
                     <th style="text-align:center;">Edit</th>
@@ -33,6 +41,7 @@
                     <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar-init">{{ strtoupper(substr($item->nama, 0, 2)) }}</div><div style="font-weight:500;color:#111;">{{ $item->nama }}</div></div></td>
                     <td>{{ $item->alamat ?? '-' }}</td>
                     <td>{{ $item->no_hp ?? '-' }}</td>
+                    <td><span class="badge-soft">{{ $statusLabels[$item->status] ?? ucfirst($item->status) }}</span></td>
                     <td><span class="badge-soft">{{ $item->penerimaan_zakat_count ?? ($item->penerimaanZakat->count() ?? 0) }} transaksi</span></td>
                     <td style="text-align:center;">
                         <form id="hapus-muzakki-{{ $item->id }}" action="{{ route('zakat.muzakki.delete', $item->id) }}" method="POST" style="display:inline;">@csrf @method('DELETE')
@@ -42,7 +51,7 @@
                     <td style="text-align:center;"><a href="{{ route('zakat.muzakki.edit', $item->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
                 </tr>
                 @empty
-                <tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#999;"><i class="fa fa-user-plus" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>Belum ada data muzakki</td></tr>
+                <tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#999;"><i class="fa fa-user-plus" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>Belum ada data muzakki</td></tr>
                 @endforelse
             </tbody>
         </table>
