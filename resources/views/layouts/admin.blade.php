@@ -152,7 +152,7 @@
                     <i class="fa fa-arrow-up"></i> Distribusi
                 </a>
             </div>
-            <a href="#" class="nav-item">
+            <a href="{{ route('admin.laporan.index') }}" class="nav-item {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
                 <i class="fa fa-chart-line"></i> Laporan
             </a>
 
@@ -220,8 +220,12 @@
         </div>
 
         {{-- CONTENT --}}
-        <div class="container">
-            @yield('content')
+        <div class="content-scroll">
+            <div class="container">
+                <div class="content-inner">
+                    @yield('content')
+                </div>
+            </div>
         </div>
 
     </div>

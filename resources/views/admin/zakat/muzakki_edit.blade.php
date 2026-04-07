@@ -28,16 +28,6 @@
                 @error('email') <span class="invalid-feedback">{{ $message }}</span> @enderror
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Status Muzakki</label>
-                <select name="status">
-                    <option value="active" {{ old('status', $muzakki->status) === 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status', $muzakki->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                </select>
-            </div>
-            <div class="form-group"></div> {{-- Spacer --}}
-        </div>
         <div class="form-actions">
             <button type="submit" class="btn-simpan"><i class="fa fa-save"></i> Update</button>
             <a href="{{ route('zakat.muzakki.index') }}" class="btn-batal"><i class="fa fa-arrow-left"></i> Batal</a>

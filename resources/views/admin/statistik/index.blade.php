@@ -179,7 +179,7 @@
 .rank-info { flex: 1; min-width: 0; }
 .rank-name { font-size: 13px; font-weight: 600; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rank-bar-track { background: #f3f4f6; border-radius: 99px; height: 6px; margin-top: 4px; }
-.rank-bar-fill  { height: 6px; border-radius: 99px; }
+.rank-bar-fill  { width: 0; height: 6px; border-radius: 99px; transition: width .3s ease; }
 .rank-val  { font-size: 12px; font-weight: 700; color: #374151; white-space: nowrap; flex-shrink: 0; }
 
 /* back button */
@@ -416,7 +416,7 @@ canvas { display: block; }
                         <div class="rank-info">
                             <div class="rank-name">{{ $label ?: 'Tidak diisi' }}</div>
                             <div class="rank-bar-track">
-                                <div class="rank-bar-fill" style="width:{{ $pct }}%;background:{{ $c }};"></div>
+                                <div class="rank-bar-fill js-rank-bar" data-width="{{ $pct }}" data-color="{{ $c }}"></div>
                             </div>
                         </div>
                         <div class="rank-val">{{ $pct }}%</div>
@@ -446,7 +446,7 @@ canvas { display: block; }
                         <div class="rank-info">
                             <div class="rank-name">{{ $label ?: 'Tidak diisi' }}</div>
                             <div class="rank-bar-track">
-                                <div class="rank-bar-fill" style="width:{{ $pct }}%;background:{{ $c2 }};"></div>
+                                <div class="rank-bar-fill js-rank-bar" data-width="{{ $pct }}" data-color="{{ $c2 }}"></div>
                             </div>
                         </div>
                         <div class="rank-val">{{ $pct }}%</div>
@@ -482,8 +482,30 @@ canvas { display: block; }
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script type="application/json" id="statistik-chart-data">
+{
+    "bulanList": @json($bulanList ?? []),
+    "donasiPerBulan": @json($donasiPerBulan ?? []),
+    "zakatPerBulan": @json($zakatPerBulan ?? []),
+    "donasiMetodeLabel": @json($donasiMetodeLabel ?? []),
+    "donasiMetodeData": @json($donasiMetodeData ?? []),
+    "zakatMetodeLabel": @json($zakatMetodeLabel ?? []),
+    "zakatMetodeData": @json($zakatMetodeData ?? []),
+    "donasiKategoriLabel": @json($donasiKategoriLabel ?? []),
+    "donasiKategoriData": @json($donasiKategoriData ?? []),
+    "zakatJenisLabel": @json($zakatJenisLabel ?? []),
+    "zakatJenisData": @json($zakatJenisData ?? [])
+}
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.js-rank-bar').forEach(function (bar) {
+        bar.style.width = (bar.dataset.width || 0) + '%';
+        bar.style.background = bar.dataset.color || '#10b981';
+    });
+
+    const statistikChartDataEl = document.getElementById('statistik-chart-data');
+    const statistikChartData = statistikChartDataEl ? JSON.parse(statistikChartDataEl.textContent) : {};
 
     /* ── shared defaults ──────────────────────────── */
     Chart.defaults.font.family = "'Segoe UI', 'Inter', sans-serif";
@@ -504,11 +526,11 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(ctxLine, {
         type: 'line',
         data: {
-            labels: @json($bulanList ?? []),
+            labels: statistikChartData.bulanList || [],
             datasets: [
                 {
                     label: 'Donasi',
-                    data: @json($donasiPerBulan ?? []),
+                    data: statistikChartData.donasiPerBulan || [],
                     backgroundColor: gDonasi,
                     borderColor: '#10b981',
                     borderWidth: 2.5,
@@ -522,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 {
                     label: 'Zakat',
-                    data: @json($zakatPerBulan ?? []),
+                    data: statistikChartData.zakatPerBulan || [],
                     backgroundColor: gZakat,
                     borderColor: '#3b82f6',
                     borderWidth: 2.5,
@@ -601,24 +623,24 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     mkDoughnut('chartMetodeDonasi',
-        @json($donasiMetodeLabel ?? []),
-        @json($donasiMetodeData  ?? []),
+        statistikChartData.donasiMetodeLabel || [],
+        statistikChartData.donasiMetodeData || [],
         ['#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#ec4899']
     );
     mkDoughnut('chartMetodeZakat',
-        @json($zakatMetodeLabel ?? []),
-        @json($zakatMetodeData  ?? []),
+        statistikChartData.zakatMetodeLabel || [],
+        statistikChartData.zakatMetodeData || [],
         ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4']
     );
     mkDoughnut('chartKategoriDonasi',
-        @json($donasiKategoriLabel ?? []),
-        @json($donasiKategoriData  ?? []),
+        statistikChartData.donasiKategoriLabel || [],
+        statistikChartData.donasiKategoriData || [],
         ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899']
     );
 
     /* ── ⑤ Jenis Zakat horizontal bar ───────────── */
-    const zakatLabels = @json($zakatJenisLabel ?? []);
-    const zakatData   = @json($zakatJenisData  ?? []);
+    const zakatLabels = statistikChartData.zakatJenisLabel || [];
+    const zakatData   = statistikChartData.zakatJenisData || [];
     const allZeroZ    = !zakatData || zakatData.every(v => v === 0);
 
     new Chart(document.getElementById('chartJenisZakat'), {

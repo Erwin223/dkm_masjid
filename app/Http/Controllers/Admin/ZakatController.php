@@ -34,7 +34,6 @@ class ZakatController extends Controller
             'alamat' => 'nullable|string',
             'no_hp' => 'nullable|string|max:30',
             'email' => 'nullable|email|unique:muzakki,email',
-            'status' => 'required|in:active,inactive,suspended',
         ]);
 
         Muzakki::create($validated);
@@ -58,7 +57,6 @@ class ZakatController extends Controller
             'alamat' => 'nullable|string',
             'no_hp' => 'nullable|string|max:30',
             'email' => 'nullable|email|unique:muzakki,email,' . $muzakki->id,
-            'status' => 'required|in:active,inactive,suspended',
         ]);
 
         $muzakki->update($validated);

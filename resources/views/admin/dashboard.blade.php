@@ -98,6 +98,17 @@
     font-size:11px; font-weight:700; text-transform:uppercase;
     letter-spacing:.07em; color:#9ca3af; margin-bottom:10px;
 }
+
+.delete-action-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.delete-action-btn i {
+    color: red;
+}
 </style>
 @endpush
 
@@ -300,7 +311,7 @@
                     </div>
                     <div class="summary-chip">
                         <div class="summary-chip-label">Saldo kas saat ini</div>
-                        <div class="summary-chip-value" style="color:{{ $saldo >= 0 ? '#198754' : '#dc3545' }};">{{ $saldo < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldo), 0, ',', '.') }}</div>
+                        <div class="summary-chip-value {{ $saldo >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">{{ $saldo < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldo), 0, ',', '.') }}</div>
                         <div class="summary-chip-note">{{ $saldo >= 0 ? 'Kas masih positif' : 'Kas sedang defisit' }}</div>
                     </div>
                 </div>
@@ -323,7 +334,7 @@
                                     <td style="text-align:center;">
                                         <form id="delete-form-{{ $kas->id }}" action="{{ route('kas.masuk.delete', $kas->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDelete({{ $kas->id }})" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                                            <button type="button" class="delete-action-btn js-confirm-submit" data-form-id="delete-form-{{ $kas->id }}" data-title="Yakin hapus?" data-confirm-color="#0f8b6d" data-cancel-color="#d33"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td style="text-align:center;"><a href="{{ route('kas.masuk.edit', $kas->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
@@ -389,7 +400,7 @@
                                     <td style="text-align:center;">
                                         <form id="delete-keluar-{{ $keluar->id }}" action="{{ route('kas.keluar.delete', $keluar->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDeleteKeluar({{ $keluar->id }})" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                                            <button type="button" class="delete-action-btn js-confirm-submit" data-form-id="delete-keluar-{{ $keluar->id }}" data-title="Yakin hapus?" data-confirm-color="#0f8b6d" data-cancel-color="#d33"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td style="text-align:center;"><a href="{{ route('kas.keluar.edit', $keluar->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
@@ -435,7 +446,7 @@
                                     <td style="text-align:center;">
                                         <form id="delete-donatur-{{ $dtr->id }}" action="{{ route('donatur.delete', $dtr->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDeleteDonatur({{ $dtr->id }})" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                                            <button type="button" class="delete-action-btn js-confirm-submit" data-form-id="delete-donatur-{{ $dtr->id }}" data-title="Yakin hapus donatur?" data-text="Menghapus donatur akan mempengaruhi data donasi terkait." data-confirm-color="#0f8b6d" data-cancel-color="#d33"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td style="text-align:center;"><a href="{{ route('donatur.edit', $dtr->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
@@ -511,7 +522,7 @@
                                     <td style="text-align:center;">
                                         <form id="delete-donasi-masuk-{{ $dm->id }}" action="{{ route('donasi.masuk.delete', $dm->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDeleteDonasiMasuk({{ $dm->id }})" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                                            <button type="button" class="delete-action-btn js-confirm-submit" data-form-id="delete-donasi-masuk-{{ $dm->id }}" data-title="Yakin hapus donasi masuk?" data-confirm-color="#d33" data-cancel-color="#6c757d"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td style="text-align:center;"><a href="{{ route('donasi.masuk.edit', $dm->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
@@ -590,7 +601,7 @@
                                     <td style="text-align:center;">
                                         <form id="delete-donasi-keluar-{{ $dk->id }}" action="{{ route('donasi.keluar.delete', $dk->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDeleteDonasiKeluar({{ $dk->id }})" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                                            <button type="button" class="delete-action-btn js-confirm-submit" data-form-id="delete-donasi-keluar-{{ $dk->id }}" data-title="Yakin hapus donasi keluar?" data-confirm-color="#d33" data-cancel-color="#6c757d"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td style="text-align:center;"><a href="{{ route('donasi.keluar.edit', $dk->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
@@ -677,7 +688,7 @@
                                     <td style="text-align:center;">
                                         <form id="delete-penerimaan-zakat-{{ $pz->id }}" action="{{ route('zakat.penerimaan.delete', $pz->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDeletePenerimaanZakat({{ $pz->id }})" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                                            <button type="button" class="delete-action-btn js-confirm-submit" data-form-id="delete-penerimaan-zakat-{{ $pz->id }}" data-title="Yakin hapus penerimaan zakat?" data-confirm-color="#d33" data-cancel-color="#6c757d"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td style="text-align:center;"><a href="{{ route('zakat.penerimaan.edit', $pz->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
@@ -760,7 +771,7 @@
                                     <td style="text-align:center;">
                                         <form id="delete-distribusi-zakat-{{ $dz->id }}" action="{{ route('zakat.distribusi.delete', $dz->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDeleteDistribusiZakat({{ $dz->id }})" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                                            <button type="button" class="delete-action-btn js-confirm-submit" data-form-id="delete-distribusi-zakat-{{ $dz->id }}" data-title="Yakin hapus distribusi zakat?" data-confirm-color="#d33" data-cancel-color="#6c757d"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td style="text-align:center;"><a href="{{ route('zakat.distribusi.edit', $dz->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
@@ -1113,42 +1124,64 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@if(session('success'))
-<script>Swal.fire({ icon:'success', title:'Berhasil!', text:@json(session('success')), timer:2000, showConfirmButton:false });</script>
+@if(session('success') || session('welcome_message'))
+<div
+    id="dashboard-alert-data"
+    data-success="{{ session('success') }}"
+    data-welcome-message="{{ session('welcome_message') }}"
+    hidden
+></div>
 @endif
-@if(session('welcome_message'))
 <script>
-Swal.fire({ title:'Selamat Datang!', text:@json(session('welcome_message')), icon:'success', confirmButtonColor:'#0f8b6d', confirmButtonText:'Terima Kasih' });
-</script>
-@endif
-<script>
-function confirmDelete(id) {
-    Swal.fire({title:'Yakin hapus?',icon:'warning',showCancelButton:true,confirmButtonColor:'#0f8b6d',cancelButtonColor:'#d33',confirmButtonText:'Ya, hapus!',cancelButtonText:'Batal'})
-        .then(r=>{ if(r.isConfirmed) document.getElementById('delete-form-'+id).submit(); });
+const dashboardAlertData = document.getElementById('dashboard-alert-data');
+
+if (dashboardAlertData?.dataset.success) {
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: dashboardAlertData.dataset.success,
+        timer: 2000,
+        showConfirmButton: false
+    });
 }
-function confirmDeleteKeluar(id) {
-    Swal.fire({title:'Yakin hapus?',icon:'warning',showCancelButton:true,confirmButtonColor:'#0f8b6d',cancelButtonColor:'#d33',confirmButtonText:'Ya, hapus!',cancelButtonText:'Batal'})
-        .then(r=>{ if(r.isConfirmed) document.getElementById('delete-keluar-'+id).submit(); });
+
+if (dashboardAlertData?.dataset.welcomeMessage) {
+    Swal.fire({
+        title: 'Selamat Datang!',
+        text: dashboardAlertData.dataset.welcomeMessage,
+        icon: 'success',
+        confirmButtonColor: '#0f8b6d',
+        confirmButtonText: 'Terima Kasih'
+    });
 }
-function confirmDeleteDonatur(id) {
-    Swal.fire({title:'Yakin hapus donatur?',text:'Menghapus donatur akan mempengaruhi data donasi terkait.',icon:'warning',showCancelButton:true,confirmButtonColor:'#0f8b6d',cancelButtonColor:'#d33',confirmButtonText:'Ya, hapus!',cancelButtonText:'Batal'})
-        .then(r=>{ if(r.isConfirmed) document.getElementById('delete-donatur-'+id).submit(); });
-}
-function confirmDeleteDonasiMasuk(id) {
-    Swal.fire({title:'Yakin hapus donasi masuk?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',cancelButtonColor:'#6c757d',confirmButtonText:'Ya, hapus!',cancelButtonText:'Batal'})
-        .then(r=>{ if(r.isConfirmed) document.getElementById('delete-donasi-masuk-'+id).submit(); });
-}
-function confirmDeleteDonasiKeluar(id) {
-    Swal.fire({title:'Yakin hapus donasi keluar?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',cancelButtonColor:'#6c757d',confirmButtonText:'Ya, hapus!',cancelButtonText:'Batal'})
-        .then(r=>{ if(r.isConfirmed) document.getElementById('delete-donasi-keluar-'+id).submit(); });
-}
-function confirmDeletePenerimaanZakat(id) {
-    Swal.fire({title:'Yakin hapus penerimaan zakat?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',cancelButtonColor:'#6c757d',confirmButtonText:'Ya, hapus!',cancelButtonText:'Batal'})
-        .then(r=>{ if(r.isConfirmed) document.getElementById('delete-penerimaan-zakat-'+id).submit(); });
-}
-function confirmDeleteDistribusiZakat(id) {
-    Swal.fire({title:'Yakin hapus distribusi zakat?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',cancelButtonColor:'#6c757d',confirmButtonText:'Ya, hapus!',cancelButtonText:'Batal'})
-        .then(r=>{ if(r.isConfirmed) document.getElementById('delete-distribusi-zakat-'+id).submit(); });
-}
+
+document.addEventListener('click', function (event) {
+    const button = event.target.closest('.js-confirm-submit');
+
+    if (!button) {
+        return;
+    }
+
+    const form = document.getElementById(button.dataset.formId);
+
+    if (!form) {
+        return;
+    }
+
+    Swal.fire({
+        title: button.dataset.title || 'Yakin hapus?',
+        text: button.dataset.text || '',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: button.dataset.confirmColor || '#d33',
+        cancelButtonColor: button.dataset.cancelColor || '#6c757d',
+        confirmButtonText: button.dataset.confirmText || 'Ya, hapus!',
+        cancelButtonText: button.dataset.cancelText || 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+});
 </script>
 @endpush

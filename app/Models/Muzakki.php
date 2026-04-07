@@ -13,7 +13,6 @@ class Muzakki extends Model
         'alamat',
         'no_hp',
         'email',
-        'status',
         'tahun_daftar',
     ];
 

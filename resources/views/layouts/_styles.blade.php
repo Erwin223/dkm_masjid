@@ -273,6 +273,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            min-width: 0;
         }
 
         .main.expanded {
@@ -428,10 +429,22 @@
         }
 
         /* CONTENT */
-        .container {
-            padding: 24px;
+        .content-scroll {
             flex: 1;
             min-width: 0;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .container {
+            padding: 24px;
+            min-width: 0;
+            min-height: 100%;
+        }
+
+        .content-inner {
+            min-width: 1100px;
         }
 
         canvas {
@@ -469,6 +482,10 @@
 
             .container {
                 padding: 16px;
+            }
+
+            .content-inner {
+                min-width: 100%;
             }
 
             .navbar {

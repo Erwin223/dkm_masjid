@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ProfilMasjidController;
 use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\GaleriController;
+use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\StatistikController;
 
 /*
@@ -43,6 +44,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 // Statistik
 Route::get('/statistik', [StatistikController::class, 'index'])
     ->name('admin.statistik');
+
+// Laporan
+Route::get('/laporan', [LaporanController::class, 'index'])
+    ->name('admin.laporan.index');
 
 // KAS MASUK
 Route::get('/kas-masuk',              [KasMasukController::class, 'index'])->name('kas.masuk.index');
