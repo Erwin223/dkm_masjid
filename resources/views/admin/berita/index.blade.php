@@ -2,76 +2,8 @@
 
 @section('content')
 
-<style>
-    .table-box {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid #e5e5e5;
-        padding: 24px;
-        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
-    }
-    .table-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 18px;
-        flex-wrap: wrap;
-    }
-    .table-header h3 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 700;
-        color: #111827;
-    }
-    .table-responsive { overflow-x:auto; }
-    table {
-        width:100%;
-        border-collapse:collapse;
-        min-width:780px;
-        table-layout:fixed;
-    }
-    table th {
-        background:#f8fafc;
-        padding:14px 14px;
-        font-size:13px;
-        text-align:left;
-        color:#374151;
-        white-space:nowrap;
-        border-bottom:1px solid #e5e7eb;
-    }
-    table td {
-        padding:13px 14px;
-        font-size:13px;
-        border-bottom:1px solid #f3f4f6;
-        vertical-align:top;
-        color:#475569;
-    }
-    table tbody tr:hover { background:#f8fafc; }
-    .title-cell, .summary-cell, .isi-cell { min-width:0; }
-    .text-cell { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .line-clamp-2 { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; white-space:normal; }
-    .line-clamp-3 { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; white-space:normal; }
-    .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px; }
-    .search-input { height:38px; border:1px solid #d1d5db; border-radius:10px; padding:0 14px; font-size:13px; outline:none; min-width:220px; }
-    .search-input:focus { border-color:#0f8b6d; box-shadow: 0 0 0 4px rgba(15, 139, 109, 0.1); }
-    .btn-tambah { background:#0f8b6d; color:#fff; border:none; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; text-decoration:none; box-shadow: 0 10px 24px rgba(15, 139, 109, 0.12); }
-    .btn-tambah:hover { background:#0c6d55; color:#fff; transform: translateY(-1px); }
-    .badge { font-size:12px; color:#0f6e56; background:#e1f5ee; padding:5px 12px; border-radius:20px; font-weight:600; }
-    .thumb { width:56px; height:40px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#f3f3f3; }
-    .td-note { color:#64748b; font-size:12px; }
-    td i { transition:0.2s; }
-    .fa-edit:hover  { color:#0e4eb0; transform:scale(1.15); }
-    .fa-trash:hover { color:#c53030;  transform:scale(1.15); }
-    @media(max-width:900px){
-        table { min-width: 680px; }
-    }
-    @media(max-width:760px){
-        .top-row { flex-direction:column; align-items:flex-start; }
-        .search-input, .btn-tambah { width:100%; justify-content:center; }
-        .table-box { padding:18px; }
-    }
-</style>
+@include('admin.berita._styles')
+
 
 <h2>
     <i class="fa fa-newspaper"></i> Berita Masjid

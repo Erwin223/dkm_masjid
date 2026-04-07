@@ -4,10 +4,8 @@
 
 @push('styles')
 <style>
-/* ── Dashboard extra utilities ───────────────── */
 .dash-page { display:flex; flex-direction:column; gap:24px; }
 
-/* Hero */
 .dash-hero {
     background: linear-gradient(135deg, #0f8b6d 0%, #085041 100%);
     border-radius: 18px; padding: 22px 28px; color: #fff;

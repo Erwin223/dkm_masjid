@@ -2,40 +2,7 @@
 
 @section('content')
 
-<style>
-    .kas-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
-    .kas-title  { font-size:20px; font-weight:600; color:#111; display:flex; align-items:center; gap:10px; }
-    .kas-icon   { width:38px; height:38px; background:#e1f5ee; border-radius:10px; display:flex; align-items:center; justify-content:center; }
-
-    .kas-nav { display:flex; gap:10px; margin-bottom:25px; flex-wrap:wrap; }
-    .kas-nav a { padding:9px 18px; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; border:1px solid #ddd; color:#555; background:#fff; display:inline-flex; align-items:center; gap:7px; transition:0.2s; }
-    .kas-nav a:hover  { background:#f0fbf6; border-color:#0f8b6d; color:#0f8b6d; }
-    .kas-nav a.active { background:#0f8b6d; border-color:#0f8b6d; color:#fff; }
-
-    .summary-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
-    .summary-card { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:16px; }
-    .summary-card .s-label { font-size:12px; color:#999; margin-bottom:6px; }
-    .summary-card .s-value { font-size:20px; font-weight:700; color:#0f8b6d; }
-
-    .table-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:20px; }
-    .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; min-width:500px; }
-    table th { background:#f3f3f3; padding:10px 12px; font-size:12px; text-align:left; white-space:nowrap; border-bottom:1px solid #e5e5e5; }
-    table td { padding:10px 12px; font-size:13px; border-bottom:1px solid #f5f5f5; vertical-align:middle; }
-    table tbody tr:hover { background:#f7fdf9; }
-    .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px; }
-    .search-input { height:36px; border:1px solid #ddd; border-radius:8px; padding:0 12px; font-size:13px; outline:none; min-width:200px; }
-    .search-input:focus { border-color:#0f8b6d; }
-    .btn-tambah { background:#0f8b6d; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-    .btn-tambah:hover { background:#0c6d55; color:#fff; }
-    .sumber-pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#e1f5ee; color:#085041; }
-    td i { transition:0.2s; }
-    .fa-edit:hover  { color:darkblue; transform:scale(1.2); }
-    .fa-trash:hover { color:darkred;  transform:scale(1.2); }
-    @media(max-width:768px){ .summary-row { grid-template-columns:1fr 1fr; } }
-    @media(max-width:600px){ .summary-row { grid-template-columns:1fr; } .top-row { flex-direction:column; align-items:flex-start; } .search-input,.btn-tambah { width:100%; justify-content:center; } }
-</style>
-
+@include('admin.kas_masuk._styles')
 <div class="kas-header">
     <div class="kas-title">
         <div class="kas-icon"><i class="fa fa-money-bill-wave" style="color:#0f6e56;font-size:15px;"></i></div>
@@ -52,7 +19,6 @@
     </a>
 </div>
 
-{{-- SUMMARY --}}
 <div class="summary-row">
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-arrow-down" style="color:#0f8b6d;"></i> Total Kas Masuk</div>

@@ -2,18 +2,7 @@
 
 @section('content')
 
-<style>
-    .table-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    table th { background: #f3f3f3; padding: 10px; text-align: left; font-size: 13px; }
-    table td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: top; }
-    .btn-tambah { background: #0f8b6d; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-tambah:hover { background: #0c6d55; color: white; }
-    .badge { font-size: 12px; color: #085041; background: #e1f5ee; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
-    .muted { color: #888; }
-    .wrap { white-space: pre-wrap; }
-    .top-row { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-</style>
+@include('admin.profil_masjid._styles')
 
 <h2>
     <i class="fa fa-mosque"></i> Profil Masjid
