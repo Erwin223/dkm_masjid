@@ -9,7 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('distribusi_zakat', function (Blueprint $table) {
-            // Add foreign key to track which penerimaan_zakat this distribusi came from
             if (! Schema::hasColumn('distribusi_zakat', 'penerimaan_zakat_id')) {
                 $table->foreignId('penerimaan_zakat_id')
                     ->nullable()

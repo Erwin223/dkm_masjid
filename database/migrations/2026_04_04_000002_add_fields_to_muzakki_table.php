@@ -9,19 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('muzakki', function (Blueprint $table) {
-            // Add email field
             if (! Schema::hasColumn('muzakki', 'email')) {
                 $table->string('email')->nullable()->unique()->after('no_hp');
             }
 
-            // Add status field
             if (! Schema::hasColumn('muzakki', 'status')) {
                 $table->enum('status', ['active', 'inactive', 'suspended'])
                     ->default('active')
                     ->after('email');
             }
 
-            // Add tahun_daftar field
             if (! Schema::hasColumn('muzakki', 'tahun_daftar')) {
                 $table->year('tahun_daftar')
                     ->default(now()->year)

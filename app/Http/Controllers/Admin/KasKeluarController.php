@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreKasKeluarRequest;
+use App\Http\Requests\UpdateKasKeluarRequest;
 use App\Models\KasKeluar;
 use Carbon\Carbon;
 
@@ -30,25 +31,9 @@ class KasKeluarController extends Controller
         return view('admin.kas_keluar.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreKasKeluarRequest $request)
     {
-        $request->merge([
-            'nominal' => str_replace('.', '', (string) $request->nominal),
-        ]);
-
-        $request->validate([
-            'tanggal'           => 'required|date',
-            'jenis_pengeluaran' => 'required',
-            'nominal'           => 'required|numeric',
-            'keterangan'        => 'nullable',
-        ]);
-
-        KasKeluar::create([
-            'tanggal'           => $request->tanggal,
-            'jenis_pengeluaran' => $request->jenis_pengeluaran,
-            'nominal'           => $request->nominal,
-            'keterangan'        => $request->keterangan,
-        ]);
+        KasKeluar::create($request->validated());
 
         return redirect()->route('kas.keluar.index')
             ->with('success', 'Kas keluar berhasil ditambahkan');
@@ -60,25 +45,9 @@ class KasKeluarController extends Controller
         return view('admin.kas_keluar.edit', compact('data'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateKasKeluarRequest $request, $id)
     {
-        $request->merge([
-            'nominal' => str_replace('.', '', (string) $request->nominal),
-        ]);
-
-        $request->validate([
-            'tanggal'           => 'required|date',
-            'jenis_pengeluaran' => 'required',
-            'nominal'           => 'required|numeric',
-            'keterangan'        => 'nullable',
-        ]);
-
-        KasKeluar::findOrFail($id)->update([
-            'tanggal'           => $request->tanggal,
-            'jenis_pengeluaran' => $request->jenis_pengeluaran,
-            'nominal'           => $request->nominal,
-            'keterangan'        => $request->keterangan,
-        ]);
+        KasKeluar::findOrFail($id)->update($request->validated());
 
         return redirect()->route('kas.keluar.index')
             ->with('success', 'Data kas keluar berhasil diupdate');

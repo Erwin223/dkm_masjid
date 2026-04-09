@@ -9,14 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('penerimaan_zakat', function (Blueprint $table) {
-            // Add status field
             if (! Schema::hasColumn('penerimaan_zakat', 'status')) {
                 $table->enum('status', ['pending', 'verified', 'distributed', 'cancelled'])
                     ->default('pending')
                     ->after('metode_pembayaran');
             }
 
-            // Add created_by field
             if (! Schema::hasColumn('penerimaan_zakat', 'created_by')) {
                 $table->foreignId('created_by')
                     ->nullable()
