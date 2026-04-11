@@ -24,5 +24,8 @@
     .error-list ul { margin:0; padding-left:20px; }
     textarea { min-height: 110px; resize: vertical; }
     @media(max-width:600px){ .form-box { padding:18px; } }
-    
+    .galeri-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+    .galeri-title  { font-size:20px; font-weight:600; color:#111; display:flex; align-items:center; gap:10px; }
+    .galeri-icon   { width:38px; height:38px; background:#e1f5ee; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+
 </style>

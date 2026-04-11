@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 @section('content')
 @include('admin.galeri._styles')
-
 <div class="form-box">
     <h3><i class="fa fa-plus-circle" style="color:#0f8b6d;"></i> Tambah Galeri</h3>
 

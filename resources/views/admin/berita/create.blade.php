@@ -1,9 +1,6 @@
 @extends('layouts.admin')
-
 @section('content')
-
 @include('admin.berita._styles')
-
 
 
 <div class="form-box">

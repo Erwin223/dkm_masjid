@@ -84,4 +84,7 @@
     textarea { min-height: 150px; resize: vertical; }
     .thumb { width:120px; height:84px; object-fit:cover; border-radius:10px; border:1px solid #e6e6e6; background:#f3f3f3; display:block; }
     @media(max-width:600px){ .form-row { grid-template-columns:1fr; } .form-box { padding:18px; } }
+    .galeri-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+    .galeri-title  { font-size:20px; font-weight:600; color:#111; display:flex; align-items:center; gap:10px; }
+    .galeri-icon   { width:38px; height:38px; background:#e1f5ee; border-radius:10px; display:flex; align-items:center; justify-content:center; }
 </style>

@@ -3,7 +3,7 @@
 @section('content')
 
 @include('admin.berita._styles')
-
+@include('admin._styles_website')
 <div class="form-box">
     <h3><i class="fa fa-edit" style="color:#0f8b6d;"></i> Edit Berita</h3>
 

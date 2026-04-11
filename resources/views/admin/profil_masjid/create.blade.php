@@ -1,9 +1,6 @@
 @extends('layouts.admin')
-
 @section('content')
-
 @include('admin.profil_masjid._styles')
-
 <div class="form-box">
     <h3><i class="fa fa-plus" style="color:#0f8b6d;"></i> Tambah Profil Masjid</h3>
 

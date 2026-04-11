@@ -29,4 +29,8 @@
     .fa-edit:hover  { color:darkblue; transform:scale(1.2); }
     .fa-trash:hover { color:darkred;  transform:scale(1.2); }
     @media(max-width:600px){ .top-row { flex-direction:column; align-items:flex-start; } .search-input,.btn-tambah { width:100%; justify-content:center; } }
+    .galeri-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+    .galeri-title  { font-size:20px; font-weight:600; color:#111; display:flex; align-items:center; gap:10px; }
+    .galeri-icon   { width:38px; height:38px; background:#e1f5ee; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+
 </style>

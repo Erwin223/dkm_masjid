@@ -1,12 +1,25 @@
 @extends('layouts.admin')
-
 @section('content')
-
 @include('admin.profil_masjid._styles')
+@include('admin._styles_website')
 
-<h2>
-    <i class="fa fa-mosque"></i> Profil Masjid
-</h2>
+<div class="galeri-header">
+    <div class="galeri-title">
+        <div class="galeri-icon"><i class="fa fa-globe" style="color:#0f6e56;font-size:15px;"></i></div>
+        Kelola Website
+    </div>
+</div>
+<div class="website-nav">
+    <a href="{{ route('profil_masjid.index') }}" {{ request()->routeIs('profil_masjid*') ? 'class=active' : '' }}>
+        <i class="fa fa-building"></i> Profil Masjid
+    </a>
+    <a href="{{ route('berita.index') }}" {{ request()->routeIs('berita*') ? 'class=active' : '' }}>
+        <i class="fa fa-newspaper"></i> Berita
+    </a>
+    <a href="{{ route('galeri.index') }}" {{ request()->routeIs('galeri*') ? 'class=active' : '' }}>
+        <i class="fa fa-images"></i> Galeri
+    </a>
+</div>
 
 <div class="table-box">
     <div class="top-row">
