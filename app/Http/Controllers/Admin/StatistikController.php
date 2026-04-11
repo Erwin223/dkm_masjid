@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DonasiMasuk;
 use App\Models\PenerimaanZakat;
+use App\Models\KasMasuk;
+use App\Models\KasKeluar;
 use Illuminate\Support\Facades\DB;
 
 class StatistikController extends Controller
@@ -15,6 +17,8 @@ class StatistikController extends Controller
         $bulanList = [];
         $donasiPerBulan = [];
         $zakatPerBulan = [];
+        $kasMasukPerBulan = [];
+        $kasKeluarPerBulan = [];
 
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
@@ -27,6 +31,14 @@ class StatistikController extends Controller
                 ->sum('total');
 
             $zakatPerBulan[] = (float) PenerimaanZakat::whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->sum('nominal');
+
+            $kasMasukPerBulan[] = (float) KasMasuk::whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->sum('jumlah');
+
+            $kasKeluarPerBulan[] = (float) KasKeluar::whereMonth('tanggal', $bulan)
                 ->whereYear('tanggal', $tahun)
                 ->sum('nominal');
         }
@@ -75,6 +87,24 @@ class StatistikController extends Controller
             ->map(fn ($v) => (int) $v)
             ->toArray();
 
+        // === Kas Masuk per Sumber ===
+        $kasMasukSumber = KasMasuk::select('sumber', DB::raw('SUM(jumlah) as total'))
+            ->groupBy('sumber')
+            ->orderByDesc('total')
+            ->get();
+
+        $kasMasukSumberLabel = $kasMasukSumber->pluck('sumber')->map(fn($k) => ucwords(str_replace('_', ' ', $k ?? 'Lainnya')))->toArray();
+        $kasMasukSumberData  = $kasMasukSumber->pluck('total')->map(fn($v) => (float) $v)->toArray();
+
+        // === Kas Keluar per Jenis Pengeluaran ===
+        $kasKeluarJenis = KasKeluar::select('jenis_pengeluaran', DB::raw('SUM(nominal) as total'))
+            ->groupBy('jenis_pengeluaran')
+            ->orderByDesc('total')
+            ->get();
+
+        $kasKeluarJenisLabel = $kasKeluarJenis->pluck('jenis_pengeluaran')->map(fn($k) => ucwords(str_replace('_', ' ', $k ?? 'Lainnya')))->toArray();
+        $kasKeluarJenisData  = $kasKeluarJenis->pluck('total')->map(fn($v) => (float) $v)->toArray();
+
         // === Ringkasan ===
         $ringkasan = [
             'total_donasi'    => DonasiMasuk::sum('total'),
@@ -83,12 +113,18 @@ class StatistikController extends Controller
             'zakat_verified'  => PenerimaanZakat::sum('nominal'),
             'donasi_count'    => DonasiMasuk::count(),
             'zakat_count'     => PenerimaanZakat::count(),
+            'total_kas_masuk' => KasMasuk::sum('jumlah'),
+            'total_kas_keluar' => KasKeluar::sum('nominal'),
+            'kas_masuk_count' => KasMasuk::count(),
+            'kas_keluar_count' => KasKeluar::count(),
         ];
 
         return view('admin.statistik.index', compact(
             'bulanList',
             'donasiPerBulan',
             'zakatPerBulan',
+            'kasMasukPerBulan',
+            'kasKeluarPerBulan',
             'donasiKategoriLabel',
             'donasiKategoriData',
             'zakatJenisLabel',
@@ -97,6 +133,10 @@ class StatistikController extends Controller
             'donasiMetodeData',
             'zakatMetodeLabel',
             'zakatMetodeData',
+            'kasMasukSumberLabel',
+            'kasMasukSumberData',
+            'kasKeluarJenisLabel',
+            'kasKeluarJenisData',
             'ringkasan'
         ));
     }

@@ -42,6 +42,11 @@
                 <i class="fa fa-users"></i> Data Pengurus
             </a>
 
+            <a href="{{ route('arsip.index') }}"
+                class="nav-item {{ request()->routeIs('arsip*') ? 'active' : '' }}">
+                <i class="fa fa-folder-open"></i> Arsip & Dokumen
+            </a>
+
             <button
                 class="nav-item {{ request()->routeIs('profil_masjid*') || request()->routeIs('berita*') || request()->routeIs('galeri*') ? 'active open' : '' }}"
                 onclick="toggleDropdown('dd-konten', this)">

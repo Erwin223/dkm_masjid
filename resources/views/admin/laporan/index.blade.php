@@ -9,6 +9,8 @@
 @endpush
 
 @section('content')
+
+
 <div class="report-page">
     <section class="report-hero">
         <div>

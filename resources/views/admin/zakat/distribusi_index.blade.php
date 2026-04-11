@@ -3,6 +3,8 @@
 @include('admin.zakat._styles')
 @include('admin.zakat._nav')
 
+
+
 <style>
     /* FIX UI: Layout Jumlah agar tidak menumpuk seperti di Penerimaan */
     .jumlah-wrapper {

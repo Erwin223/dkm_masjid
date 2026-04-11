@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Statistik — DKM Masjid')
 @section('page-title', 'Statistik & Analitik')
@@ -56,9 +56,14 @@
                 <div class="kpi-pill-sub">{{ $ringkasan['zakat_count'] ?? 0 }} transaksi</div>
             </div>
             <div class="kpi-pill">
-                <div class="kpi-pill-label">Total Transaksi</div>
-                <div class="kpi-pill-value">{{ number_format($totalTrx, 0, ',', '.') }}</div>
-                <div class="kpi-pill-sub">Donasi + Zakat</div>
+                <div class="kpi-pill-label">Total Kas Masuk</div>
+                <div class="kpi-pill-value">Rp {{ number_format($ringkasan['total_kas_masuk'] ?? 0, 0, ',', '.') }}</div>
+                <div class="kpi-pill-sub">Kas masuk</div>
+            </div>
+            <div class="kpi-pill">
+                <div class="kpi-pill-label">Total Kas Keluar</div>
+                <div class="kpi-pill-value">Rp {{ number_format($ringkasan['total_kas_keluar'] ?? 0, 0, ',', '.') }}</div>
+                <div class="kpi-pill-sub">Kas keluar</div>
             </div>
         </div>
     </div>
@@ -79,6 +84,22 @@
                 <div class="stat-sum-label">Rata-rata Bulanan</div>
                 <div class="stat-sum-value">Rp {{ number_format($avgBulanan, 0, ',', '.') }}</div>
                 <div class="stat-sum-sub">Per bulan (6 bulan terakhir)</div>
+            </div>
+        </div>
+        <div class="stat-sum-card">
+            <div class="stat-sum-icon" style="background:#dcfce7;color:#15803d;"><i class="fa fa-arrow-down"></i></div>
+            <div class="stat-sum-body">
+                <div class="stat-sum-label">Total Kas Masuk</div>
+                <div class="stat-sum-value">Rp {{ number_format($ringkasan['total_kas_masuk'] ?? 0, 0, ',', '.') }}</div>
+                <div class="stat-sum-sub">Seluruh pemasukan kas</div>
+            </div>
+        </div>
+        <div class="stat-sum-card">
+            <div class="stat-sum-icon" style="background:#fee2e2;color:#b91c1c;"><i class="fa fa-arrow-up"></i></div>
+            <div class="stat-sum-body">
+                <div class="stat-sum-label">Total Kas Keluar</div>
+                <div class="stat-sum-value">Rp {{ number_format($ringkasan['total_kas_keluar'] ?? 0, 0, ',', '.') }}</div>
+                <div class="stat-sum-sub">Seluruh pengeluaran kas</div>
             </div>
         </div>
         <div class="stat-sum-card">
@@ -119,6 +140,23 @@
                 </div>
                 <div class="chart-canvas-wrap chart-canvas-wrap-line">
                     <canvas id="chartTren"></canvas>
+                </div>
+            </div>
+
+            {{-- Tren Kas Line Chart --}}
+            <div class="chart-card">
+                <div class="chart-card-head">
+                    <div>
+                        <div class="chart-card-title-label">6 Bulan Terakhir</div>
+                        <h2 class="chart-card-title">Tren Kas Masuk vs Kas Keluar</h2>
+                    </div>
+                    <div class="chart-badge-row">
+                        <span class="chart-badge chart-badge-green"><i class="fa fa-circle" style="font-size:8px;"></i> Kas Masuk</span>
+                        <span class="chart-badge chart-badge-red"><i class="fa fa-circle" style="font-size:8px;"></i> Kas Keluar</span>
+                    </div>
+                </div>
+                <div class="chart-canvas-wrap chart-canvas-wrap-line">
+                    <canvas id="chartTrenKas"></canvas>
                 </div>
             </div>
 
@@ -174,6 +212,34 @@
                     </div>
                     <div class="chart-canvas-wrap chart-canvas-wrap-bar">
                         <canvas id="chartJenisZakat"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Kas Row --}}
+            <div class="chart-row-2">
+                <div class="chart-card">
+                    <div class="chart-card-head">
+                        <div>
+                            <div class="chart-card-title-label">Sumber</div>
+                            <h3 class="chart-card-title" style="font-size:15px;">Kas Masuk per Sumber</h3>
+                        </div>
+                        <span class="chart-badge chart-badge-green">{{ count($kasMasukSumberLabel ?? []) }} sumber</span>
+                    </div>
+                    <div class="chart-canvas-wrap chart-canvas-wrap-donut">
+                        <canvas id="chartKasMasukSumber" style="max-width:190px;max-height:190px;"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-head">
+                        <div>
+                            <div class="chart-card-title-label">Jenis</div>
+                            <h3 class="chart-card-title" style="font-size:15px;">Kas Keluar per Jenis</h3>
+                        </div>
+                        <span class="chart-badge chart-badge-red">{{ count($kasKeluarJenisLabel ?? []) }} jenis</span>
+                    </div>
+                    <div class="chart-canvas-wrap chart-canvas-wrap-donut">
+                        <canvas id="chartKasKeluarJenis" style="max-width:190px;max-height:190px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -286,6 +352,28 @@
                 </div>
             </div>
 
+            {{-- Kas Masuk Widget --}}
+            <div class="aside-card">
+                <div class="aside-title-label">Keuangan</div>
+                <p class="aside-title">Kas Masuk</p>
+                <div class="aside-item" style="background:#dcfce7;border:1px solid #86efac;">
+                    <div class="aside-item-label" style="color:#15803d;">Total Kas Masuk</div>
+                    <div class="aside-item-value" style="color:#15803d;">Rp {{ number_format($ringkasan['total_kas_masuk'] ?? 0, 0, ',', '.') }}</div>
+                    <div class="aside-item-sub">{{ $ringkasan['kas_masuk_count'] ?? 0 }} transaksi</div>
+                </div>
+            </div>
+
+            {{-- Kas Keluar Widget --}}
+            <div class="aside-card">
+                <div class="aside-title-label">Keuangan</div>
+                <p class="aside-title">Kas Keluar</p>
+                <div class="aside-item" style="background:#fee2e2;border:1px solid #fca5a5;">
+                    <div class="aside-item-label" style="color:#b91c1c;">Total Kas Keluar</div>
+                    <div class="aside-item-value" style="color:#b91c1c;">Rp {{ number_format($ringkasan['total_kas_keluar'] ?? 0, 0, ',', '.') }}</div>
+                    <div class="aside-item-sub">{{ $ringkasan['kas_keluar_count'] ?? 0 }} transaksi</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -299,6 +387,8 @@
     "bulanList": @json($bulanList ?? []),
     "donasiPerBulan": @json($donasiPerBulan ?? []),
     "zakatPerBulan": @json($zakatPerBulan ?? []),
+    "kasMasukPerBulan": @json($kasMasukPerBulan ?? []),
+    "kasKeluarPerBulan": @json($kasKeluarPerBulan ?? []),
     "donasiMetodeLabel": @json($donasiMetodeLabel ?? []),
     "donasiMetodeData": @json($donasiMetodeData ?? []),
     "zakatMetodeLabel": @json($zakatMetodeLabel ?? []),
@@ -306,7 +396,11 @@
     "donasiKategoriLabel": @json($donasiKategoriLabel ?? []),
     "donasiKategoriData": @json($donasiKategoriData ?? []),
     "zakatJenisLabel": @json($zakatJenisLabel ?? []),
-    "zakatJenisData": @json($zakatJenisData ?? [])
+    "zakatJenisData": @json($zakatJenisData ?? []),
+    "kasMasukSumberLabel": @json($kasMasukSumberLabel ?? []),
+    "kasMasukSumberData": @json($kasMasukSumberData ?? []),
+    "kasKeluarJenisLabel": @json($kasKeluarJenisLabel ?? []),
+    "kasKeluarJenisData": @json($kasKeluarJenisData ?? [])
 }
 </script>
 <script>
@@ -398,6 +492,78 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    /* ── Tren Kas Masuk vs Kas Keluar ────────────── */
+    const ctxKas = document.getElementById('chartTrenKas').getContext('2d');
+    const gKasMasuk = ctxKas.createLinearGradient(0, 0, 0, 260);
+    gKasMasuk.addColorStop(0, 'rgba(16,185,129,0.25)');
+    gKasMasuk.addColorStop(1, 'rgba(16,185,129,0)');
+    const gKasKeluar  = ctxKas.createLinearGradient(0, 0, 0, 260);
+    gKasKeluar.addColorStop(0, 'rgba(239,68,68,0.22)');
+    gKasKeluar.addColorStop(1, 'rgba(239,68,68,0)');
+
+    new Chart(ctxKas, {
+        type: 'line',
+        data: {
+            labels: statistikChartData.bulanList || [],
+            datasets: [
+                {
+                    label: 'Kas Masuk',
+                    data: statistikChartData.kasMasukPerBulan || [],
+                    backgroundColor: gKasMasuk,
+                    borderColor: '#10b981',
+                    borderWidth: 2.5,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#10b981',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7,
+                    tension: 0.38,
+                    fill: true,
+                },
+                {
+                    label: 'Kas Keluar',
+                    data: statistikChartData.kasKeluarPerBulan || [],
+                    backgroundColor: gKasKeluar,
+                    borderColor: '#ef4444',
+                    borderWidth: 2.5,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#ef4444',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7,
+                    tension: 0.38,
+                    fill: true,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    titleColor: '#f3f4f6',
+                    bodyColor:  '#d1d5db',
+                    padding: 12,
+                    callbacks: { label: c => ' ' + c.dataset.label + ': ' + rp(c.parsed.y) }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(229,231,235,0.8)' },
+                    ticks: {
+                        callback: v => v >= 1e6 ? 'Rp ' + (v/1e6).toFixed(1) + 'Jt'
+                                      : v >= 1e3 ? 'Rp ' + (v/1e3).toFixed(0) + 'Rb'
+                                      : 'Rp ' + v
+                    }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
     /* ── doughnut factory ────────────────────────── */
     const mkDoughnut = (id, labels, data, colors) => {
         const allZero = !data || data.every(v => v === 0);
@@ -448,6 +614,16 @@ document.addEventListener('DOMContentLoaded', function () {
         statistikChartData.donasiKategoriLabel || [],
         statistikChartData.donasiKategoriData || [],
         ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899']
+    );
+    mkDoughnut('chartKasMasukSumber',
+        statistikChartData.kasMasukSumberLabel || [],
+        statistikChartData.kasMasukSumberData || [],
+        ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899']
+    );
+    mkDoughnut('chartKasKeluarJenis',
+        statistikChartData.kasKeluarJenisLabel || [],
+        statistikChartData.kasKeluarJenisData || [],
+        ['#ef4444','#f59e0b','#3b82f6','#10b981','#8b5cf6','#06b6d4','#ec4899']
     );
 
     /* ── ⑤ Jenis Zakat horizontal bar ───────────── */

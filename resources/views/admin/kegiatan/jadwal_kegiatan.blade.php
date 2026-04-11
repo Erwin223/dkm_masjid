@@ -2,6 +2,8 @@
 @section('content')
 @include('admin.kegiatan._styles')
 
+
+
 <div class="keg-header">
     <div class="keg-title">
         <div class="keg-icon">
