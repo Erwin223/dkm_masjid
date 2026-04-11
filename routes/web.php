@@ -48,6 +48,14 @@ Route::get('/statistik', [StatistikController::class, 'index'])
 // Laporan
 Route::get('/laporan', [LaporanController::class, 'index'])
     ->name('admin.laporan.index');
+Route::get('/laporan/kas', [LaporanController::class, 'kas'])
+    ->name('admin.laporan.kas');
+Route::get('/laporan/donasi', [LaporanController::class, 'donasi'])
+    ->name('admin.laporan.donasi');
+Route::get('/laporan/zakat', [LaporanController::class, 'zakat'])
+    ->name('admin.laporan.zakat');
+Route::get('/laporan/kegiatan', [LaporanController::class, 'kegiatan'])
+    ->name('admin.laporan.kegiatan');
 
 // KAS MASUK
 Route::get('/kas-masuk',              [KasMasukController::class, 'index'])->name('kas.masuk.index');

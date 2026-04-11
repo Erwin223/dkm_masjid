@@ -10,7 +10,7 @@
     .keg-nav a.active { background:#0f8b6d; border-color:#0f8b6d; color:#fff; }
     .table-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:20px; }
     .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; min-width:500px; }
+    table { width:100%; border-collapse:collapse; min-width:800px; }
     table th { background:#f3f3f3; padding:10px 12px; font-size:12px; text-align:left; white-space:nowrap; border-bottom:1px solid #e5e5e5; }
     table td { padding:10px 12px; font-size:13px; border-bottom:1px solid #f5f5f5; vertical-align:middle; }
     table tbody tr:hover { background:#f7fdf9; }
@@ -24,7 +24,7 @@
     .badge-selesai { background:#d1e7dd; color:#0f5132; }
     .badge-berjalan{ background:#cfe2ff; color:#084298; }
     .anggaran-pill { background:#faeeda; color:#633806; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-    .anggaran-none { color:#ccc; font-size:12px; }
+    .anggaran-none { color:#9ca3af; font-size:12px; }
     td i { transition:0.2s; }
     .fa-edit:hover  { color:darkblue; transform:scale(1.2); }
     .fa-trash:hover { color:darkred;  transform:scale(1.2); }
@@ -72,7 +72,7 @@
                 <tr>
                     <th>No</th><th>Nama Kegiatan</th><th>Tanggal</th>
                     <th>Waktu</th><th>Tempat</th><th>Penanggung Jawab</th>
-                    <th>Anggaran</th><th>Keterangan</th><th>Status</th>
+                    <th>Estimasi</th><th>Realisasi</th><th>Keterangan</th><th>Status</th>
                     <th style="text-align:center;">Hapus</th><th style="text-align:center;">Edit</th>
                 </tr>
             </thead>
@@ -86,6 +86,16 @@
                     <td>{{ $k->tempat ?? '-' }}</td>
                     <td>{{ $k->penanggung_jawab ?? '-' }}</td>
                     <td>
+                        @if($k->estimasi_anggaran)
+                            <span class="anggaran-pill">
+                                <i class="fa fa-wallet" style="font-size:10px;"></i>
+                                Rp.{{ number_format($k->estimasi_anggaran, 0, ',', '.') }}
+                            </span>
+                        @else
+                            <span class="anggaran-none">belum diisi</span>
+                        @endif
+                    </td>
+                    <td>
                         @if($k->kasKeluar)
                             <span class="anggaran-pill">
                                 <i class="fa fa-money-bill" style="font-size:10px;"></i>
@@ -93,7 +103,7 @@
                             </span>
                             <div style="font-size:10px;color:#999;margin-top:2px;">{{ $k->kasKeluar->jenis_pengeluaran }}</div>
                         @else
-                            <span class="anggaran-none">— belum ada —</span>
+                            <span class="anggaran-none">belum direalisasikan</span>
                         @endif
                     </td>
                     <td>{{ $k->keterangan ?? '-' }}</td>
@@ -123,7 +133,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="11" style="text-align:center;padding:2.5rem;color:#999;">
+                    <td colspan="12" style="text-align:center;padding:2.5rem;color:#999;">
                         <i class="fa fa-inbox" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>
                         Belum ada jadwal kegiatan
                     </td>

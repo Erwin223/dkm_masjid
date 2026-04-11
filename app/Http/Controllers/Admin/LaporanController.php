@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\DistribusiZakat;
 use App\Models\DonasiKeluar;
 use App\Models\DonasiMasuk;
+use App\Models\JadwalKegiatan;
 use App\Models\KasKeluar;
 use App\Models\KasMasuk;
 use App\Models\PenerimaanZakat;
+use App\Models\ProfilMasjid;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -16,7 +18,35 @@ class LaporanController extends Controller
 {
     public function index(Request $request)
     {
+        return $this->renderReport($request, 'ringkasan');
+    }
+
+    public function kas(Request $request)
+    {
+        return $this->renderReport($request, 'kas');
+    }
+
+    public function donasi(Request $request)
+    {
+        return $this->renderReport($request, 'donasi');
+    }
+
+    public function zakat(Request $request)
+    {
+        return $this->renderReport($request, 'zakat');
+    }
+
+    public function kegiatan(Request $request)
+    {
+        return $this->renderReport($request, 'kegiatan');
+    }
+
+    private function renderReport(Request $request, string $defaultReportType)
+    {
         [$preset, $dateFrom, $dateTo, $periodLabel] = $this->resolvePeriod($request);
+        $reportType = $defaultReportType;
+        $profilMasjid = ProfilMasjid::query()->latest('id')->first();
+        $namaMasjid = $profilMasjid->nama ?? 'Masjid Al-Musabaqoh Subang';
 
         $kasMasuk = KasMasuk::query()
             ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
@@ -48,6 +78,11 @@ class LaporanController extends Controller
             ->orderBy('tanggal', 'desc')
             ->get();
 
+        $kegiatan = JadwalKegiatan::with('kasKeluar')
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
         $kasSummary = [
             'masuk_total' => (float) $kasMasuk->sum('jumlah'),
             'keluar_total' => (float) $kasKeluar->sum('nominal'),
@@ -72,6 +107,16 @@ class LaporanController extends Controller
         ];
         $zakatSummary['saldo'] = $zakatSummary['masuk_total'] - $zakatSummary['keluar_total'];
 
+        $today = Carbon::today();
+        $kegiatanSummary = [
+            'count' => $kegiatan->count(),
+            'estimasi_total' => $kegiatan->sum(fn (JadwalKegiatan $item): float => (float) ($item->estimasi_anggaran ?? 0)),
+            'realisasi_total' => $kegiatan->sum(fn (JadwalKegiatan $item): float => (float) optional($item->kasKeluar)->nominal),
+            'today_count' => $kegiatan->filter(fn (JadwalKegiatan $item): bool => Carbon::parse($item->tanggal)->isSameDay($today))->count(),
+            'upcoming_count' => $kegiatan->filter(fn (JadwalKegiatan $item): bool => Carbon::parse($item->tanggal)->isFuture())->count(),
+            'completed_count' => $kegiatan->filter(fn (JadwalKegiatan $item): bool => Carbon::parse($item->tanggal)->isPast() && ! Carbon::parse($item->tanggal)->isSameDay($today))->count(),
+        ];
+
         $overallSummary = [
             'masuk_total' => $kasSummary['masuk_total'] + $donasiSummary['masuk_total'] + $zakatSummary['masuk_total'],
             'keluar_total' => $kasSummary['keluar_total'] + $donasiSummary['keluar_total'] + $zakatSummary['keluar_total'],
@@ -81,22 +126,65 @@ class LaporanController extends Controller
         ];
         $overallSummary['saldo'] = $overallSummary['masuk_total'] - $overallSummary['keluar_total'];
 
+        $reportConfig = [
+            'ringkasan' => [
+                'title' => 'Ringkasan Semua Laporan',
+                'document_title' => 'Ringkasan Laporan ' . $namaMasjid . ' Periode ' . $periodLabel,
+                'print_orientation' => 'portrait',
+                'transaksi_total' => $overallSummary['transaksi_total'],
+            ],
+            'kas' => [
+                'title' => 'Laporan Kas',
+                'document_title' => 'Laporan Kas ' . $namaMasjid . ' Periode ' . $periodLabel,
+                'print_orientation' => 'portrait',
+                'transaksi_total' => $kasSummary['masuk_count'] + $kasSummary['keluar_count'],
+            ],
+            'donasi' => [
+                'title' => 'Laporan Donasi',
+                'document_title' => 'Laporan Donasi ' . $namaMasjid . ' Periode ' . $periodLabel,
+                'print_orientation' => 'portrait',
+                'transaksi_total' => $donasiSummary['masuk_count'] + $donasiSummary['keluar_count'],
+            ],
+            'zakat' => [
+                'title' => 'Laporan Zakat',
+                'document_title' => 'Laporan Zakat ' . $namaMasjid . ' Periode ' . $periodLabel,
+                'print_orientation' => 'portrait',
+                'transaksi_total' => $zakatSummary['masuk_count'] + $zakatSummary['keluar_count'],
+            ],
+            'kegiatan' => [
+                'title' => 'Laporan Kegiatan',
+                'document_title' => 'Laporan Kegiatan ' . $namaMasjid . ' Periode ' . $periodLabel,
+                'print_orientation' => 'landscape',
+                'transaksi_total' => $kegiatanSummary['count'],
+            ],
+        ];
+
+        $activeReport = $reportConfig[$reportType];
+
         return view('admin.laporan.index', [
             'preset' => $preset,
+            'reportType' => $reportType,
+            'activeReport' => $activeReport,
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
             'periodLabel' => $periodLabel,
+            'namaMasjid' => $namaMasjid,
+            'reportDocumentTitle' => $activeReport['document_title'],
+            'reportSummaryDocumentTitle' => 'Ringkasan Laporan ' . $namaMasjid . ' Periode ' . $periodLabel,
+            'reportKegiatanDocumentTitle' => 'Laporan Kegiatan ' . $namaMasjid . ' Periode ' . $periodLabel,
             'generatedAt' => now(),
             'overallSummary' => $overallSummary,
             'kasSummary' => $kasSummary,
             'donasiSummary' => $donasiSummary,
             'zakatSummary' => $zakatSummary,
+            'kegiatanSummary' => $kegiatanSummary,
             'kasMasuk' => $kasMasuk,
             'kasKeluar' => $kasKeluar,
             'donasiMasuk' => $donasiMasuk,
             'donasiKeluar' => $donasiKeluar,
             'penerimaanZakat' => $penerimaanZakat,
             'distribusiZakat' => $distribusiZakat,
+            'kegiatan' => $kegiatan,
         ]);
     }
 

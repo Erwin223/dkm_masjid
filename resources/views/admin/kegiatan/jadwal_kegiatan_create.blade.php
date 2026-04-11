@@ -20,6 +20,7 @@
     .btn-batal:hover { background:#f5f5f5; }
     .invalid-feedback { font-size:12px; color:#dc3545; margin-top:4px; display:block; }
     .kas-info { background:#faeeda; border:1px solid #f0c070; border-radius:8px; padding:10px 14px; font-size:12px; color:#633806; margin-top:6px; display:none; }
+    .field-hint { font-size:11px; color:#6b7280; margin-top:5px; }
     @media(max-width:600px){ .form-row { grid-template-columns:1fr; } .form-box { padding:18px; } }
 </style>
 
@@ -66,26 +67,34 @@
         </div>
 
         <div class="form-group">
+            <label><i class="fa fa-wallet" style="color:#0f8b6d;font-size:12px;"></i> Estimasi Anggaran</label>
+            <input type="text" name="estimasi_anggaran" id="estimasiAnggaran" value="{{ old('estimasi_anggaran') ? number_format((float) old('estimasi_anggaran'), 0, ',', '.') : '' }}" inputmode="numeric" autocomplete="off" placeholder="Contoh: 1.500.000">
+            <div class="field-hint">Isi nominal rencana anggaran kegiatan. Angka akan otomatis memakai pemisah ribuan.</div>
+            @error('estimasi_anggaran') <span class="invalid-feedback">{{ $message }}</span> @enderror
+        </div>
+
+        <div class="form-group">
             <label>
                 <i class="fa fa-money-bill" style="color:#0f8b6d;font-size:12px;"></i>
-                Anggaran Kegiatan
-                <span style="font-size:11px;color:#999;font-weight:400;">(opsional — pilih dari kas keluar)</span>
+                Realisasi Anggaran
+                <span style="font-size:11px;color:#999;font-weight:400;">(opsional, ambil dari kas keluar)</span>
             </label>
             <select name="kas_keluar_id" id="kasSelect" onchange="tampilInfoKas()">
-                <option value="">— Tidak ada anggaran —</option>
+                <option value="">Belum ada realisasi anggaran</option>
                 @foreach($kasKeluar as $kas)
                     <option value="{{ $kas->id }}"
                         data-nominal="{{ $kas->nominal }}"
                         data-jenis="{{ $kas->jenis_pengeluaran }}"
                         data-tgl="{{ \Carbon\Carbon::parse($kas->tanggal)->translatedFormat('d M Y') }}"
                         {{ old('kas_keluar_id') == $kas->id ? 'selected' : '' }}>
-                        {{ \Carbon\Carbon::parse($kas->tanggal)->format('d/m/Y') }} —
-                        {{ $kas->jenis_pengeluaran }} —
+                        {{ \Carbon\Carbon::parse($kas->tanggal)->format('d/m/Y') }} -
+                        {{ $kas->jenis_pengeluaran }} -
                         Rp.{{ number_format($kas->nominal, 0, ',', '.') }}
                     </option>
                 @endforeach
             </select>
             <div class="kas-info" id="kasInfo"></div>
+            <div class="field-hint">Pilih transaksi kas keluar jika dana kegiatan sudah benar-benar direalisasikan.</div>
             @error('kas_keluar_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
         </div>
 
@@ -108,13 +117,23 @@ function tampilInfoKas(){
     const box = document.getElementById('kasInfo');
     if(sel.value){
         const nominal = parseInt(opt.dataset.nominal).toLocaleString('id-ID');
-        box.innerHTML = '<i class="fa fa-circle-info"></i> <b>' + opt.dataset.jenis + '</b> &nbsp;|&nbsp; Rp.' + nominal + ' &nbsp;|&nbsp; ' + opt.dataset.tgl;
+        box.innerHTML = '<i class="fa fa-circle-info"></i> <b>' + opt.dataset.jenis + '</b> | Rp.' + nominal + ' | ' + opt.dataset.tgl;
         box.style.display = 'block';
     } else {
         box.style.display = 'none';
     }
 }
-window.onload = tampilInfoKas;
+function formatEstimasiAnggaran(){
+    const input = document.getElementById('estimasiAnggaran');
+    if(!input) return;
+    const digits = input.value.replace(/\D/g, '');
+    input.value = digits ? new Intl.NumberFormat('id-ID').format(Number(digits)) : '';
+}
+document.getElementById('estimasiAnggaran')?.addEventListener('input', formatEstimasiAnggaran);
+window.onload = function () {
+    tampilInfoKas();
+    formatEstimasiAnggaran();
+};
 </script>
 
 @endsection

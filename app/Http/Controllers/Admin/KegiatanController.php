@@ -27,12 +27,17 @@ class KegiatanController extends Controller
 
     public function jadwalStore(Request $request)
     {
+        $request->merge([
+            'estimasi_anggaran' => $this->normalizeCurrencyInput($request->input('estimasi_anggaran')),
+        ]);
+
         $validated = $request->validate([
             'nama_kegiatan'    => 'required',
             'tanggal'          => 'required|date',
             'waktu'            => 'nullable',
             'tempat'           => 'nullable',
             'penanggung_jawab' => 'nullable',
+            'estimasi_anggaran'=> 'nullable|numeric|min:0',
             'keterangan'       => 'nullable',
             'kas_keluar_id'    => 'nullable|exists:kas_keluar,id',
         ]);
@@ -52,12 +57,17 @@ class KegiatanController extends Controller
 
     public function jadwalUpdate(Request $request, $id)
     {
+        $request->merge([
+            'estimasi_anggaran' => $this->normalizeCurrencyInput($request->input('estimasi_anggaran')),
+        ]);
+
         $validated = $request->validate([
             'nama_kegiatan' => 'required',
             'tanggal'       => 'required|date',
             'waktu'         => 'nullable',
             'tempat'        => 'nullable',
             'penanggung_jawab' => 'nullable',
+            'estimasi_anggaran' => 'nullable|numeric|min:0',
             'keterangan'    => 'nullable',
             'kas_keluar_id' => 'nullable|exists:kas_keluar,id',
         ]);
@@ -173,5 +183,16 @@ class KegiatanController extends Controller
     public function sholat()
     {
         return view('admin.kegiatan.jadwal_sholat');
+    }
+
+    private function normalizeCurrencyInput(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $normalized = preg_replace('/[^\d]/', '', $value);
+
+        return $normalized === '' ? null : $normalized;
     }
 }
