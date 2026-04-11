@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreArsipRequest;
+use App\Http\Requests\UpdateArsipRequest;
 use App\Models\Arsip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -30,15 +32,9 @@ class ArsipController extends Controller
     // =======================
     // SIMPAN DATA
     // =======================
-    public function store(Request $request)
+    public function store(StoreArsipRequest $request)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'kategori' => 'required|string',
-            'tanggal_arsip' => 'required|date',
-            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png,jpeg|max:5120', // max 5MB
-        ]);
+        $validated = $request->validated();
 
         $file_path = null;
         $nama_file_asli = null;
@@ -51,10 +47,10 @@ class ArsipController extends Controller
         }
 
         Arsip::create([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'kategori' => $request->kategori,
-            'tanggal_arsip' => $request->tanggal_arsip,
+            'judul' => $validated['judul'],
+            'deskripsi' => $validated['deskripsi'],
+            'kategori' => $validated['kategori'],
+            'tanggal_arsip' => $validated['tanggal_arsip'],
             'file' => $file_path,
             'nama_file_asli' => $nama_file_asli
         ]);
@@ -76,16 +72,9 @@ class ArsipController extends Controller
     // =======================
     // UPDATE DATA
     // =======================
-    public function update(Request $request, $id)
+    public function update(UpdateArsipRequest $request, $id)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'kategori' => 'required|string',
-            'tanggal_arsip' => 'required|date',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png,jpeg|max:5120',
-        ]);
-
+        $validated = $request->validated();
         $data = Arsip::findOrFail($id);
 
         $file_path = $data->file;
@@ -105,10 +94,10 @@ class ArsipController extends Controller
         }
 
         $data->update([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'kategori' => $request->kategori,
-            'tanggal_arsip' => $request->tanggal_arsip,
+            'judul' => $validated['judul'],
+            'deskripsi' => $validated['deskripsi'],
+            'kategori' => $validated['kategori'],
+            'tanggal_arsip' => $validated['tanggal_arsip'],
             'file' => $file_path,
             'nama_file_asli' => $nama_file_asli
         ]);
