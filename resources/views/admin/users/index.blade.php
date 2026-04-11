@@ -2,74 +2,7 @@
 
 @section('content')
 
-<style>
-    .header-box {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .table-box {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    table th {
-        background: #f3f3f3;
-        padding: 12px;
-        text-align: left;
-        font-size: 13px;
-        border-bottom: 1px solid #e5e5e5;
-    }
-
-    table td {
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-        font-size: 13px;
-    }
-
-    .btn-tambah {
-        background: #0f8b6d;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 13px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .btn-tambah:hover {
-        background: #0c6d55;
-    }
-
-    .pgr-avatar-sm {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: #e1f5ee;
-        border: 2px solid #9fe1cb;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 600;
-        color: #0f6e56;
-    }
-</style>
+@include('admin.users._styles')
 
 <div class="header-box">
     <h2><i class="fa-solid fa-users-gear"></i> Manajemen Admin</h2>

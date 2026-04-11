@@ -66,7 +66,6 @@ class UpdateKasKeluarRequest extends FormRequest
             return 0;
         }
 
-        // Remove all dots (thousand separators)
         return (int) str_replace('.', '', (string) $value);
     }
 }

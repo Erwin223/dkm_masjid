@@ -55,7 +55,6 @@ class StoreDistribusiZakatRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Normalize numeric inputs
         $this->merge([
             'jumlah_zakat' => $this->normalizeNumber($this->jumlah_zakat),
             'nominal' => $this->normalizeNumber($this->nominal),

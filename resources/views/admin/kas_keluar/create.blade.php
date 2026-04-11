@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('content')
-
 @include('admin.kas_keluar._styles')
 
 <div class="form-box">
@@ -25,7 +23,7 @@
                 <label>Tanggal <span style="color:red;">*</span></label>
                 <input type="date" name="tanggal" required value="{{ old('tanggal', date('Y-m-d')) }}">
             </div>
-            
+
             <div class="form-group">
                 <label>Jenis Pengeluaran <span style="color:red;">*</span></label>
                 <input type="text" name="jenis_pengeluaran" placeholder="Contoh: Listrik, Konsumsi" required value="{{ old('jenis_pengeluaran') }}">

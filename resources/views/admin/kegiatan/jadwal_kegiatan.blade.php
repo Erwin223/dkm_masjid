@@ -1,35 +1,7 @@
 @extends('layouts.admin')
 @section('content')
-<style>
-    .keg-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
-    .keg-title  { font-size:20px; font-weight:600; color:#111; display:flex; align-items:center; gap:10px; }
-    .keg-icon   { width:38px; height:38px; background:#e1f5ee; border-radius:10px; display:flex; align-items:center; justify-content:center; }
-    .keg-nav { display:flex; gap:10px; margin-bottom:25px; flex-wrap:wrap; }
-    .keg-nav a { padding:9px 18px; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; border:1px solid #ddd; color:#555; background:#fff; display:inline-flex; align-items:center; gap:7px; transition:0.2s; }
-    .keg-nav a:hover  { background:#f0fbf6; border-color:#0f8b6d; color:#0f8b6d; }
-    .keg-nav a.active { background:#0f8b6d; border-color:#0f8b6d; color:#fff; }
-    .table-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:20px; }
-    .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; min-width:800px; }
-    table th { background:#f3f3f3; padding:10px 12px; font-size:12px; text-align:left; white-space:nowrap; border-bottom:1px solid #e5e5e5; }
-    table td { padding:10px 12px; font-size:13px; border-bottom:1px solid #f5f5f5; vertical-align:middle; }
-    table tbody tr:hover { background:#f7fdf9; }
-    .btn-tambah { background:#0f8b6d; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-    .btn-tambah:hover { background:#0c6d55; color:#fff; }
-    .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px; }
-    .search-input { height:36px; border:1px solid #ddd; border-radius:8px; padding:0 12px; font-size:13px; outline:none; min-width:200px; }
-    .search-input:focus { border-color:#0f8b6d; }
-    .badge-status  { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-    .badge-akan    { background:#fff3cd; color:#856404; }
-    .badge-selesai { background:#d1e7dd; color:#0f5132; }
-    .badge-berjalan{ background:#cfe2ff; color:#084298; }
-    .anggaran-pill { background:#faeeda; color:#633806; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-    .anggaran-none { color:#9ca3af; font-size:12px; }
-    td i { transition:0.2s; }
-    .fa-edit:hover  { color:darkblue; transform:scale(1.2); }
-    .fa-trash:hover { color:darkred;  transform:scale(1.2); }
-    @media(max-width:600px){ .top-row { flex-direction:column; align-items:flex-start; } .search-input { width:100%; } .btn-tambah { width:100%; justify-content:center; } }
-</style>
+@include('admin.kegiatan._styles')
+
 <div class="keg-header">
     <div class="keg-title">
         <div class="keg-icon">

@@ -51,7 +51,6 @@ class StoreKasMasukRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Normalize numeric input
         $this->merge([
             'jumlah' => $this->normalizeNumber($this->jumlah),
         ]);

@@ -51,7 +51,6 @@ class StoreKasKeluarRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Normalize numeric input
         $this->merge([
             'nominal' => $this->normalizeNumber($this->nominal),
         ]);
@@ -66,7 +65,6 @@ class StoreKasKeluarRequest extends FormRequest
             return 0;
         }
 
-        // Remove all dots (thousand separators)
         return (int) str_replace('.', '', (string) $value);
     }
 }

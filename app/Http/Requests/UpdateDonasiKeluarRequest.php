@@ -32,7 +32,6 @@ class UpdateDonasiKeluarRequest extends FormRequest
             'keterangan' => 'nullable|string|max:1000',
         ];
 
-        // For barang, satuan and nominal are required
         if ($this->isJenisBarang($this->jenis_donasi)) {
             $rules['satuan'] = 'required|string|max:50';
             $rules['nominal'] = 'required|numeric|min:0';

@@ -100,7 +100,13 @@ class KegiatanController extends Controller
 
     public function imamDataStore(Request $request)
     {
-        $validated = $request->validate(['nama' => 'required', 'status' => 'required|in:Tetap,Tamu']);
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_hp' => 'nullable|string|max:30',
+            'alamat' => 'nullable|string|max:255',
+            'status' => 'required|in:Tetap,Tamu',
+            'keterangan' => 'nullable|string',
+        ]);
         DataImam::create($validated);
         return redirect()->route('imam.data')->with('success', 'Data imam berhasil ditambahkan');
     }
@@ -113,7 +119,13 @@ class KegiatanController extends Controller
 
     public function imamDataUpdate(Request $request, $id)
     {
-        $validated = $request->validate(['nama' => 'required', 'status' => 'required|in:Tetap,Tamu']);
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_hp' => 'nullable|string|max:30',
+            'alamat' => 'nullable|string|max:255',
+            'status' => 'required|in:Tetap,Tamu',
+            'keterangan' => 'nullable|string',
+        ]);
         DataImam::findOrFail($id)->update($validated);
         return redirect()->route('imam.data')->with('success', 'Data imam berhasil diupdate');
     }

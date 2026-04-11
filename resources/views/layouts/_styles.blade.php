@@ -447,6 +447,20 @@
             min-width: 1100px;
         }
 
+        .content-inner .form-box {
+            width: 100%;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        .content-inner :is(.don-nav, .keg-nav, .zakat-nav, .kas-nav):has(+ .form-box) {
+            width: fit-content;
+            max-width: 100%;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            justify-content: center;
+        }
+
         canvas {
             display: block;
             width: 100%;
@@ -486,6 +500,11 @@
 
             .content-inner {
                 min-width: 100%;
+            }
+
+            .content-inner :is(.don-nav, .keg-nav, .zakat-nav, .kas-nav):has(+ .form-box) {
+                width: 100%;
+                justify-content: flex-start;
             }
 
             .navbar {

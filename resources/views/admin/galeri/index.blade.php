@@ -1,25 +1,6 @@
 @extends('layouts.admin')
-
 @section('content')
-
-<style>
-    .table-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:20px; }
-    .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; min-width:600px; }
-    table th { background:#f3f3f3; padding:10px 12px; font-size:12px; text-align:left; border-bottom:1px solid #e5e5e5; }
-    table td { padding:10px 12px; font-size:13px; border-bottom:1px solid #f5f5f5; vertical-align:middle; }
-    table tbody tr:hover { background:#f7fdf9; }
-    .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px; }
-    .search-input { height:36px; border:1px solid #ddd; border-radius:8px; padding:0 12px; font-size:13px; outline:none; min-width:200px; }
-    .search-input:focus { border-color:#0f8b6d; }
-    .btn-tambah { background:#0f8b6d; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-    .btn-tambah:hover { background:#0c6d55; color:#fff; }
-    .galeri-img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; }
-    td i { transition:0.2s; }
-    .fa-edit:hover  { color:darkblue; transform:scale(1.2); }
-    .fa-trash:hover { color:darkred;  transform:scale(1.2); }
-    @media(max-width:600px){ .top-row { flex-direction:column; align-items:flex-start; } .search-input,.btn-tambah { width:100%; justify-content:center; } }
-</style>
+@include('admin.galeri._styles')
 
 <div class="table-box">
     <div class="top-row">

@@ -24,4 +24,5 @@
     .error-list ul { margin:0; padding-left:20px; }
     textarea { min-height: 110px; resize: vertical; }
     @media(max-width:600px){ .form-box { padding:18px; } }
+    
 </style>

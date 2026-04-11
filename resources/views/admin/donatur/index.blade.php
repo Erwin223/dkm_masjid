@@ -1,30 +1,7 @@
 @extends('layouts.admin')
 @section('content')
+@include('admin.donatur._styles')
 
-<style>
-    .don-nav { display:flex; gap:10px; margin-bottom:25px; flex-wrap:wrap; }
-    .don-nav a { padding:9px 18px; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; border:1px solid #ddd; color:#555; background:#fff; display:inline-flex; align-items:center; gap:7px; transition:0.2s; }
-    .don-nav a:hover  { background:#f0fbf6; border-color:#0f8b6d; color:#0f8b6d; }
-    .don-nav a.active { background:#0f8b6d; border-color:#0f8b6d; color:#fff; }
-    .table-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:20px; }
-    .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; min-width:500px; }
-    table th { background:#f3f3f3; padding:10px 12px; font-size:12px; text-align:left; white-space:nowrap; border-bottom:1px solid #e5e5e5; }
-    table td { padding:10px 12px; font-size:13px; border-bottom:1px solid #f5f5f5; vertical-align:middle; }
-    table tbody tr:hover { background:#f7fdf9; }
-    .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px; }
-    .search-input { height:36px; border:1px solid #ddd; border-radius:8px; padding:0 12px; font-size:13px; outline:none; min-width:200px; }
-    .search-input:focus { border-color:#0f8b6d; }
-    .btn-tambah { background:#0f8b6d; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-    .btn-tambah:hover { background:#0c6d55; color:#fff; }
-    .badge-individu { background:#e1f5ee; color:#085041; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-    .badge-lembaga  { background:#e6f1fb; color:#0c447c; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-    .avatar-init { width:34px; height:34px; border-radius:50%; background:#e1f5ee; border:2px solid #9fe1cb; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:#0f6e56; }
-    td i { transition:0.2s; }
-    .fa-edit:hover  { color:darkblue; transform:scale(1.2); }
-    .fa-trash:hover { color:darkred;  transform:scale(1.2); }
-    @media(max-width:600px){ .top-row { flex-direction:column; align-items:flex-start; } .search-input,.btn-tambah { width:100%; justify-content:center; } }
-</style>
 
 <div class="don-nav">
     <a href="{{ route('donatur.index') }}" {{ request()->routeIs('donatur*') ? 'class=active' : '' }}>

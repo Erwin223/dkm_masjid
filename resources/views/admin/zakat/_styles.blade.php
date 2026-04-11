@@ -12,14 +12,20 @@
     .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px; }
     .search-input { height:36px; border:1px solid #ddd; border-radius:8px; padding:0 12px; font-size:13px; outline:none; min-width:220px; }
     .search-input:focus { border-color:#0f8b6d; }
-    .form-box { background:#fff; border-radius:10px; border:1px solid #e5e5e5; padding:28px; max-width:780px; }
-    .form-box h3 { font-size:16px; font-weight:600; margin-bottom:20px; color:#111; display:flex; align-items:center; gap:8px; }
+    .form-box { background:#fff; border-radius:16px; border:1px solid #e5e5e5; padding:30px; max-width:860px; box-shadow:0 14px 28px rgba(15,23,42,.04); }
+    .form-box h3 { font-size:18px; font-weight:700; margin-bottom:8px; color:#111; display:flex; align-items:center; gap:8px; }
+    .form-subtitle { font-size:12px; color:#6b7280; line-height:1.6; margin:0 0 22px; }
     .form-group { margin-bottom:18px; }
     .form-group label { display:block; font-size:13px; font-weight:500; color:#444; margin-bottom:6px; }
     .form-group input, .form-group select, .form-group textarea { width:100%; padding:9px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; color:#333; outline:none; background:#fff; transition:border 0.2s; }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#0f8b6d; }
     .form-group textarea { resize:vertical; min-height:90px; }
     .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-row-single { display:grid; grid-template-columns:1fr; gap:16px; }
+    .form-section { border:1px solid #edf1f5; border-radius:14px; padding:18px; background:#fcfdfd; }
+    .form-section + .form-section { margin-top:18px; }
+    .form-section-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#9ca3af; margin-bottom:14px; }
+    .field-note { color:#6b7280; font-size:11px; margin-top:6px; display:block; line-height:1.5; }
     .btn-tambah, .btn-simpan { background:#0f8b6d; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
     .btn-tambah:hover, .btn-simpan:hover { background:#0c6d55; color:#fff; }
     .btn-batal { background:#fff; color:#555; border:1px solid #ddd; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:7px; }
@@ -36,6 +42,7 @@
         .top-row { flex-direction:column; align-items:flex-start; }
         .search-input, .btn-tambah { width:100%; justify-content:center; }
         .form-row { grid-template-columns:1fr; }
-        .form-box { padding:18px; }
+        .form-box { padding:18px; border-radius:12px; }
+        .form-section { padding:14px; }
     }
 </style>
