@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\StatistikController;
+use App\Http\Controllers\Admin\ArsipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +81,15 @@ Route::post('/pengurus/store',         [PengurusController::class, 'store'])->na
 Route::get('/pengurus/edit/{id}',      [PengurusController::class, 'edit'])->name('pengurus.edit');
 Route::put('/pengurus/update/{id}',    [PengurusController::class, 'update'])->name('pengurus.update');
 Route::delete('/pengurus/delete/{id}', [PengurusController::class, 'destroy'])->name('pengurus.delete');
+
+// Arsip
+Route::get('/arsip',                   [ArsipController::class, 'index'])->name('arsip.index');
+Route::get('/arsip/create',            [ArsipController::class, 'create'])->name('arsip.create');
+Route::post('/arsip/store',            [ArsipController::class, 'store'])->name('arsip.store');
+Route::get('/arsip/edit/{id}',         [ArsipController::class, 'edit'])->name('arsip.edit');
+Route::put('/arsip/update/{id}',       [ArsipController::class, 'update'])->name('arsip.update');
+Route::delete('/arsip/delete/{id}',    [ArsipController::class, 'destroy'])->name('arsip.delete');
+Route::get('/arsip/download/{id}',     [ArsipController::class, 'download'])->name('arsip.download');
 
 
 // Jadwal Kegiatan

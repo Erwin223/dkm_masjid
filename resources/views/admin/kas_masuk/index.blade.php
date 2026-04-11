@@ -2,7 +2,7 @@
 @section('content')
 @include('admin.kas_masuk._styles')
 
-<div class="kas-header">
+<div class="kas-he      ader">
     <div class="kas-title">
         <div class="kas-icon"><i class="fa fa-money-bill-wave" style="color:#0f6e56;font-size:15px;"></i></div>
         Kas Masjid

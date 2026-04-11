@@ -2,6 +2,9 @@
 @section('content')
 @include('admin.zakat._styles')
 @include('admin.zakat._nav')
+
+
+
 <div class="table-box">
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">

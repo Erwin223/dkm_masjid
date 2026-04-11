@@ -3,6 +3,7 @@
 @include('admin.profil_masjid._styles')
 @include('admin._styles_website')
 
+
 <div class="galeri-header">
     <div class="galeri-title">
         <div class="galeri-icon"><i class="fa fa-globe" style="color:#0f6e56;font-size:15px;"></i></div>

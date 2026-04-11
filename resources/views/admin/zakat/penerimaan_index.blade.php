@@ -103,12 +103,12 @@
 
                     <td>{{ $item->jumlah_tanggungan ?? '-' }}</td>
                     <td>{{ $item->metode_pembayaran ?? '-' }}</td>
-                    
+
                     <td>
                         <span class="badge-status" style="
-                            padding: 4px 8px; 
-                            border-radius: 4px; 
-                            font-size: 11px; 
+                            padding: 4px 8px;
+                            border-radius: 4px;
+                            font-size: 11px;
                             font-weight: 600;
                             @if($item->status === 'pending') background: #fff3cd; color: #856404;
                             @elseif($item->status === 'verified') background: #d1ecf1; color: #0c5460;
@@ -119,7 +119,7 @@
                             {{ ['pending' => 'Menunggu', 'verified' => 'Diverifikasi', 'distributed' => 'Didistribusikan', 'cancelled' => 'Dibatalkan'][$item->status ?? 'pending'] ?? ucfirst($item->status ?? 'pending') }}
                         </span>
                     </td>
-                    
+
                     <td style="font-size: 11px; color: #666;">
                         @if($item->createdByUser)
                             {{ $item->createdByUser->name }}
@@ -127,7 +127,7 @@
                             <span style="color: #999;">User #{{ $item->created_by }}</span>
                         @endif
                     </td>
-                    
+
                     <td>{{ $item->keterangan ?? '-' }}</td>
 
                     <td style="text-align:center;">

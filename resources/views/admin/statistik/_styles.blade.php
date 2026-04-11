@@ -132,6 +132,7 @@
 .chart-badge-blue   { background: #dbeafe; color: #1e40af; }
 .chart-badge-amber  { background: #fef3c7; color: #92400e; }
 .chart-badge-purple { background: #ede9fe; color: #5b21b6; }
+.chart-badge-red    { background: #fee2e2; color: #b91c1c; }
 .chart-badge-row    { display: flex; flex-wrap: wrap; gap: 6px; }
 
 .chart-canvas-wrap { position: relative; }

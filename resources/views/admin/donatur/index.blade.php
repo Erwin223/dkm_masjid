@@ -2,7 +2,6 @@
 @section('content')
 @include('admin.donatur._styles')
 
-
 <div class="don-nav">
     <a href="{{ route('donatur.index') }}" {{ request()->routeIs('donatur*') ? 'class=active' : '' }}>
         <i class="fa fa-users"></i> Data Donatur

@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('content')
-
 @include('admin.berita._styles')
 @include('admin._styles_website')
 
@@ -76,7 +74,7 @@
                             @method('DELETE')
                             <button type="button" onclick="hapus('del-berita-{{ $b->id }}')" style="border:none;background:none;cursor:pointer;">
                                 <i class="fa fa-trash" style="color:red;"></i>
-                            </button>
+                            </button>e
                         </form>
                     </td>
                     <td style="text-align:center;">
