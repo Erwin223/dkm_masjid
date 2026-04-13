@@ -25,6 +25,7 @@ class StoreArsipRequest extends FormRequest
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'kategori' => 'required|string|in:Surat,Dokumen,Laporan,Kontrak,Proposal,Lainnya',
+            'jenis_surat' => 'nullable|string|in:masuk,keluar',
             'tanggal_arsip' => 'required|date',
             'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png,jpeg|max:5120',
         ];

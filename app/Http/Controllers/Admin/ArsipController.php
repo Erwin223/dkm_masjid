@@ -26,7 +26,8 @@ class ArsipController extends Controller
     public function create()
     {
         $kategori_list = ['Surat', 'Dokumen', 'Laporan', 'Kontrak', 'Proposal', 'Lainnya'];
-        return view('admin.arsip.create', compact('kategori_list'));
+        $jenis_surat_list = ['masuk', 'keluar'];
+        return view('admin.arsip.create', compact('kategori_list', 'jenis_surat_list'));
     }
 
     // =======================
@@ -50,6 +51,7 @@ class ArsipController extends Controller
             'judul' => $validated['judul'],
             'deskripsi' => $validated['deskripsi'],
             'kategori' => $validated['kategori'],
+            'jenis_surat' => $validated['jenis_surat'] ?? null,
             'tanggal_arsip' => $validated['tanggal_arsip'],
             'file' => $file_path,
             'nama_file_asli' => $nama_file_asli
@@ -66,7 +68,8 @@ class ArsipController extends Controller
     {
         $data = Arsip::findOrFail($id);
         $kategori_list = ['Surat', 'Dokumen', 'Laporan', 'Kontrak', 'Proposal', 'Lainnya'];
-        return view('admin.arsip.edit', compact('data', 'kategori_list'));
+        $jenis_surat_list = ['masuk', 'keluar'];
+        return view('admin.arsip.edit', compact('data', 'kategori_list', 'jenis_surat_list'));
     }
 
     // =======================
@@ -80,14 +83,11 @@ class ArsipController extends Controller
         $file_path = $data->file;
         $nama_file_asli = $data->nama_file_asli;
 
-        // JIKA ADA FILE BARU
         if ($request->hasFile('file')) {
-            // HAPUS FILE LAMA
             if ($data->file && Storage::disk('public')->exists($data->file)) {
                 Storage::disk('public')->delete($data->file);
             }
 
-            // SIMPAN FILE BARU
             $file = $request->file('file');
             $nama_file_asli = $file->getClientOriginalName();
             $file_path = $file->store('arsip', 'public');
@@ -97,6 +97,7 @@ class ArsipController extends Controller
             'judul' => $validated['judul'],
             'deskripsi' => $validated['deskripsi'],
             'kategori' => $validated['kategori'],
+            'jenis_surat' => $validated['jenis_surat'] ?? null,
             'tanggal_arsip' => $validated['tanggal_arsip'],
             'file' => $file_path,
             'nama_file_asli' => $nama_file_asli

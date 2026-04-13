@@ -42,11 +42,20 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="kategori">Kategori <span style="color:#ef4444;">*</span></label>
-                <select id="kategori" name="kategori" required>
+                <select id="kategori" name="kategori" required onchange="toggleJenisSurat()">
                     <option value="">-- Pilih Kategori --</option>
                     @foreach($kategori_list as $k)
                     <option value="{{ $k }}" {{ old('kategori', $data->kategori) == $k ? 'selected' : '' }}>{{ $k }}</option>
                     @endforeach
+                </select>
+            </div>
+
+            <div class="form-group" id="jenis_surat_group" style="display: none;">
+                <label for="jenis_surat">Jenis Surat <span style="color:#ef4444;">*</span></label>
+                <select id="jenis_surat" name="jenis_surat">
+                    <option value="">-- Pilih Jenis --</option>
+                    <option value="masuk" {{ old('jenis_surat', $data->jenis_surat) == 'masuk' ? 'selected' : '' }}>Surat Masuk</option>
+                    <option value="keluar" {{ old('jenis_surat', $data->jenis_surat) == 'keluar' ? 'selected' : '' }}>Surat Keluar</option>
                 </select>
             </div>
 
@@ -87,5 +96,27 @@
         </div>
     </form>
 </div>
+
+<script>
+function toggleJenisSurat() {
+    const kategori = document.getElementById('kategori').value;
+    const jenisSuratGroup = document.getElementById('jenis_surat_group');
+    const jenisSuratSelect = document.getElementById('jenis_surat');
+    
+    if (kategori === 'Surat') {
+        jenisSuratGroup.style.display = 'block';
+        jenisSuratSelect.required = true;
+    } else {
+        jenisSuratGroup.style.display = 'none';
+        jenisSuratSelect.required = false;
+        jenisSuratSelect.value = '';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleJenisSurat();
+});
+</script>
 
 @endsection

@@ -11,6 +11,7 @@ class Arsip extends Model
         'judul',
         'deskripsi',
         'kategori',
+        'jenis_surat',
         'tanggal_arsip',
         'file',
         'nama_file_asli'
