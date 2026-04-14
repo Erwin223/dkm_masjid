@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'nocache' => \App\Http\Middleware\NoCache::class,
             'admin' => \App\Http\Middleware\AdminOnly::class,
+            'check.account.lock' => \App\Http\Middleware\CheckAccountLock::class,
         ]);
 
     })

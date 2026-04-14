@@ -58,11 +58,11 @@
         <option value="1212" data-nama="Kab. Majalengka">Kab. Majalengka</option>
         <option value="1213" data-nama="Kab. Pangandaran">Kab. Pangandaran</option>
         <option value="1214" data-nama="Kab. Purwakarta">Kab. Purwakarta</option>
-        <option value="1215" data-nama="Kab. Subang">Kab. Subang</option>
+        <option value="1215" data-nama="Kab. Subang" selected>Kab. Subang</option>
         <option value="1216" data-nama="Kab. Sukabumi">Kab. Sukabumi</option>
         <option value="1217" data-nama="Kab. Sumedang">Kab. Sumedang</option>
         <option value="1218" data-nama="Kab. Tasikmalaya">Kab. Tasikmalaya</option>
-        <option value="1219" data-nama="Kota Bandung" selected>Kota Bandung</option>
+        <option value="1219" data-nama="Kota Bandung">Kota Bandung</option>
         <option value="1220" data-nama="Kota Banjar">Kota Banjar</option>
         <option value="1221" data-nama="Kota Bekasi">Kota Bekasi</option>
         <option value="1222" data-nama="Kota Bogor">Kota Bogor</option>
@@ -122,7 +122,7 @@
     let tahunAkt  = now.getFullYear();
     let bulanAkt  = now.getMonth() + 1;
     let tanggalAkt= now.getDate();
-    let kotaId    = '1301';
+    let kotaId    = '1215';
 
     function gantiKota(){
         kotaId = document.getElementById('kotaSelect').value;
