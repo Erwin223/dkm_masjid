@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\PenggunaController;
 use App\Http\Controllers\Admin\DonasiController;
 use App\Http\Controllers\Admin\DonaturController;
 use App\Http\Controllers\Admin\ZakatController;
-use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProfilMasjidController;
 use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\GaleriController;
@@ -173,13 +173,13 @@ Route::get('/zakat/distribusi/{id}/edit',   [ZakatController::class, 'distribusi
 Route::put('/zakat/distribusi/{id}',        [ZakatController::class, 'distribusiUpdate'])->name('zakat.distribusi.update');
 Route::delete('/zakat/distribusi/{id}',     [ZakatController::class, 'distribusiDelete'])->name('zakat.distribusi.delete');
 
-// MANAJEMEN ADMIN (USERS)
-Route::get('/users',                [AdminUserController::class, 'index'])->name('admin.users.index');
-Route::get('/users/create',         [AdminUserController::class, 'create'])->name('admin.users.create');
-Route::post('/users',               [AdminUserController::class, 'store'])->name('admin.users.store');
-Route::get('/users/{id}/edit',      [AdminUserController::class, 'edit'])->name('admin.users.edit');
-Route::put('/users/{id}',           [AdminUserController::class, 'update'])->name('admin.users.update');
-Route::delete('/users/{id}',        [AdminUserController::class, 'destroy'])->name('admin.users.delete');
+// MANAJEMEN ADMIN
+Route::get('/admins',               [AdminController::class, 'index'])->name('admin.admins.index');
+Route::get('/admins/create',        [AdminController::class, 'create'])->name('admin.admins.create');
+Route::post('/admins',              [AdminController::class, 'store'])->name('admin.admins.store');
+Route::get('/admins/{id}/edit',     [AdminController::class, 'edit'])->name('admin.admins.edit');
+Route::put('/admins/{id}',          [AdminController::class, 'update'])->name('admin.admins.update');
+Route::delete('/admins/{id}',       [AdminController::class, 'destroy'])->name('admin.admins.delete');
 
 // KONTEN WEBSITE
 Route::get('/profil-masjid',             [ProfilMasjidController::class, 'index'])->name('profil_masjid.index');

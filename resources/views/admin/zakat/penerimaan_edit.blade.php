@@ -19,7 +19,7 @@
     
     <div style="background: #f3e5f5; border-left: 4px solid #7b1fa2; padding: 12px; margin-bottom: 20px; border-radius: 4px; font-size: 11px; color: #4a148c;">
         <i class="fa fa-history"></i> <strong>Catatan Audit:</strong> 
-        Input by <strong>{{ $penerimaan->createdByUser->name ?? 'User #' . $penerimaan->created_by }}</strong> 
+        Input by <strong>{{ $penerimaan->createdByAdmin->name ?? 'Admin #' . $penerimaan->created_by }}</strong> 
         on {{ optional($penerimaan->created_at)->format('d M Y H:i') }} | 
         Last updated {{ optional($penerimaan->updated_at)->format('d M Y H:i') }}
     </div>

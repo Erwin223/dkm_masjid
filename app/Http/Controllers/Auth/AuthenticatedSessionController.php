@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,8 +28,8 @@ class AuthenticatedSessionController extends Controller
     {
         // Check if account is locked before attempting authentication
         $email = $request->input('email');
-        $user = User::where('email', $email)->first();
-        if ($user && $user->isLocked()) {
+        $admin = Admin::where('email', $email)->first();
+        if ($admin && $admin->isLocked()) {
             Log::warning('Login attempt on locked account', [
                 'email' => $email,
                 'ip' => $request->ip(),
@@ -46,35 +46,35 @@ class AuthenticatedSessionController extends Controller
 
             $request->session()->regenerate();
 
-            /** @var User|null $user */
-            $user = Auth::user();
-            assert($user instanceof User);
+            /** @var Admin|null $admin */
+            $admin = Auth::user();
+            assert($admin instanceof Admin);
 
             // Record successful login
-            $user->recordLogin($request->ip());
+            $admin->recordLogin($request->ip());
 
             // Log successful login
             Log::info('User logged in successfully', [
-                'user_id' => $user->id,
-                'email' => $user->email,
+                'admin_id' => $admin->id,
+                'email' => $admin->email,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
 
             // Tambahkan pesan selamat datang
-            $request->session()->flash('welcome_message', "Selamat datang " . $user->name . " pada halaman admin DKM Masjid Al-Musabaqoh");
+            $request->session()->flash('welcome_message', "Selamat datang " . $admin->name . " pada halaman admin DKM Masjid Al-Musabaqoh");
 
             return redirect()->intended('/admin/dashboard');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            if ($user) {
-                $user->incrementFailedAttempts();
+            if ($admin) {
+                $admin->incrementFailedAttempts();
 
                 Log::warning('Failed login attempt', [
                     'email' => $email,
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
-                    'attempts' => $user->failed_login_attempts,
+                    'attempts' => $admin->failed_login_attempts,
                 ]);
             }
 

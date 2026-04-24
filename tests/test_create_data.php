@@ -71,7 +71,7 @@ try {
 
 try {
     echo "4. Testing Relationship - PenerimaanZakat -> CreatedByUser:\n";
-    $creator = $penerimaan->createdByUser;
+    $creator = $penerimaan->createdByAdmin;
     echo "  ✓ Created by user: " . ($creator ? $creator->name : "ID {$penerimaan->created_by} (user not found)") . "\n";
     if (!$creator) {
         echo "    → This is OK if user ID 1 doesn't exist yet\n";

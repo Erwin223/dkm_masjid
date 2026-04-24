@@ -14,10 +14,10 @@ class CheckAccountLock
         $email = $request->input('email');
 
         if ($email) {
-            $user = \App\Models\User::where('email', $email)->first();
+            $admin = \App\Models\Admin::where('email', $email)->first();
 
-            if ($user && $user->isLocked()) {
-                $minutesLeft = now()->diffInMinutes($user->locked_until, false);
+            if ($admin && $admin->isLocked()) {
+                $minutesLeft = now()->diffInMinutes($admin->locked_until, false);
 
                 return back()->withErrors([
                     'email' => "Akun terkunci. Coba lagi dalam {$minutesLeft} menit."

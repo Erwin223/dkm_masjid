@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('admin.users._styles')
+@include('admin.admins._styles')
 
 <div class="form-box">
     <h3><i class="fa fa-user-edit" style="color:#0f8b6d;"></i> Edit Data Admin</h3>
@@ -17,21 +17,21 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
+    <form method="POST" action="{{ route('admin.admins.update', $admin->id) }}">
         @csrf
         @method('PUT')
 
         <div class="form-group">
             <label>Nama Lengkap <span style="color:red;">*</span></label>
-            <input type="text" name="name" value="{{ old('name', $user->name) }}" required placeholder="Masukkan nama admin">
+            <input type="text" name="name" value="{{ old('name', $admin->name) }}" required placeholder="Masukkan nama admin">
         </div>
 
         <div class="form-group">
             <label>Alamat Email <span style="color:red;">*</span></label>
-            <input type="email" name="email" value="{{ old('email', $user->email) }}" required placeholder="Masukkan email aktif">
+            <input type="email" name="email" value="{{ old('email', $admin->email) }}" required placeholder="Masukkan email aktif">
         </div>
 
-        @if(Auth::id() == $user->id)
+        @if(Auth::id() == $admin->id)
         <div class="form-group" style="background:#f0f9ff; padding:15px; border-radius:8px; border:1px solid #bae6fd;">
             <label style="color:#0369a1;">Konfirmasi Keamanan <span style="color:red;">*</span></label>
             <div class="password-wrapper">
@@ -63,7 +63,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn-simpan"><i class="fa fa-save"></i> Perbarui Admin</button>
-            <a href="{{ route('admin.users.index') }}" class="btn-batal"><i class="fa fa-arrow-left"></i> Batal</a>
+            <a href="{{ route('admin.admins.index') }}" class="btn-batal"><i class="fa fa-arrow-left"></i> Batal</a>
         </div>
     </form>
 </div>

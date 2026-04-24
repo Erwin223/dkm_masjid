@@ -74,8 +74,8 @@ echo "-----------------------------------\n";
 $penerimaan = new \App\Models\PenerimaanZakat();
 echo "  PenerimaanZakat relations exist: ";
 try {
-    echo (method_exists($penerimaan, 'createdByUser') ? "✓ createdByUser " : "");
-    echo (method_exists($penerimaan, 'updatedByUser') ? "✓ updatedByUser " : "");
+    echo (method_exists($penerimaan, 'createdByAdmin') ? "✓ createdByAdmin " : "");
+    echo (method_exists($penerimaan, 'updatedByAdmin') ? "✓ updatedByAdmin " : "");
     echo (method_exists($penerimaan, 'distribusiZakat') ? "✓ distribusiZakat" : "");
     echo "\n";
 } catch (\Exception $e) {

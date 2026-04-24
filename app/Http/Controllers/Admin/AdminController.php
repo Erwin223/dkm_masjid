@@ -3,21 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
-class AdminUserController extends Controller
+class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::where('is_admin', true)->orderBy('name', 'asc')->get();
-        return view('admin.users.index', compact('users'));
+        $admins = Admin::query()->orderBy('name', 'asc')->get();
+
+        return view('admin.admins.index', compact('admins'));
     }
 
     /**
@@ -25,7 +26,7 @@ class AdminUserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.create');
+        return view('admin.admins.create');
     }
 
     /**
@@ -35,18 +36,17 @@ class AdminUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.Admin::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        User::create([
+        Admin::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_admin' => true,
         ]);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.admins.index')
             ->with('success', 'Admin baru berhasil ditambahkan.');
     }
 
@@ -55,8 +55,9 @@ class AdminUserController extends Controller
      */
     public function edit($id)
     {
-        $user = User::where('is_admin', true)->findOrFail($id);
-        return view('admin.users.edit', compact('user'));
+        $admin = Admin::findOrFail($id);
+
+        return view('admin.admins.edit', compact('admin'));
     }
 
     /**
@@ -64,16 +65,15 @@ class AdminUserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::where('is_admin', true)->findOrFail($id);
+        $admin = Admin::findOrFail($id);
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$admin->id],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ];
 
-        // Validasi kata sandi saat ini jika admin mengedit profilnya sendiri
-        if (Auth::id() == $user->id) {
+        if (Auth::id() == $admin->id) {
             $rules['current_password'] = ['required', 'current_password'];
         }
 
@@ -91,9 +91,9 @@ class AdminUserController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        $user->update($data);
+        $admin->update($data);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.admins.index')
             ->with('success', 'Data admin berhasil diperbarui.');
     }
 
@@ -102,17 +102,16 @@ class AdminUserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::where('is_admin', true)->findOrFail($id);
+        $admin = Admin::findOrFail($id);
 
-        // Mencegah admin menghapus dirinya sendiri
-        if (Auth::id() == $user->id) {
-            return redirect()->route('admin.users.index')
+        if (Auth::id() == $admin->id) {
+            return redirect()->route('admin.admins.index')
                 ->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
-        $user->delete();
+        $admin->delete();
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.admins.index')
             ->with('success', 'Admin berhasil dihapus.');
     }
 }

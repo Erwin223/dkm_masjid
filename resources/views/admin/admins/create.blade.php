@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('admin.users._styles')
+@include('admin.admins._styles')
 
 <div class="form-box">
     <h3><i class="fa fa-user-plus" style="color:#0f8b6d;"></i> Tambah Admin Baru</h3>
@@ -17,7 +17,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.users.store') }}">
+    <form method="POST" action="{{ route('admin.admins.store') }}">
         @csrf
 
         <div class="form-group">
@@ -50,7 +50,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn-simpan"><i class="fa fa-save"></i> Simpan Admin</button>
-            <a href="{{ route('admin.users.index') }}" class="btn-batal"><i class="fa fa-arrow-left"></i> Batal</a>
+            <a href="{{ route('admin.admins.index') }}" class="btn-batal"><i class="fa fa-arrow-left"></i> Batal</a>
         </div>
     </form>
 </div>

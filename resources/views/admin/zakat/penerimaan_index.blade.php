@@ -121,10 +121,10 @@
                     </td>
 
                     <td style="font-size: 11px; color: #666;">
-                        @if($item->createdByUser)
-                            {{ $item->createdByUser->name }}
+                        @if($item->createdByAdmin)
+                            {{ $item->createdByAdmin->name }}
                         @else
-                            <span style="color: #999;">User #{{ $item->created_by }}</span>
+                            <span style="color: #999;">Admin #{{ $item->created_by }}</span>
                         @endif
                     </td>
 

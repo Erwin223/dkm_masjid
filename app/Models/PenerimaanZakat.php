@@ -53,14 +53,14 @@ class PenerimaanZakat extends Model
         return $this->belongsTo(Muzakki::class, 'muzakki_id');
     }
 
-    public function createdByUser()
+    public function createdByAdmin()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(Admin::class, 'created_by');
     }
 
-    public function updatedByUser()
+    public function updatedByAdmin()
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(Admin::class, 'updated_by');
     }
 
     public function distribusiZakat()

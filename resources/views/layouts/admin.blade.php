@@ -165,7 +165,7 @@
             <div class="nav-divider"></div>
             <div class="nav-label">Pengaturan</div>
 
-            <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+            <a href="{{ route('admin.admins.index') }}" class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
                 <i class="fa fa-user-shield"></i> Kelola Admin
             </a>
 
@@ -175,7 +175,7 @@
         <div class="sidebar-bottom">
 
             {{-- TAMBAH ADMIN --}}
-            <a href="{{ route('admin.users.create') }}" class="btn-tambah-admin">
+            <a href="{{ route('admin.admins.create') }}" class="btn-tambah-admin">
                 <div class="icon-circle"><i class="fa fa-user-plus"></i></div>
                 Tambah Admin Baru
             </a>

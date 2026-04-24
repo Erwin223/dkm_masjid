@@ -3,15 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use Database\Factories\AdminFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class Admin extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<AdminFactory> */
     use HasFactory, Notifiable;
+
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -40,6 +43,22 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected static function newFactory(): AdminFactory
+    {
+        return AdminFactory::new();
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('admin_only', function (Builder $builder) {
+            $builder->where('is_admin', true);
+        });
+
+        static::creating(function (self $admin) {
+            $admin->is_admin = true;
+        });
+    }
 
     /**
      * Get the attributes that should be cast.

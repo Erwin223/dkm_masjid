@@ -2,16 +2,18 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends Factory<User>
+ * @extends Factory<Admin>
  */
-class UserFactory extends Factory
+class AdminFactory extends Factory
 {
+    protected $model = Admin::class;
+
     /**
      * The current password being used by the factory.
      */
@@ -29,6 +31,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'is_admin' => true,
             'remember_token' => Str::random(10),
         ];
     }

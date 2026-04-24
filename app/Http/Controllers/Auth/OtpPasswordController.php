@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+use App\Models\Admin;
 use App\Mail\SendOtpMail;
 use Carbon\Carbon;
 use Illuminate\Validation\Rules\Password;
@@ -36,7 +36,7 @@ class OtpPasswordController extends Controller
 
         // Kirim email
         try {
-            $sendMail = User::where('email', $email)->where('is_admin', true)->exists();
+            $sendMail = Admin::where('email', $email)->exists();
             $result = $this->issueOtp($email, $sendMail);
             if (! $result['ok']) {
                 return back()->withErrors([
@@ -105,7 +105,7 @@ class OtpPasswordController extends Controller
             return back()->withErrors(['otp' => 'Terlalu banyak percobaan. Coba lagi dalam ' . $minutes . ' menit.']);
         }
 
-        $isAdmin = User::where('email', $email)->where('is_admin', true)->exists();
+        $isAdmin = Admin::where('email', $email)->exists();
 
         if (!$otpRecord || ! $isAdmin) {
             return back()->withErrors(['otp' => $genericError]);
@@ -154,7 +154,7 @@ class OtpPasswordController extends Controller
         }
 
         try {
-            $sendMail = User::where('email', $email)->where('is_admin', true)->exists();
+            $sendMail = Admin::where('email', $email)->exists();
             $result = $this->issueOtp($email, $sendMail);
             if (! $result['ok']) {
                 return back()->withErrors([
@@ -189,13 +189,13 @@ class OtpPasswordController extends Controller
             return redirect()->route('password.request')->withErrors(['email' => 'Akses tidak sah.']);
         }
 
-        $user = User::where('email', $email)->where('is_admin', true)->first();
-        if (! $user) {
+        $admin = Admin::where('email', $email)->first();
+        if (! $admin) {
             return redirect()->route('password.request')->withErrors(['email' => 'Akses tidak sah.']);
         }
 
         // Update password
-        $user->update([
+        $admin->update([
             'password' => Hash::make($request->password)
         ]);
 
