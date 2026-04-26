@@ -142,7 +142,7 @@ class OtpPasswordController extends Controller
             'locked_until' => null,
         ]);
         session(['otp_verified' => true]);
-        
+
         return redirect()->route('password.otp.reset');
     }
 

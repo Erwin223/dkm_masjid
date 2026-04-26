@@ -3,9 +3,10 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\Admin;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -19,55 +20,71 @@ class PasswordResetTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_reset_password_link_can_be_requested(): void
+    public function test_otp_can_be_requested_for_existing_admin_email(): void
     {
-        Notification::fake();
+        Mail::fake();
 
         $user = Admin::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $response = $this->post('/forgot-password', ['email' => $user->email]);
 
-        Notification::assertSentTo($user, ResetPassword::class);
+        $response->assertRedirect(route('password.otp.verify'));
+        $response->assertSessionHas('status');
+        $this->assertSame($user->email, session('reset_email'));
+
+        $this->assertDatabaseHas('password_reset_otps', [
+            'email' => $user->email,
+        ]);
     }
 
-    public function test_reset_password_screen_can_be_rendered(): void
+    public function test_verify_otp_screen_requires_reset_email_session(): void
     {
-        Notification::fake();
+        $response = $this->get('/verify-otp');
 
-        $user = Admin::factory()->create();
-
-        $this->post('/forgot-password', ['email' => $user->email]);
-
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-            $response = $this->get('/reset-password/'.$notification->token);
-
-            $response->assertStatus(200);
-
-            return true;
-        });
+        $response->assertRedirect(route('password.request'));
     }
 
-    public function test_password_can_be_reset_with_valid_token(): void
+    public function test_reset_password_screen_requires_verified_otp_session(): void
     {
-        Notification::fake();
+        $response = $this->get('/reset-password');
 
-        $user = Admin::factory()->create();
+        $response->assertRedirect(route('password.request'));
+    }
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+    public function test_password_can_be_reset_after_otp_verification_session_is_present(): void
+    {
+        $user = Admin::factory()->create([
+            'password' => bcrypt('old-password'),
+        ]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-            $response = $this->post('/reset-password', [
-                'token' => $notification->token,
-                'email' => $user->email,
-                'password' => 'password',
-                'password_confirmation' => 'password',
+        DB::table('password_reset_otps')->insert([
+            'email' => $user->email,
+            'otp' => Hash::make('123456'),
+            'created_at' => now(),
+            'last_sent_at' => now(),
+            'attempts' => 0,
+            'locked_until' => null,
+        ]);
+
+        $response = $this
+            ->withSession([
+                'reset_email' => $user->email,
+                'otp_verified' => true,
+            ])
+            ->post('/reset-password', [
+                'password' => 'new-password',
+                'password_confirmation' => 'new-password',
             ]);
 
-            $response
-                ->assertSessionHasNoErrors()
-                ->assertRedirect(route('login'));
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('login'));
 
-            return true;
-        });
+        $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
+        $this->assertDatabaseMissing('password_reset_otps', [
+            'email' => $user->email,
+        ]);
+        $this->assertNull(session('reset_email'));
+        $this->assertNull(session('otp_verified'));
     }
 }

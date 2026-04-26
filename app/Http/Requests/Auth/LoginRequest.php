@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Admin;
+use Carbon\CarbonInterval;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,19 +44,32 @@ class LoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): void
+    public function authenticate(): Admin
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        /** @var Admin|null $admin */
+        $admin = Admin::where('email', (string) $this->string('email'))->first();
+
+        if (! $admin || ! Auth::validate($this->only('email', 'password'))) {
+            $this->hitRateLimiters();
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
-        RateLimiter::clear($this->throttleKey());
+        if ($admin->isLocked()) {
+            $this->hitRateLimiters();
+
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
+        $this->clearRateLimiters();
+
+        return $admin;
     }
 
     /**
@@ -64,19 +79,26 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        $credentialLimited = RateLimiter::tooManyAttempts($this->throttleKey(), 5);
+        $ipLimited = RateLimiter::tooManyAttempts($this->ipThrottleKey(), 20);
+
+        if (! $credentialLimited && ! $ipLimited) {
             return;
         }
 
         event(new Lockout($this));
 
-        $seconds = RateLimiter::availableIn($this->throttleKey());
+        $seconds = max(
+            RateLimiter::availableIn($this->throttleKey()),
+            RateLimiter::availableIn($this->ipThrottleKey()),
+        );
+        $humanWindow = CarbonInterval::seconds($seconds)->cascade()->forHumans(short: true);
 
         throw ValidationException::withMessages([
             'email' => trans('auth.throttle', [
                 'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+                'minutes' => max(1, ceil($seconds / 60)),
+            ]).' Silakan coba lagi dalam '.$humanWindow.'.',
         ]);
     }
 
@@ -86,5 +108,22 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+    }
+
+    public function ipThrottleKey(): string
+    {
+        return 'login-ip|'.$this->ip();
+    }
+
+    protected function hitRateLimiters(): void
+    {
+        RateLimiter::hit($this->throttleKey(), 60);
+        RateLimiter::hit($this->ipThrottleKey(), 60);
+    }
+
+    protected function clearRateLimiters(): void
+    {
+        RateLimiter::clear($this->throttleKey());
+        RateLimiter::clear($this->ipThrottleKey());
     }
 }

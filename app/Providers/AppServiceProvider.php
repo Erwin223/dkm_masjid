@@ -42,5 +42,19 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(2)->by($key);
         });
+
+        RateLimiter::for('login-otp-verify', function (Request $request) {
+            $adminId = (string) $request->session()->get('login_otp_admin_id', '');
+            $key = $request->ip().'|'.$adminId;
+
+            return Limit::perMinute(10)->by($key);
+        });
+
+        RateLimiter::for('login-otp-resend', function (Request $request) {
+            $adminId = (string) $request->session()->get('login_otp_admin_id', '');
+            $key = $request->ip().'|'.$adminId;
+
+            return Limit::perMinute(3)->by($key);
+        });
     }
 }

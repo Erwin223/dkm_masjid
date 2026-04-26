@@ -1,13 +1,13 @@
 @extends('layouts.auth-login')
 
-@section('title', 'Verifikasi OTP')
-@section('subtitle', 'Verifikasi OTP Reset Password')
+@section('title', 'Verifikasi Login')
+@section('subtitle', 'Masukkan kode verifikasi email untuk menyelesaikan login')
 
 @section('content')
-    <h2>Verifikasi OTP</h2>
-    <p>Masukkan 6 digit kode OTP yang dikirim ke email Anda.</p>
+    <h2>Verifikasi Login</h2>
+    <p>Masukkan 6 digit kode verifikasi yang baru saja dikirim ke email admin Anda.</p>
 
-    @if(session('status'))
+    @if (session('status'))
         <div class="status-box">{{ session('status') }}</div>
     @endif
 
@@ -15,24 +15,24 @@
         <div class="error-box">{{ $errors->first() }}</div>
     @endif
 
-    <form method="POST" action="{{ route('password.otp.verify.post') }}">
+    <form method="POST" action="{{ route('login.otp.verify') }}">
         @csrf
 
         <div class="input-group">
-            <input id="otp" type="text" name="otp" placeholder="Kode OTP" required autofocus maxlength="6"
-                autocomplete="off" inputmode="numeric" style="text-align:center;letter-spacing:6px;">
+            <input id="otp" type="text" name="otp" placeholder="Kode Verifikasi" required autofocus maxlength="6"
+                autocomplete="one-time-code" inputmode="numeric" style="text-align:center;letter-spacing:6px;">
         </div>
 
-        <button type="submit">Verifikasi OTP</button>
+        <button type="submit">Verifikasi dan Masuk</button>
     </form>
 
     <div class="actions" style="margin-top:18px;margin-bottom:0;">
-        <a href="{{ route('password.request') }}" class="link">Ganti Email</a>
+        <a href="{{ route('login') }}" class="link">Kembali ke Login</a>
 
-        <form method="POST" action="{{ route('password.otp.resend') }}" style="margin:0;">
+        <form method="POST" action="{{ route('login.otp.resend') }}" style="margin:0;">
             @csrf
             <button id="resendBtn" type="submit" class="btn-inline btn-secondary">
-                Kirim Ulang OTP <span id="cooldownText"></span>
+                Kirim Ulang Kode <span id="cooldownText"></span>
             </button>
         </form>
     </div>
@@ -40,14 +40,12 @@
     <script>
         (function () {
             var cooldown = {{ (int) ($cooldownRemaining ?? 0) }};
-            var locked = {{ (int) ($lockRemainingSeconds ?? 0) }};
             var btn = document.getElementById('resendBtn');
             var text = document.getElementById('cooldownText');
 
             function render() {
-                var remaining = Math.max(cooldown, locked);
-                if (remaining > 0) {
-                    text.textContent = ' (' + remaining + 's)';
+                if (cooldown > 0) {
+                    text.textContent = ' (' + cooldown + 's)';
                     if (btn) btn.setAttribute('disabled', 'disabled');
                 } else {
                     text.textContent = '';
@@ -57,10 +55,9 @@
 
             render();
 
-            if (cooldown > 0 || locked > 0) {
+            if (cooldown > 0) {
                 setInterval(function () {
                     if (cooldown > 0) cooldown--;
-                    if (locked > 0) locked--;
                     render();
                 }, 1000);
             }

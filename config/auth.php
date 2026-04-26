@@ -4,6 +4,8 @@ use App\Models\Admin;
 
 return [
 
+    'require_admin_otp' => env('AUTH_REQUIRE_ADMIN_OTP', true),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults

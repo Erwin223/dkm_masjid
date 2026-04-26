@@ -4,7 +4,7 @@
 @section('subtitle', 'Buat Password Baru Admin')
 
 @section('content')
-    <h2><i class="fa-solid fa-lock"></i> Reset Password</h2>
+    <h2>Reset Password</h2>
     <p>Masukkan password baru untuk akun admin Anda.</p>
 
     @if(session('status'))
@@ -19,20 +19,18 @@
         @csrf
 
         <div class="input-group">
-            <i class="fa fa-lock"></i>
             <input id="password" type="password" name="password" placeholder="Password Baru" required
                 autocomplete="new-password">
-            <i class="fa fa-eye toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('password', this)">Tampilkan</button>
         </div>
 
         <div class="input-group">
-            <i class="fa fa-shield-halved"></i>
             <input id="password_confirmation" type="password" name="password_confirmation"
                 placeholder="Konfirmasi Password Baru" required autocomplete="new-password">
-            <i class="fa fa-eye toggle-password" onclick="togglePasswordVisibility('password_confirmation', this)"></i>
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('password_confirmation', this)">Tampilkan</button>
         </div>
 
-        <button type="submit"><i class="fa fa-save"></i> Simpan Password Baru</button>
+        <button type="submit">Simpan Password Baru</button>
     </form>
 
     <div class="actions" style="margin-top:18px;margin-bottom:0;">

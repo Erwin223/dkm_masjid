@@ -86,17 +86,6 @@ class Admin extends Authenticatable
     }
 
     /**
-     * Lock user account for specified minutes
-     */
-    public function lockAccount(int $minutes = 15): void
-    {
-        $this->update([
-            'locked_until' => now()->addMinutes($minutes),
-            'failed_login_attempts' => 0,
-        ]);
-    }
-
-    /**
      * Unlock user account
      */
     public function unlockAccount(): void
@@ -105,28 +94,6 @@ class Admin extends Authenticatable
             'locked_until' => null,
             'failed_login_attempts' => 0,
         ]);
-    }
-
-    /**
-     * Increment failed login attempts
-     */
-    public function incrementFailedAttempts(): void
-    {
-        $attempts = $this->failed_login_attempts + 1;
-        $this->update(['failed_login_attempts' => $attempts]);
-
-        // Lock account after 5 failed attempts
-        if ($attempts >= 5) {
-            $this->lockAccount(15); // Lock for 15 minutes
-        }
-    }
-
-    /**
-     * Reset failed login attempts on successful login
-     */
-    public function resetFailedAttempts(): void
-    {
-        $this->update(['failed_login_attempts' => 0]);
     }
 
     /**
@@ -139,5 +106,10 @@ class Admin extends Authenticatable
             'last_login_ip' => $ip,
             'failed_login_attempts' => 0,
         ]);
+    }
+
+    public function requiresTwoFactorAuth(): bool
+    {
+        return (bool) config('auth.require_admin_otp', true);
     }
 }
