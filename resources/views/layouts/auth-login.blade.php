@@ -11,22 +11,36 @@
             margin: 0;
             font-family: sans-serif;
             min-height: 100vh;
+            background:
+                linear-gradient(rgba(10, 24, 17, 0.35), rgba(10, 24, 17, 0.35)),
+                url('{{ asset('storage/icon/FOTO.jpeg') }}') center/cover no-repeat fixed;
         }
 
         .container {
             display: flex;
             min-height: 100vh;
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .left {
             width: 50%;
-            background: linear-gradient(90deg, #2f8f6b, #a7c6b8);
+            background:
+                linear-gradient(135deg, rgba(47, 143, 107, 0.88), rgba(167, 198, 184, 0.72));
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
             text-align: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        
+
+        .left-content {
+            position: relative;
+            z-index: 1;
         }
 
         .left-content img {
@@ -54,7 +68,8 @@
 
         .right {
             width: 50%;
-            background: #f2f2f2;
+            background: rgba(242, 242, 242, 0.84);
+            backdrop-filter: blur(6px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -62,13 +77,15 @@
         }
 
         .login-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 50px;
             width: 420px;
             max-width: 100%;
             border-radius: 14px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
             text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
         }
 
         .login-card h2 {
@@ -251,6 +268,8 @@
             .left {
                 width: 100%;
                 min-height: 200px;
+                background:
+                    linear-gradient(135deg, rgba(47, 143, 107, 0.9), rgba(167, 198, 184, 0.76));
             }
 
             .right {
