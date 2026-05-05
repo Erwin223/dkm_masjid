@@ -296,7 +296,6 @@
                         <path d="M12 2 4 6v2h16V6l-8-4Zm-6 8v8H4v2h16v-2h-2v-8h-2v8h-3v-5h-2v5H8v-8H6Zm2.5-1.5A1.5 1.5 0 1 0 8.5 7a1.5 1.5 0 0 0 0 3Zm7 0A1.5 1.5 0 1 0 15.5 7a1.5 1.5 0 0 0 0 3Z"/>
                     </svg>
                 </div>
-                <img src="/images/logo.png">
                 <h2>DKM Masjid AL-MUSABAQOH</h2>
                 <p>@yield('subtitle', 'Login Admin Website DKM')</p>
             </div>
