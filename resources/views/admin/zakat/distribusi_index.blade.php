@@ -95,19 +95,40 @@
                     <td>{{ $item->nominal ? 'Rp ' . number_format($item->nominal, 0, ',', '.') : '-' }}</td>
                     <td>{{ $item->keterangan ?? '-' }}</td>
 
-                    <td style="text-align:center;">
-                        <form id="hapus-distribusi-{{ $item->id }}" action="{{ route('zakat.distribusi.delete', $item->id) }}" method="POST" style="display:inline;">
-                            @csrf @method('DELETE')
-                            <button type="button" onclick="hapus('hapus-distribusi-{{ $item->id }}')" style="border:none;background:none;cursor:pointer;">
-                                <i class="fa fa-trash" style="color:red;"></i>
-                            </button>
-                        </form>
-                    </td>
-                    <td style="text-align:center;">
-                        <a href="{{ route('zakat.distribusi.edit', $item->id) }}">
-                            <i class="fa fa-edit" style="color:blue;"></i>
-                        </a>
-                    </td>
+                    @if($item->deletionRequest)
+                        @if(auth()->user()->role == 'ketua')
+                            <td colspan="2" style="text-align:center;">
+                                <div style="display:flex; justify-content:center; gap:4px;">
+                                    <form action="{{ route('admin.deletion_approvals.approve', $item->deletionRequest->id) }}" method="POST">
+                                        @csrf
+                                        <button style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Setujui" onclick="return confirm('Yakin setujui?')"><i class="fa fa-check"></i> Setujui</button>
+                                    </form>
+                                    <form action="{{ route('admin.deletion_approvals.reject', $item->deletionRequest->id) }}" method="POST">
+                                        @csrf
+                                        <button style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Tolak" onclick="return confirm('Yakin tolak?')"><i class="fa fa-times"></i> Tolak</button>
+                                    </form>
+                                </div>
+                            </td>
+                        @else
+                            <td colspan="2" style="text-align:center;">
+                                <span style="font-size:12px;color:#b45309;background:#fef3c7;padding:4px 10px;border-radius:12px;font-weight:600;">Menunggu Dihapus</span>
+                            </td>
+                        @endif
+                    @else
+                        <td style="text-align:center;">
+                            <form id="hapus-distribusi-{{ $item->id }}" action="{{ route('zakat.distribusi.delete', $item->id) }}" method="POST" style="display:inline;">
+                                @csrf @method('DELETE')
+                                <button type="button" onclick="hapus('hapus-distribusi-{{ $item->id }}')" style="border:none;background:none;cursor:pointer;">
+                                    <i class="fa fa-trash" style="color:red;"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ route('zakat.distribusi.edit', $item->id) }}">
+                                <i class="fa fa-edit" style="color:blue;"></i>
+                            </a>
+                        </td>
+                    @endif
                 </tr>
                 @empty
                 <tr><td colspan="10" style="text-align:center;padding:2.5rem;color:#999;"><i class="fa fa-arrow-up" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>Belum ada distribusi zakat</td></tr>

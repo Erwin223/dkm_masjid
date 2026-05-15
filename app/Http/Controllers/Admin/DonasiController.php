@@ -141,9 +141,25 @@ class DonasiController extends Controller
 
     public function masukDelete($id)
     {
-        DonasiMasuk::findOrFail($id)->delete();
+        $donasi = DonasiMasuk::findOrFail($id);
+
+        if (!$donasi->deletionRequest) {
+            \App\Models\DeletionRequest::create([
+                'model_type' => get_class($donasi),
+                'model_id' => $donasi->id,
+                'user_id' => auth()->id(),
+                'status' => 'pending',
+            ]);
+
+            $ketuas = \App\Models\Admin::where('role', 'ketua')->get();
+            $adminName = auth()->user()->name ?? 'Admin';
+            foreach ($ketuas as $ketua) {
+                $ketua->notify(new \App\Notifications\DeletionRequested($adminName, 'Donasi Masuk'));
+            }
+        }
+
         return redirect()->route('donasi.masuk')
-            ->with('success', 'Data donasi masuk berhasil dihapus');
+            ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
     }
 
     // ==================== DONASI KELUAR ====================
@@ -242,9 +258,25 @@ class DonasiController extends Controller
 
     public function keluarDelete($id)
     {
-        DonasiKeluar::findOrFail($id)->delete();
+        $donasi = DonasiKeluar::findOrFail($id);
+
+        if (!$donasi->deletionRequest) {
+            \App\Models\DeletionRequest::create([
+                'model_type' => get_class($donasi),
+                'model_id' => $donasi->id,
+                'user_id' => auth()->id(),
+                'status' => 'pending',
+            ]);
+
+            $ketuas = \App\Models\Admin::where('role', 'ketua')->get();
+            $adminName = auth()->user()->name ?? 'Admin';
+            foreach ($ketuas as $ketua) {
+                $ketua->notify(new \App\Notifications\DeletionRequested($adminName, 'Donasi Keluar'));
+            }
+        }
+
         return redirect()->route('donasi.keluar')
-            ->with('success', 'Data donasi keluar berhasil dihapus');
+            ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
     }
 
     private function isJenisBarang(?string $jenisDonasi): bool

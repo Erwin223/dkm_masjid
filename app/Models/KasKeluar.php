@@ -19,4 +19,9 @@ class KasKeluar extends Model
     {
         return $this->hasOne(JadwalKegiatan::class, 'kas_keluar_id');
     }
+
+    public function deletionRequest()
+    {
+        return $this->morphOne(DeletionRequest::class, 'model')->where('status', 'pending');
+    }
 }

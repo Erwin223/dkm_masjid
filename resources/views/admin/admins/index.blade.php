@@ -21,6 +21,7 @@
                     <th width="50">No</th>
                     <th>Nama</th>
                     <th>Email</th>
+                    <th>Role</th>
                     <th>Dibuat Pada</th>
                     <th style="text-align:center;">Hapus</th>
                     <th style="text-align:center;">Edit</th>
@@ -37,11 +38,16 @@
                             </div>
                             {{ $admin->name }}
                             @if(Auth::id() == $admin->id)
-                                <span style="background:#cfe2ff; color:#084298; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600;">Saya</span>
+                            <span style="background:#cfe2ff; color:#084298; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600;">Saya</span>
                             @endif
                         </div>
                     </td>
                     <td>{{ $admin->email }}</td>
+                    <td>
+                        <span style="background:{{ $admin->role == 'ketua' ? '#dcfce7' : '#f1f5f9' }}; color:{{ $admin->role == 'ketua' ? '#166534' : '#475569' }}; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:600;">
+                            {{ ucfirst($admin->role) }}
+                        </span>
+                    </td>
                     <td>{{ $admin->created_at->translatedFormat('d M Y') }}</td>
                     <td style="text-align:center;">
                         @if(Auth::id() != $admin->id)
@@ -53,7 +59,7 @@
                             </button>
                         </form>
                         @else
-                            <i class="fa fa-trash" style="color:#ccc;" title="Tidak dapat menghapus diri sendiri"></i>
+                        <i class="fa fa-trash" style="color:#ccc;" title="Tidak dapat menghapus diri sendiri"></i>
                         @endif
                     </td>
                     <td style="text-align:center;">
@@ -90,13 +96,23 @@
 
 @if(session('success'))
 <script>
-    Swal.fire({ icon:'success', title:'Berhasil!', text: @json(session('success')), timer:2000, showConfirmButton:false });
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: @json(session('success')),
+        timer: 2000,
+        showConfirmButton: false
+    });
 </script>
 @endif
 
 @if(session('error'))
 <script>
-    Swal.fire({ icon:'error', title:'Oops!', text: @json(session('error')) });
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: @json(session('error'))
+    });
 </script>
 @endif
 

@@ -68,4 +68,9 @@ class DonasiMasuk extends Model
         $formatted = number_format((float) $value, 2, ',', '.');
         return rtrim(rtrim($formatted, '0'), ',');
     }
+
+    public function deletionRequest()
+    {
+        return $this->morphOne(DeletionRequest::class, 'model')->where('status', 'pending');
+    }
 }

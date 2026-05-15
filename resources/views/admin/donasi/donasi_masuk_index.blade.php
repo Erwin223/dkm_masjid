@@ -91,19 +91,40 @@
                     <td>{{ $d->is_barang ? $d->label_jumlah : '-' }}</td>
                     <td style="font-weight:600;color:#0f8b6d;">Rp.{{ number_format($d->nilai_dana, 0, ',', '.') }}</td>
                     <td>{{ $d->keterangan ?? '-' }}</td>
-                    <td style="text-align:center;">
-                        <form id="del-dm-{{ $d->id }}" action="{{ route('donasi.masuk.delete', $d->id) }}" method="POST" style="display:inline;">
-                            @csrf @method('DELETE')
-                            <button type="button" onclick="hapus('del-dm-{{ $d->id }}')" style="border:none;background:none;cursor:pointer;">
-                                <i class="fa fa-trash" style="color:red;"></i>
-                            </button>
-                        </form>
-                    </td>
-                    <td style="text-align:center;">
-                        <a href="{{ route('donasi.masuk.edit', $d->id) }}">
-                            <i class="fa fa-edit" style="color:blue;"></i>
-                        </a>
-                    </td>
+                    @if($d->deletionRequest)
+                        @if(auth()->user()->role == 'ketua')
+                            <td colspan="2" style="text-align:center;">
+                                <div style="display:flex; justify-content:center; gap:4px;">
+                                    <form action="{{ route('admin.deletion_approvals.approve', $d->deletionRequest->id) }}" method="POST">
+                                        @csrf
+                                        <button style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Setujui" onclick="return confirm('Yakin setujui?')"><i class="fa fa-check"></i> Setujui</button>
+                                    </form>
+                                    <form action="{{ route('admin.deletion_approvals.reject', $d->deletionRequest->id) }}" method="POST">
+                                        @csrf
+                                        <button style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Tolak" onclick="return confirm('Yakin tolak?')"><i class="fa fa-times"></i> Tolak</button>
+                                    </form>
+                                </div>
+                            </td>
+                        @else
+                            <td colspan="2" style="text-align:center;">
+                                <span style="font-size:12px;color:#b45309;background:#fef3c7;padding:4px 10px;border-radius:12px;font-weight:600;">Menunggu Dihapus</span>
+                            </td>
+                        @endif
+                    @else
+                        <td style="text-align:center;">
+                            <form id="del-dm-{{ $d->id }}" action="{{ route('donasi.masuk.delete', $d->id) }}" method="POST" style="display:inline;">
+                                @csrf @method('DELETE')
+                                <button type="button" onclick="hapus('del-dm-{{ $d->id }}')" style="border:none;background:none;cursor:pointer;">
+                                    <i class="fa fa-trash" style="color:red;"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ route('donasi.masuk.edit', $d->id) }}">
+                                <i class="fa fa-edit" style="color:blue;"></i>
+                            </a>
+                        </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>

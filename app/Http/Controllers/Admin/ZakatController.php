@@ -157,10 +157,25 @@ class ZakatController extends Controller
 
     public function penerimaanDelete($id)
     {
-        PenerimaanZakat::findOrFail($id)->delete();
+        $zakat = PenerimaanZakat::findOrFail($id);
+
+        if (!$zakat->deletionRequest) {
+            \App\Models\DeletionRequest::create([
+                'model_type' => get_class($zakat),
+                'model_id' => $zakat->id,
+                'user_id' => auth()->id(),
+                'status' => 'pending',
+            ]);
+
+            $ketuas = \App\Models\Admin::where('role', 'ketua')->get();
+            $adminName = auth()->user()->name ?? 'Admin';
+            foreach ($ketuas as $ketua) {
+                $ketua->notify(new \App\Notifications\DeletionRequested($adminName, 'Penerimaan Zakat'));
+            }
+        }
 
         return redirect()->route('zakat.penerimaan.index')
-            ->with('success', 'Penerimaan zakat berhasil dihapus');
+            ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
     }
 
     public function mustahik()
@@ -296,10 +311,25 @@ class ZakatController extends Controller
 
     public function distribusiDelete($id)
     {
-        DistribusiZakat::findOrFail($id)->delete();
+        $zakat = DistribusiZakat::findOrFail($id);
+
+        if (!$zakat->deletionRequest) {
+            \App\Models\DeletionRequest::create([
+                'model_type' => get_class($zakat),
+                'model_id' => $zakat->id,
+                'user_id' => auth()->id(),
+                'status' => 'pending',
+            ]);
+
+            $ketuas = \App\Models\Admin::where('role', 'ketua')->get();
+            $adminName = auth()->user()->name ?? 'Admin';
+            foreach ($ketuas as $ketua) {
+                $ketua->notify(new \App\Notifications\DeletionRequested($adminName, 'Distribusi Zakat'));
+            }
+        }
 
         return redirect()->route('zakat.distribusi.index')
-            ->with('success', 'Distribusi zakat berhasil dihapus');
+            ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
     }
 
     private function preparePenerimaanPayload(array $validated): array

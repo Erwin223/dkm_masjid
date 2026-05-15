@@ -33,4 +33,9 @@ class JadwalKegiatan extends Model
     {
         return (float) ($this->kasKeluar->nominal ?? 0);
     }
+
+    public function deletionRequest()
+    {
+        return $this->morphOne(DeletionRequest::class, 'model')->where('status', 'pending');
+    }
 }

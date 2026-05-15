@@ -55,8 +55,24 @@ class KasMasukController extends Controller
 
     public function delete($id)
     {
-        KasMasuk::findOrFail($id)->delete();
+        $kasMasuk = KasMasuk::findOrFail($id);
+
+        if (!$kasMasuk->deletionRequest) {
+            \App\Models\DeletionRequest::create([
+                'model_type' => get_class($kasMasuk),
+                'model_id' => $kasMasuk->id,
+                'user_id' => auth()->id(),
+                'status' => 'pending',
+            ]);
+
+            $ketuas = \App\Models\Admin::where('role', 'ketua')->get();
+            $adminName = auth()->user()->name ?? 'Admin';
+            foreach ($ketuas as $ketua) {
+                $ketua->notify(new \App\Notifications\DeletionRequested($adminName, 'Kas Masuk'));
+            }
+        }
+
         return redirect()->route('kas.masuk.index')
-            ->with('success', 'Data kas masuk berhasil dihapus');
+            ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
     }
 }

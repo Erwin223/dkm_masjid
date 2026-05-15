@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\ArsipController;
+use App\Http\Controllers\Admin\DeletionApprovalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -180,6 +181,15 @@ Route::post('/admins',              [AdminController::class, 'store'])->name('ad
 Route::get('/admins/{id}/edit',     [AdminController::class, 'edit'])->name('admin.admins.edit');
 Route::put('/admins/{id}',          [AdminController::class, 'update'])->name('admin.admins.update');
 Route::delete('/admins/{id}',       [AdminController::class, 'destroy'])->name('admin.admins.delete');
+
+// PERSETUJUAN HAPUS
+Route::get('/deletion-approvals',          [DeletionApprovalController::class, 'index'])->name('admin.deletion_approvals.index');
+Route::post('/deletion-approvals/{id}/approve', [DeletionApprovalController::class, 'approve'])->name('admin.deletion_approvals.approve');
+Route::post('/deletion-approvals/{id}/reject',  [DeletionApprovalController::class, 'reject'])->name('admin.deletion_approvals.reject');
+
+// NOTIFICATIONS
+Route::post('/notifications/mark-as-read/{id}', [App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+Route::post('/notifications/mark-all-as-read',  [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('admin.notifications.read_all');
 
 // KONTEN WEBSITE
 Route::get('/profil-masjid',             [ProfilMasjidController::class, 'index'])->name('profil_masjid.index');

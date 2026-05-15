@@ -93,4 +93,9 @@ class DistribusiZakat extends Model
         $formatted = number_format($number, 2, ',', '.');
         return rtrim(rtrim($formatted, '0'), ',');
     }
+
+    public function deletionRequest()
+    {
+        return $this->morphOne(DeletionRequest::class, 'model')->where('status', 'pending');
+    }
 }

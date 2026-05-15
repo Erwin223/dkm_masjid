@@ -14,4 +14,9 @@ class KasMasuk extends Model
         'jumlah',
         'keterangan',
     ];
+
+    public function deletionRequest()
+    {
+        return $this->morphOne(DeletionRequest::class, 'model')->where('status', 'pending');
+    }
 }

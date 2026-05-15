@@ -25,6 +25,7 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'is_admin',
         'failed_login_attempts',
         'locked_until',

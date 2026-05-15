@@ -8,13 +8,13 @@
     <h3><i class="fa fa-user-plus" style="color:#0f8b6d;"></i> Tambah Admin Baru</h3>
 
     @if ($errors->any())
-        <div class="error-list">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+    <div class="error-list">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
     @endif
 
     <form method="POST" action="{{ route('admin.admins.store') }}">
@@ -28,6 +28,14 @@
         <div class="form-group">
             <label>Alamat Email <span style="color:red;">*</span></label>
             <input type="email" name="email" value="{{ old('email') }}" required placeholder="Masukkan email aktif">
+        </div>
+
+        <div class="form-group">
+            <label>Role / Peran <span style="color:red;">*</span></label>
+            <select name="role" required class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                <option value="ketua" {{ old('role') == 'ketua' ? 'selected' : '' }}>Ketua</option>
+            </select>
         </div>
 
         <div class="form-row">
@@ -56,18 +64,18 @@
 </div>
 
 <script>
-function togglePasswordVisibility(inputId, iconElement) {
-    const passwordInput = document.getElementById(inputId);
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        iconElement.classList.remove("fa-eye");
-        iconElement.classList.add("fa-eye-slash");
-    } else {
-        passwordInput.type = "password";
-        iconElement.classList.remove("fa-eye-slash");
-        iconElement.classList.add("fa-eye");
+    function togglePasswordVisibility(inputId, iconElement) {
+        const passwordInput = document.getElementById(inputId);
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            iconElement.classList.remove("fa-eye");
+            iconElement.classList.add("fa-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            iconElement.classList.remove("fa-eye-slash");
+            iconElement.classList.add("fa-eye");
+        }
     }
-}
 </script>
 
 @endsection

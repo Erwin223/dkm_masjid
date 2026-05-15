@@ -270,6 +270,7 @@
                 </div>
                 <i class="fa-solid fa-calendar-days"></i>
             </div>
+            @if(auth()->user()->role != 'ketua')
             <div class="card">
                 <div>
                     <h3>Kelola Website</h3>
@@ -278,6 +279,7 @@
                 </div>
                 <i class="fa-solid fa-globe"></i>
             </div>
+            @endif
         </div>
     </div>
 
@@ -791,6 +793,7 @@
             </div>
 
             {{-- Berita --}}
+            @if(auth()->user()->role != 'ketua')
             <div class="table-box">
                 <div class="table-box-header">
                     <h3><i class="fa-solid fa-newspaper" style="color:#f39c12;"></i> Data Berita Terbaru</h3>
@@ -855,6 +858,7 @@
                     </table>
                 </div>
             </div>
+            @endif
 
         </div>
 
@@ -1035,6 +1039,7 @@
             </div>
 
             {{-- Data Pengurus --}}
+            @if(auth()->user()->role != 'ketua')
             <div class="widget-box">
                 <div class="wgt-head">
                     <h3><i class="fa-solid fa-users" style="color:#0f8b6d;"></i> Data Pengurus</h3>
@@ -1113,6 +1118,7 @@
                     @endif
                 @endif
             </div>
+            @endif
 
         </div>
     </div>

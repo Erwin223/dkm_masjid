@@ -80,9 +80,25 @@ class KegiatanController extends Controller
 
     public function jadwalDelete($id)
     {
-        JadwalKegiatan::findOrFail($id)->delete();
+        $kegiatan = JadwalKegiatan::findOrFail($id);
+
+        if (!$kegiatan->deletionRequest) {
+            \App\Models\DeletionRequest::create([
+                'model_type' => get_class($kegiatan),
+                'model_id' => $kegiatan->id,
+                'user_id' => auth()->id(),
+                'status' => 'pending',
+            ]);
+
+            $ketuas = \App\Models\Admin::where('role', 'ketua')->get();
+            $adminName = auth()->user()->name ?? 'Admin';
+            foreach ($ketuas as $ketua) {
+                $ketua->notify(new \App\Notifications\DeletionRequested($adminName, 'Jadwal Kegiatan'));
+            }
+        }
+
         return redirect()->route('kegiatan.jadwal')
-            ->with('success', 'Jadwal kegiatan berhasil dihapus');
+            ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
     }
 
     // ==================== DATA IMAM ====================

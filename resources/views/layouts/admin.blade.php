@@ -38,6 +38,7 @@
                 <i class="fa fa-home"></i> Dashboard
             </a>
 
+            @if(auth()->user()->role != 'ketua')
             <a href="{{ route('pengurus.index') }}"
                 class="nav-item {{ request()->routeIs('pengurus*') ? 'active' : '' }}">
                 <i class="fa fa-users"></i> Data Pengurus
@@ -69,6 +70,7 @@
                     <i class="fa fa-images"></i> Galeri
                 </a>
             </div>
+            @endif
 
             {{-- KEGIATAN --}}
             <button
@@ -83,6 +85,7 @@
                     class="nav-item {{ request()->routeIs('kegiatan.jadwal*') ? 'active' : '' }}">
                     <i class="fa fa-calendar-check"></i> Jadwal Kegiatan
                 </a>
+                @if(auth()->user()->role != 'ketua')
                 <a href="{{ route('imam.data') }}"
                     class="nav-item {{ request()->routeIs('imam.data*') ? 'active' : '' }}">
                     <i class="fa fa-user-tie"></i> Data Imam
@@ -95,6 +98,7 @@
                     class="nav-item {{ request()->routeIs('kegiatan.sholat*') ? 'active' : '' }}">
                     <i class="fa fa-mosque"></i> Jadwal Sholat
                 </a>
+                @endif
             </div>
 
             <div class="nav-divider"></div>
@@ -165,6 +169,12 @@
             <div class="nav-divider"></div>
             <div class="nav-label">Pengaturan</div>
 
+            @if(auth()->user()->role == 'ketua')
+            <a href="{{ route('admin.deletion_approvals.index') }}" class="nav-item {{ request()->routeIs('admin.deletion_approvals*') ? 'active' : '' }}">
+                <i class="fa fa-clipboard-check"></i> Persetujuan Hapus
+            </a>
+            @endif
+
             <a href="{{ route('admin.admins.index') }}" class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
                 <i class="fa fa-user-shield"></i> Kelola Admin
             </a>
@@ -208,10 +218,41 @@
 
             <div class="navbar-right">
                 {{-- NOTIFIKASI --}}
-                <button class="nav-icon-btn">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="notif-dot"></span>
-                </button>
+                <div class="notif-wrapper" style="position: relative;">
+                    <button class="nav-icon-btn" onclick="toggleNotifDropdown(event)">
+                        <i class="fa-solid fa-bell"></i>
+                        @if(auth()->user()->unreadNotifications->count() > 0)
+                        <span class="notif-dot" style="width: auto; height: auto; min-width: 16px; padding: 2px 4px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; top: 0; right: 0;">{{ auth()->user()->unreadNotifications->count() }}</span>
+                        @endif
+                    </button>
+                    <div class="notif-dropdown" id="notifDropdown" style="display: none; position: absolute; right: 0; top: 120%; background: white; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #eee; z-index: 100;">
+                        <div style="padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 600; font-size: 14px;">Notifikasi</span>
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                            <form action="{{ route('admin.notifications.read_all') }}" method="POST" style="margin: 0;">
+                                @csrf
+                                <button type="submit" style="background: none; border: none; color: #0f8b6d; font-size: 12px; cursor: pointer;">Tandai Semua Dibaca</button>
+                            </form>
+                            @endif
+                        </div>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            @forelse(auth()->user()->unreadNotifications->take(5) as $notif)
+                            <form action="{{ route('admin.notifications.read', $notif->id) }}" method="POST" style="margin: 0;">
+                                @csrf
+                                <button type="submit" style="width: 100%; text-align: left; padding: 12px 16px; border: none; background: #fff; border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='#fff'">
+                                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px;">{{ $notif->data['title'] ?? 'Notifikasi' }}</div>
+                                    <div style="font-size: 12px; color: #666; line-height: 1.4;">{{ $notif->data['message'] ?? '' }}</div>
+                                    <div style="font-size: 10px; color: #999; margin-top: 6px;">{{ $notif->created_at->diffForHumans() }}</div>
+                                </button>
+                            </form>
+                            @empty
+                            <div style="padding: 20px; text-align: center; color: #999; font-size: 13px;">
+                                Belum ada notifikasi baru.
+                            </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
 
                 <div class="navbar-divider"></div>
 
@@ -264,6 +305,23 @@
             dd.classList.toggle('open', !isOpen);
             btn.classList.toggle('open', !isOpen);
         }
+
+        function toggleNotifDropdown(event) {
+            event.stopPropagation();
+            const dd = document.getElementById('notifDropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close notif dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const notifWrapper = document.querySelector('.notif-wrapper');
+            const notifDropdown = document.getElementById('notifDropdown');
+            if (notifWrapper && notifDropdown && notifDropdown.style.display === 'block') {
+                if (!notifWrapper.contains(event.target)) {
+                    notifDropdown.style.display = 'none';
+                }
+            }
+        });
 
         // Tutup sidebar saat resize ke desktop
         window.addEventListener('resize', function () {

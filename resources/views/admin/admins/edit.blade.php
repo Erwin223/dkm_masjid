@@ -31,6 +31,14 @@
             <input type="email" name="email" value="{{ old('email', $admin->email) }}" required placeholder="Masukkan email aktif">
         </div>
 
+        <div class="form-group">
+            <label>Role / Peran <span style="color:red;">*</span></label>
+            <select name="role" required class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                <option value="admin" {{ old('role', $admin->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                <option value="ketua" {{ old('role', $admin->role) == 'ketua' ? 'selected' : '' }}>Ketua</option>
+            </select>
+        </div>
+
         @if(Auth::id() == $admin->id)
         <div class="form-group" style="background:#f0f9ff; padding:15px; border-radius:8px; border:1px solid #bae6fd;">
             <label style="color:#0369a1;">Konfirmasi Keamanan <span style="color:red;">*</span></label>
