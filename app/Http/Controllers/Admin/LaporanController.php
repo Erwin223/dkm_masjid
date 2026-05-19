@@ -54,6 +54,7 @@ class LaporanController extends Controller
             ->get();
 
         $kasKeluar = KasKeluar::query()
+            ->approved()
             ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
             ->orderBy('tanggal', 'desc')
             ->get();
@@ -79,6 +80,7 @@ class LaporanController extends Controller
             ->get();
 
         $kegiatan = JadwalKegiatan::with('kasKeluar')
+            ->approved()
             ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
             ->orderBy('tanggal', 'asc')
             ->get();

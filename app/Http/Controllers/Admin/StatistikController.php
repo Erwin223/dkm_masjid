@@ -40,6 +40,7 @@ class StatistikController extends Controller
 
             $kasKeluarPerBulan[] = (float) KasKeluar::whereMonth('tanggal', $bulan)
                 ->whereYear('tanggal', $tahun)
+                ->approved()
                 ->sum('nominal');
         }
 
@@ -98,6 +99,7 @@ class StatistikController extends Controller
 
         // === Kas Keluar per Jenis Pengeluaran ===
         $kasKeluarJenis = KasKeluar::select('jenis_pengeluaran', DB::raw('SUM(nominal) as total'))
+            ->approved()
             ->groupBy('jenis_pengeluaran')
             ->orderByDesc('total')
             ->get();
@@ -114,9 +116,9 @@ class StatistikController extends Controller
             'donasi_count'    => DonasiMasuk::count(),
             'zakat_count'     => PenerimaanZakat::count(),
             'total_kas_masuk' => KasMasuk::sum('jumlah'),
-            'total_kas_keluar' => KasKeluar::sum('nominal'),
+            'total_kas_keluar' => KasKeluar::approved()->sum('nominal'),
             'kas_masuk_count' => KasMasuk::count(),
-            'kas_keluar_count' => KasKeluar::count(),
+            'kas_keluar_count' => KasKeluar::approved()->count(),
         ];
 
         return view('admin.statistik.index', compact(

@@ -20,6 +20,7 @@ class HomeController extends Controller
         $today = Carbon::today();
 
         $kegiatanTerbaru = JadwalKegiatan::query()
+            ->approved()
             ->orderByRaw("CASE WHEN tanggal >= ? THEN 0 ELSE 1 END", [$today->toDateString()])
             ->orderByRaw("CASE WHEN tanggal >= ? THEN tanggal END asc", [$today->toDateString()])
             ->orderByRaw("CASE WHEN tanggal < ? THEN tanggal END desc", [$today->toDateString()])
@@ -33,7 +34,7 @@ class HomeController extends Controller
             ->get();
 
         $kasMasukTotal = (float) KasMasuk::query()->sum('jumlah');
-        $kasKeluarTotal = (float) KasKeluar::query()->sum('nominal');
+        $kasKeluarTotal = (float) KasKeluar::query()->approved()->sum('nominal');
         $donasiMasuk = DonasiMasuk::query()->orderBy('tanggal', 'desc')->get();
         $donasiKeluar = DonasiKeluar::query()->orderBy('tanggal', 'desc')->get();
         $donasiMasukTotal = (float) $donasiMasuk->sum(fn (DonasiMasuk $item) => (float) ($item->total ?? 0));
@@ -110,7 +111,7 @@ class HomeController extends Controller
         $overviewStats = [
             [
                 'label' => 'Agenda Tersedia',
-                'value' => (string) JadwalKegiatan::query()->count(),
+                'value' => (string) JadwalKegiatan::query()->approved()->count(),
             ],
             [
                 'label' => 'Berita Terpublikasi',

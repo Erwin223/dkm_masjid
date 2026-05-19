@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\KasKeluar;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,9 @@ class UpdateKasKeluarRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $kasKeluar = KasKeluar::query()->find($this->route('id'));
+
+        return $kasKeluar !== null && ($this->user()?->can('update', $kasKeluar) ?? false);
     }
 
     /**
@@ -63,7 +66,7 @@ class UpdateKasKeluarRequest extends FormRequest
     private function normalizeNumber($value)
     {
         if ($value === null || $value === '') {
-            return 0;
+            return null;
         }
 
         return (int) str_replace('.', '', (string) $value);

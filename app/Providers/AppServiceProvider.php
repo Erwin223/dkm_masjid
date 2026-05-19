@@ -2,8 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\JadwalKegiatan;
+use App\Models\KasKeluar;
+use App\Policies\JadwalKegiatanPolicy;
+use App\Policies\KasKeluarPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(KasKeluar::class, KasKeluarPolicy::class);
+        Gate::policy(JadwalKegiatan::class, JadwalKegiatanPolicy::class);
+
         RateLimiter::for('otp-email', function (Request $request) {
             $email = strtolower((string) $request->input('email', ''));
             $key = $request->ip().'|'.$email;

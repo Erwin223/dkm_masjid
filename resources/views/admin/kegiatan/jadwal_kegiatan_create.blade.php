@@ -11,6 +11,9 @@
 
 <div class="form-box">
     <h3><i class="fa fa-plus-circle" style="color:#0f8b6d;"></i> Tambah Jadwal Kegiatan</h3>
+    <div style="margin:0 0 16px;padding:12px 14px;border-radius:10px;background:#fef3c7;color:#92400e;font-size:13px;">
+        Status awal kegiatan otomatis <b>pending</b> dan belum tampil di website publik sampai disetujui Ketua.
+    </div>
 
     <form action="{{ route('kegiatan.jadwal.store') }}" method="POST">
         @csrf
@@ -55,7 +58,7 @@
             <label>
                 <i class="fa fa-money-bill" style="color:#0f8b6d;font-size:12px;"></i>
                 Realisasi Anggaran
-                <span style="font-size:11px;color:#999;font-weight:400;">(opsional, ambil dari kas keluar)</span>
+                <span style="font-size:11px;color:#999;font-weight:400;">(opsional, ambil dari kas keluar yang sudah approved)</span>
             </label>
             <select name="kas_keluar_id" id="kasSelect" onchange="tampilInfoKas()">
                 <option value="">Belum ada realisasi anggaran</option>
@@ -72,7 +75,7 @@
                 @endforeach
             </select>
             <div class="kas-info" id="kasInfo"></div>
-            <div class="field-hint">Pilih transaksi kas keluar jika dana kegiatan sudah benar-benar direalisasikan.</div>
+            <div class="field-hint">Hanya transaksi kas keluar yang sudah approved yang bisa dipilih agar laporan tetap konsisten.</div>
             @error('kas_keluar_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
         </div>
 

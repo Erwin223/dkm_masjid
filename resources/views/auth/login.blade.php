@@ -8,6 +8,12 @@
     <h2>Login Admin</h2>
     <p>Silakan login untuk mengelola sistem informasi masjid.</p>
 
+    @if (session('error') || $errors->any())
+        <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; text-align: left; border: 1px solid #ffeeba; line-height: 1.4;">
+            <strong>⚠️ Peringatan:</strong> Demi keamanan, jika Anda salah memasukkan password sebanyak 5 kali berturut-turut, akun Anda akan dikunci sementara selama 15 menit.
+        </div>
+    @endif
+
     @if (session('error'))
         <div class="error-box">
             {{ session('error') }}

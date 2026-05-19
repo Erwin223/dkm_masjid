@@ -4,6 +4,9 @@
 
 <div class="form-box">
     <h3><i class="fa fa-arrow-up" style="color:#dc3545;"></i> Tambah Kas Keluar</h3>
+    <div style="margin:0 0 16px;padding:12px 14px;border-radius:10px;background:#fef3c7;color:#92400e;font-size:13px;">
+        Status awal otomatis <b>pending</b>. Saldo kas utama belum akan terpotong sampai disetujui oleh Ketua.
+    </div>
 
     @if ($errors->any())
     <div class="error-list">

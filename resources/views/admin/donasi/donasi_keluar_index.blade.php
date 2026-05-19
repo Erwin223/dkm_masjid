@@ -80,14 +80,17 @@
                     @if($d->deletionRequest)
                         @if(auth()->user()->role == 'ketua')
                             <td colspan="2" style="text-align:center;">
-                                <div style="display:flex; justify-content:center; gap:4px;">
+                                <div style="margin-bottom:6px;">
+                                    <span style="font-size:12px;color:#b45309;background:#fef3c7;padding:4px 10px;border-radius:12px;font-weight:600;">Menunggu Dihapus</span>
+                                </div>
+                                <div style="display:flex; justify-content:center; align-items:center; gap:6px; flex-wrap:wrap;">
                                     <form action="{{ route('admin.deletion_approvals.approve', $d->deletionRequest->id) }}" method="POST">
                                         @csrf
-                                        <button style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Setujui" onclick="return confirm('Yakin setujui?')"><i class="fa fa-check"></i> Setujui</button>
+                                        <button style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Setuju" onclick="return confirm('Yakin setujui?')"><i class="fa fa-check"></i> Setuju</button>
                                     </form>
                                     <form action="{{ route('admin.deletion_approvals.reject', $d->deletionRequest->id) }}" method="POST">
                                         @csrf
-                                        <button style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Tolak" onclick="return confirm('Yakin tolak?')"><i class="fa fa-times"></i> Tolak</button>
+                                        <button style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Tidak" onclick="return confirm('Yakin tolak?')"><i class="fa fa-times"></i> Tidak</button>
                                     </form>
                                 </div>
                             </td>

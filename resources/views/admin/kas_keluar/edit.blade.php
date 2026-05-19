@@ -5,6 +5,9 @@
 @include('admin.kas_keluar._styles')
 <div class="form-box">
     <h3><i class="fa fa-pen" style="color:#dc3545;"></i> Edit Kas Keluar</h3>
+    <div style="margin:0 0 16px;padding:12px 14px;border-radius:10px;background:#f8fafc;color:#334155;font-size:13px;">
+        Hanya data berstatus <b>pending</b> yang bisa diubah. Setelah di-approve atau di-reject, data otomatis terkunci.
+    </div>
 
     @if ($errors->any())
     <div class="error-list">

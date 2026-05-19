@@ -67,7 +67,14 @@ class ZakatController extends Controller
 
     public function muzakkiDelete($id)
     {
-        Muzakki::findOrFail($id)->delete();
+        $muzakki = Muzakki::withCount('penerimaanZakat')->findOrFail($id);
+
+        if ($muzakki->penerimaan_zakat_count > 0) {
+            return redirect()->route('zakat.muzakki.index')
+                ->with('error', 'Data muzakki tidak bisa dihapus karena masih dipakai pada penerimaan zakat.');
+        }
+
+        $muzakki->delete();
 
         return redirect()->route('zakat.muzakki.index')
             ->with('success', 'Data muzakki berhasil dihapus');
@@ -180,7 +187,7 @@ class ZakatController extends Controller
 
     public function mustahik()
     {
-        $data = Mustahik::orderBy('nama', 'asc')->get();
+        $data = Mustahik::withCount('distribusiZakat')->orderBy('nama', 'asc')->get();
         return view('admin.zakat.mustahik_index', compact('data'));
     }
 
@@ -229,7 +236,14 @@ class ZakatController extends Controller
 
     public function mustahikDelete($id)
     {
-        Mustahik::findOrFail($id)->delete();
+        $mustahik = Mustahik::withCount('distribusiZakat')->findOrFail($id);
+
+        if ($mustahik->distribusi_zakat_count > 0) {
+            return redirect()->route('zakat.mustahik.index')
+                ->with('error', 'Data mustahik tidak bisa dihapus karena masih dipakai pada distribusi zakat.');
+        }
+
+        $mustahik->delete();
 
         return redirect()->route('zakat.mustahik.index')
             ->with('success', 'Data mustahik berhasil dihapus');

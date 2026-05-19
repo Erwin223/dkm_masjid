@@ -74,6 +74,8 @@ Route::post('/kas-keluar/store',      [KasKeluarController::class, 'store'])->na
 Route::get('/kas-keluar/edit/{id}',   [KasKeluarController::class, 'edit'])->name('kas.keluar.edit');
 Route::put('/kas-keluar/update/{id}', [KasKeluarController::class, 'update'])->name('kas.keluar.update');
 Route::delete('/kas-keluar/delete/{id}', [KasKeluarController::class, 'destroy'])->name('kas.keluar.delete');
+Route::post('/kas-keluar/{id}/approve', [KasKeluarController::class, 'approve'])->name('kas.keluar.approve');
+Route::post('/kas-keluar/{id}/reject', [KasKeluarController::class, 'reject'])->name('kas.keluar.reject');
 
 // Pengurus
 Route::get('/pengurus',                [PengurusController::class, 'index'])->name('pengurus.index');
@@ -100,6 +102,8 @@ Route::post('/kegiatan/jadwal',             [AdminKegiatanController::class, 'ja
 Route::get('/kegiatan/jadwal/{id}/edit',    [AdminKegiatanController::class, 'jadwalEdit'])->name('kegiatan.jadwal.edit');
 Route::put('/kegiatan/jadwal/{id}',         [AdminKegiatanController::class, 'jadwalUpdate'])->name('kegiatan.jadwal.update');
 Route::delete('/kegiatan/jadwal/{id}',      [AdminKegiatanController::class, 'jadwalDelete'])->name('kegiatan.jadwal.delete');
+Route::post('/kegiatan/jadwal/{id}/approve', [AdminKegiatanController::class, 'jadwalApprove'])->name('kegiatan.jadwal.approve');
+Route::post('/kegiatan/jadwal/{id}/reject', [AdminKegiatanController::class, 'jadwalReject'])->name('kegiatan.jadwal.reject');
 
 // Jadwal Imam
 Route::get('/kegiatan/imam',                [AdminKegiatanController::class, 'imam'])->name('kegiatan.imam');

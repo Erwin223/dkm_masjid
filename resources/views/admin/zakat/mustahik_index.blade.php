@@ -41,9 +41,15 @@
                     <td><span class="badge-warn">{{ $item->kategori_mustahik }}</span></td>
                     <td>{{ $item->keterangan ?? '-' }}</td>
                     <td style="text-align:center;">
-                        <form id="hapus-mustahik-{{ $item->id }}" action="{{ route('zakat.mustahik.delete', $item->id) }}" method="POST" style="display:inline;">@csrf @method('DELETE')
-                            <button type="button" onclick="hapus('hapus-mustahik-{{ $item->id }}')" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
-                        </form>
+                        @if(($item->distribusi_zakat_count ?? 0) > 0)
+                            <span title="Mustahik ini sudah dipakai pada distribusi zakat" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;background:#fee2e2;color:#b91c1c;cursor:not-allowed;">
+                                <i class="fa fa-lock"></i>
+                            </span>
+                        @else
+                            <form id="hapus-mustahik-{{ $item->id }}" action="{{ route('zakat.mustahik.delete', $item->id) }}" method="POST" style="display:inline;">@csrf @method('DELETE')
+                                <button type="button" onclick="hapus('hapus-mustahik-{{ $item->id }}')" style="border:none;background:none;cursor:pointer;"><i class="fa fa-trash" style="color:red;"></i></button>
+                            </form>
+                        @endif
                     </td>
                     <td style="text-align:center;"><a href="{{ route('zakat.mustahik.edit', $item->id) }}"><i class="fa fa-edit" style="color:blue;"></i></a></td>
                 </tr>
@@ -57,6 +63,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @if(session('success'))
 <script>Swal.fire({ icon:'success', title:'Berhasil!', text:'{{ session("success") }}', timer:2000, showConfirmButton:false });</script>
+@endif
+@if(session('error'))
+<script>Swal.fire({ icon:'error', title:'Tidak Bisa Dihapus', text:'{{ session("error") }}' });</script>
 @endif
 <script>
 function cariData(){const q=document.getElementById('cariInput').value.toLowerCase();const rows=document.querySelectorAll('#tabelBody tr');let v=0;rows.forEach(r=>{if(r.textContent.toLowerCase().includes(q)){r.style.display='';v++;}else r.style.display='none';});document.getElementById('jmlBadge').textContent=v+' mustahik';}

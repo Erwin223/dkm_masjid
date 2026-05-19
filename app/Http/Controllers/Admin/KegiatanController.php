@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreJadwalKegiatanRequest;
+use App\Http\Requests\UpdateJadwalKegiatanRequest;
+use App\Models\Admin;
 use App\Models\JadwalKegiatan;
 use App\Models\JadwalImam;
 use App\Models\DataImam;
 use App\Models\KasKeluar;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class KegiatanController extends Controller
 {
@@ -15,72 +19,65 @@ class KegiatanController extends Controller
 
     public function jadwal()
     {
-        $kegiatan = JadwalKegiatan::with('kasKeluar')->orderBy('tanggal', 'asc')->get();
+        $this->authorize('viewAny', JadwalKegiatan::class);
+
+        $kegiatan = JadwalKegiatan::with(['kasKeluar', 'approver'])
+            ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
         return view('admin.kegiatan.jadwal_kegiatan', compact('kegiatan'));
     }
 
     public function jadwalCreate()
     {
-        $kasKeluar = KasKeluar::orderBy('tanggal', 'desc')->get();
+        $this->authorize('create', JadwalKegiatan::class);
+
+        $kasKeluar = KasKeluar::availableForActivity()->orderBy('tanggal', 'desc')->get();
         return view('admin.kegiatan.jadwal_kegiatan_create', compact('kasKeluar'));
     }
 
-    public function jadwalStore(Request $request)
+    public function jadwalStore(StoreJadwalKegiatanRequest $request): RedirectResponse
     {
-        $request->merge([
-            'estimasi_anggaran' => $this->normalizeCurrencyInput($request->input('estimasi_anggaran')),
-        ]);
-
-        $validated = $request->validate([
-            'nama_kegiatan'    => 'required',
-            'tanggal'          => 'required|date',
-            'waktu'            => 'nullable',
-            'tempat'           => 'nullable',
-            'penanggung_jawab' => 'nullable',
-            'estimasi_anggaran'=> 'nullable|numeric|min:0',
-            'keterangan'       => 'nullable',
-            'kas_keluar_id'    => 'nullable|exists:kas_keluar,id',
-        ]);
-
-        JadwalKegiatan::create($validated);
+        JadwalKegiatan::create($request->validated());
 
         return redirect()->route('kegiatan.jadwal')
-            ->with('success', 'Jadwal kegiatan berhasil ditambahkan');
+            ->with('success', 'Jadwal kegiatan berhasil ditambahkan dengan status pending.');
     }
 
     public function jadwalEdit($id)
     {
         $kegiatan  = JadwalKegiatan::findOrFail($id);
-        $kasKeluar = KasKeluar::orderBy('tanggal', 'desc')->get();
+        $this->authorize('update', $kegiatan);
+
+        $kasKeluar = KasKeluar::query()
+            ->where(function ($query) use ($kegiatan) {
+                $query->availableForActivity();
+
+                if ($kegiatan->kas_keluar_id) {
+                    $query->orWhere('id', $kegiatan->kas_keluar_id);
+                }
+            })
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
         return view('admin.kegiatan.jadwal_kegiatan_edit', compact('kegiatan', 'kasKeluar'));
     }
 
-    public function jadwalUpdate(Request $request, $id)
+    public function jadwalUpdate(UpdateJadwalKegiatanRequest $request, $id): RedirectResponse
     {
-        $request->merge([
-            'estimasi_anggaran' => $this->normalizeCurrencyInput($request->input('estimasi_anggaran')),
-        ]);
-
-        $validated = $request->validate([
-            'nama_kegiatan' => 'required',
-            'tanggal'       => 'required|date',
-            'waktu'         => 'nullable',
-            'tempat'        => 'nullable',
-            'penanggung_jawab' => 'nullable',
-            'estimasi_anggaran' => 'nullable|numeric|min:0',
-            'keterangan'    => 'nullable',
-            'kas_keluar_id' => 'nullable|exists:kas_keluar,id',
-        ]);
-
-        JadwalKegiatan::findOrFail($id)->update($validated);
+        $kegiatan = JadwalKegiatan::findOrFail($id);
+        $this->authorize('update', $kegiatan);
+        $kegiatan->update($request->validated());
 
         return redirect()->route('kegiatan.jadwal')
             ->with('success', 'Jadwal kegiatan berhasil diupdate');
     }
 
-    public function jadwalDelete($id)
+    public function jadwalDelete($id): RedirectResponse
     {
         $kegiatan = JadwalKegiatan::findOrFail($id);
+        $this->authorize('delete', $kegiatan);
 
         if (!$kegiatan->deletionRequest) {
             \App\Models\DeletionRequest::create([
@@ -99,6 +96,38 @@ class KegiatanController extends Controller
 
         return redirect()->route('kegiatan.jadwal')
             ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
+    }
+
+    public function jadwalApprove(Request $request, int $id): RedirectResponse
+    {
+        $kegiatan = JadwalKegiatan::findOrFail($id);
+        $this->authorize('approve', $kegiatan);
+
+        /** @var Admin $user */
+        $user = $request->user();
+        $kegiatan->approve($user);
+
+        return redirect()->route('kegiatan.jadwal')
+            ->with('success', 'Kegiatan berhasil di-approve dan kini dapat tampil di website publik.');
+    }
+
+    public function jadwalReject(Request $request, int $id): RedirectResponse
+    {
+        $kegiatan = JadwalKegiatan::findOrFail($id);
+        $this->authorize('reject', $kegiatan);
+
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:2000',
+        ], [
+            'rejection_reason.required' => 'Alasan penolakan wajib diisi.',
+        ]);
+
+        /** @var Admin $user */
+        $user = $request->user();
+        $kegiatan->reject($user, $validated['rejection_reason']);
+
+        return redirect()->route('kegiatan.jadwal')
+            ->with('success', 'Kegiatan berhasil ditolak.');
     }
 
     // ==================== DATA IMAM ====================
@@ -211,16 +240,5 @@ class KegiatanController extends Controller
     public function sholat()
     {
         return view('admin.kegiatan.jadwal_sholat');
-    }
-
-    private function normalizeCurrencyInput(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $normalized = preg_replace('/[^\d]/', '', $value);
-
-        return $normalized === '' ? null : $normalized;
     }
 }

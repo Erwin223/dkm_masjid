@@ -98,6 +98,20 @@ class Admin extends Authenticatable
     }
 
     /**
+     * Increment failed login attempts
+     */
+    public function incrementFailedAttempts(): void
+    {
+        $this->failed_login_attempts++;
+        $this->save();
+
+        // Lock the account if there are too many failed attempts (e.g., 5 attempts)
+        if ($this->failed_login_attempts >= 5) {
+            $this->update(['locked_until' => now()->addMinutes(15)]);
+        }
+    }
+
+    /**
      * Record successful login
      */
     public function recordLogin(string $ip): void
@@ -112,5 +126,10 @@ class Admin extends Authenticatable
     public function requiresTwoFactorAuth(): bool
     {
         return (bool) config('auth.require_admin_otp', true);
+    }
+
+    public function isKetua(): bool
+    {
+        return $this->role === 'ketua';
     }
 }

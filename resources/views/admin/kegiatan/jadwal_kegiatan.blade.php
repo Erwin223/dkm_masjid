@@ -46,7 +46,8 @@
                 <tr>
                     <th>No</th><th>Nama Kegiatan</th><th>Tanggal</th>
                     <th>Waktu</th><th>Tempat</th><th>Penanggung Jawab</th>
-                    <th>Estimasi</th><th>Realisasi</th><th>Keterangan</th><th>Status</th>
+                    <th>Estimasi</th><th>Realisasi</th><th>Keterangan</th><th>Status Agenda</th>
+                    <th>Status Approval</th><th>Catatan Approval</th><th style="text-align:center;">Aksi Ketua</th>
                     <th style="text-align:center;">Hapus</th><th style="text-align:center;">Edit</th>
                 </tr>
             </thead>
@@ -91,17 +92,72 @@
                             <span class="badge-status badge-selesai">Selesai</span>
                         @endif
                     </td>
+                    <td>
+                        @php
+                            $statusClasses = [
+                                \App\Models\JadwalKegiatan::STATUS_PENDING => ['#fef3c7', '#b45309', 'Pending'],
+                                \App\Models\JadwalKegiatan::STATUS_APPROVED => ['#dcfce7', '#166534', 'Approved'],
+                                \App\Models\JadwalKegiatan::STATUS_REJECTED => ['#fee2e2', '#b91c1c', 'Rejected'],
+                            ];
+                            [$bg, $color, $label] = $statusClasses[$k->status] ?? ['#e5e7eb', '#374151', ucfirst($k->status)];
+                        @endphp
+                        <span style="font-size:12px;background:{{ $bg }};color:{{ $color }};padding:4px 10px;border-radius:999px;font-weight:700;">
+                            {{ $label }}
+                        </span>
+                    </td>
+                    <td style="font-size:12px;color:#475569;">
+                        @if($k->status === \App\Models\JadwalKegiatan::STATUS_APPROVED)
+                            Tampil di website publik
+                            <div style="margin-top:4px;color:#64748b;">
+                                {{ optional($k->approved_at)->translatedFormat('d M Y H:i') ?? '-' }}
+                                @if($k->approver)
+                                    oleh {{ $k->approver->name }}
+                                @endif
+                            </div>
+                        @elseif($k->status === \App\Models\JadwalKegiatan::STATUS_REJECTED)
+                            {{ $k->rejection_reason }}
+                            @if($k->approver)
+                                <div style="margin-top:4px;color:#64748b;">oleh {{ $k->approver->name }}</div>
+                            @endif
+                        @else
+                            Belum tampil di website
+                        @endif
+                    </td>
+                    <td style="text-align:center;">
+                        @can('approve', $k)
+                            <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
+                                <form action="{{ route('kegiatan.jadwal.approve', $k->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" style="background:#16a34a;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" onclick="return confirm('Approve kegiatan ini agar tampil di website?')">
+                                        <i class="fa fa-check"></i> Approve
+                                    </button>
+                                </form>
+                                <form id="reject-kegiatan-{{ $k->id }}" action="{{ route('kegiatan.jadwal.reject', $k->id) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="rejection_reason" id="reject-kegiatan-reason-{{ $k->id }}">
+                                    <button type="button" style="background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" onclick="rejectApproval('reject-kegiatan-{{ $k->id }}', 'reject-kegiatan-reason-{{ $k->id }}', 'kegiatan ini')">
+                                        <i class="fa fa-times"></i> Reject
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <span style="font-size:12px;color:#94a3b8;">-</span>
+                        @endcan
+                    </td>
                     @if($k->deletionRequest)
                         @if(auth()->user()->role == 'ketua')
                             <td colspan="2" style="text-align:center;">
-                                <div style="display:flex; justify-content:center; gap:4px;">
+                                <div style="margin-bottom:6px;">
+                                    <span style="font-size:12px;color:#b45309;background:#fef3c7;padding:4px 10px;border-radius:12px;font-weight:600;">Menunggu Dihapus</span>
+                                </div>
+                                <div style="display:flex; justify-content:center; align-items:center; gap:6px; flex-wrap:wrap;">
                                     <form action="{{ route('admin.deletion_approvals.approve', $k->deletionRequest->id) }}" method="POST">
                                         @csrf
-                                        <button style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Setujui" onclick="return confirm('Yakin setujui?')"><i class="fa fa-check"></i> Setujui</button>
+                                        <button style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Setuju" onclick="return confirm('Yakin setujui?')"><i class="fa fa-check"></i> Setuju</button>
                                     </form>
                                     <form action="{{ route('admin.deletion_approvals.reject', $k->deletionRequest->id) }}" method="POST">
                                         @csrf
-                                        <button style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Tolak" onclick="return confirm('Yakin tolak?')"><i class="fa fa-times"></i> Tolak</button>
+                                        <button style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;" type="submit" title="Tidak" onclick="return confirm('Yakin tolak?')"><i class="fa fa-times"></i> Tidak</button>
                                     </form>
                                 </div>
                             </td>
@@ -112,23 +168,31 @@
                         @endif
                     @else
                         <td style="text-align:center;">
-                            <form id="del-keg-{{ $k->id }}" action="{{ route('kegiatan.jadwal.delete', $k->id) }}" method="POST" style="display:inline;">
-                                @csrf @method('DELETE')
-                                <button type="button" onclick="hapus('del-keg-{{ $k->id }}')" style="border:none;background:none;cursor:pointer;">
-                                    <i class="fa fa-trash" style="color:red;"></i>
-                                </button>
-                            </form>
+                            @can('delete', $k)
+                                <form id="del-keg-{{ $k->id }}" action="{{ route('kegiatan.jadwal.delete', $k->id) }}" method="POST" style="display:inline;">
+                                    @csrf @method('DELETE')
+                                    <button type="button" onclick="hapus('del-keg-{{ $k->id }}')" style="border:none;background:none;cursor:pointer;">
+                                        <i class="fa fa-trash" style="color:red;"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <span style="font-size:12px;color:#94a3b8;">Terkunci</span>
+                            @endcan
                         </td>
                         <td style="text-align:center;">
-                            <a href="{{ route('kegiatan.jadwal.edit', $k->id) }}">
-                                <i class="fa fa-edit" style="color:blue;"></i>
-                            </a>
+                            @can('update', $k)
+                                <a href="{{ route('kegiatan.jadwal.edit', $k->id) }}">
+                                    <i class="fa fa-edit" style="color:blue;"></i>
+                                </a>
+                            @else
+                                <span style="font-size:12px;color:#94a3b8;">Terkunci</span>
+                            @endcan
                         </td>
                     @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="12" style="text-align:center;padding:2.5rem;color:#999;">
+                    <td colspan="15" style="text-align:center;padding:2.5rem;color:#999;">
                         <i class="fa fa-inbox" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>
                         Belum ada jadwal kegiatan
                     </td>
@@ -154,6 +218,29 @@ function cariData(){
     let v=0;
     rows.forEach(r=>{ if(r.textContent.toLowerCase().includes(q)){r.style.display='';v++;} else r.style.display='none'; });
     document.getElementById('jmlBadge').textContent=v+' kegiatan';
+}
+function rejectApproval(formId, inputId, label){
+    Swal.fire({
+        title:'Tolak ' + label + '?',
+        input:'textarea',
+        inputLabel:'Alasan penolakan',
+        inputPlaceholder:'Wajib diisi...',
+        inputAttributes:{ 'aria-label':'Alasan penolakan' },
+        showCancelButton:true,
+        confirmButtonText:'Tolak',
+        cancelButtonText:'Batal',
+        confirmButtonColor:'#dc2626',
+        inputValidator:(value)=>{
+            if(!value || !value.trim()){
+                return 'Alasan penolakan wajib diisi.';
+            }
+        }
+    }).then((result)=>{
+        if(result.isConfirmed){
+            document.getElementById(inputId).value = result.value.trim();
+            document.getElementById(formId).submit();
+        }
+    });
 }
 </script>
 @endsection

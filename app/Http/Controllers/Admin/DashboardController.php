@@ -25,26 +25,28 @@ class DashboardController extends Controller
     {
         // KAS
         $kasMasuk  = KasMasuk::orderBy('tanggal', 'desc')->limit(5)->get();
-        $kasKeluar = KasKeluar::orderBy('tanggal', 'desc')->limit(5)->get();
+        $kasKeluar = KasKeluar::with('approver')->orderBy('tanggal', 'desc')->limit(5)->get();
         $totalKasMasuk  = KasMasuk::sum('jumlah');
-        $totalKasKeluar = KasKeluar::sum('nominal');
+        $totalKasKeluar = KasKeluar::approved()->sum('nominal');
 
         // ANGGARAN KEGIATAN
         $totalAnggaranKegiatan = JadwalKegiatan::with('kasKeluar')
+            ->approved()
             ->whereNotNull('kas_keluar_id')
             ->get()
             ->sum(fn($k) => $k->kasKeluar->nominal ?? 0);
 
         // STAT KEGIATAN
-        $totalJadwal  = JadwalKegiatan::whereDate('tanggal', '>=', now())->count();
+        $totalJadwal  = JadwalKegiatan::approved()->whereDate('tanggal', '>=', now())->count();
         $statKegiatan = [
-            'akan_datang' => JadwalKegiatan::whereDate('tanggal', '>', now())->count(),
-            'hari_ini'    => JadwalKegiatan::whereDate('tanggal', Carbon::today())->count(),
-            'selesai'     => JadwalKegiatan::whereDate('tanggal', '<', now())->count(),
+            'akan_datang' => JadwalKegiatan::approved()->whereDate('tanggal', '>', now())->count(),
+            'hari_ini'    => JadwalKegiatan::approved()->whereDate('tanggal', Carbon::today())->count(),
+            'selesai'     => JadwalKegiatan::approved()->whereDate('tanggal', '<', now())->count(),
         ];
 
         // KEGIATAN TERDEKAT
         $kegiatanTerdekat = JadwalKegiatan::with('kasKeluar')
+            ->approved()
             ->whereDate('tanggal', '>=', Carbon::today())
             ->orderBy('tanggal', 'asc')
             ->limit(5)

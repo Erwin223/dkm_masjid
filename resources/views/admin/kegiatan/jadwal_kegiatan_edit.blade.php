@@ -11,6 +11,9 @@
 
 <div class="form-box">
     <h3><i class="fa fa-edit" style="color:#0f8b6d;"></i> Edit Jadwal Kegiatan</h3>
+    <div style="margin:0 0 16px;padding:12px 14px;border-radius:10px;background:#f8fafc;color:#334155;font-size:13px;">
+        Hanya kegiatan berstatus <b>pending</b> yang bisa diubah. Setelah di-approve atau di-reject, data otomatis terkunci.
+    </div>
 
     <form action="{{ route('kegiatan.jadwal.update', $kegiatan->id) }}" method="POST">
         @csrf @method('PUT')
@@ -55,7 +58,7 @@
             <label>
                 <i class="fa fa-money-bill" style="color:#0f8b6d;font-size:12px;"></i>
                 Realisasi Anggaran
-                <span style="font-size:11px;color:#999;font-weight:400;">(pilih dari kas keluar)</span>
+                <span style="font-size:11px;color:#999;font-weight:400;">(pilih dari kas keluar approved)</span>
             </label>
             <select name="kas_keluar_id" id="kasSelect" onchange="tampilInfoKas()">
                 <option value="">Belum ada realisasi anggaran</option>
@@ -72,7 +75,7 @@
                 @endforeach
             </select>
             <div class="kas-info" id="kasInfo"></div>
-            <div class="field-hint">Jika dana kegiatan sudah keluar, tautkan ke transaksi kas agar laporan tetap sinkron.</div>
+            <div class="field-hint">Jika dana kegiatan sudah keluar, tautkan ke transaksi kas approved agar laporan tetap sinkron.</div>
             @error('kas_keluar_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
         </div>
 
