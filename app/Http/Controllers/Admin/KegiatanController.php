@@ -10,6 +10,7 @@ use App\Models\JadwalKegiatan;
 use App\Models\JadwalImam;
 use App\Models\DataImam;
 use App\Models\KasKeluar;
+use App\Notifications\ApprovalRequested;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -40,6 +41,12 @@ class KegiatanController extends Controller
     public function jadwalStore(StoreJadwalKegiatanRequest $request): RedirectResponse
     {
         JadwalKegiatan::create($request->validated());
+
+        $ketuas = Admin::where('role', 'ketua')->get();
+        $adminName = auth()->user()->name ?? 'Admin';
+        foreach ($ketuas as $ketua) {
+            $ketua->notify(new ApprovalRequested($adminName, 'Jadwal Kegiatan'));
+        }
 
         return redirect()->route('kegiatan.jadwal')
             ->with('success', 'Jadwal kegiatan berhasil ditambahkan dengan status pending.');

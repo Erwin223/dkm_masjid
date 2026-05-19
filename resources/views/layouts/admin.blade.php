@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 @include('layouts._styles')
+
 <head>
-    <title>{{ trim($__env->yieldContent('title')) ?: trim($__env->yieldContent('page-title', 'Dashboard Admin')) . ' - DKM' }}</title>
+    <title>
+        {{ trim($__env->yieldContent('title')) ?: trim($__env->yieldContent('page-title', 'Dashboard Admin')) . ' - DKM' }}
+    </title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpeg" href="{{ asset('favicon.ico') }}">
@@ -12,6 +15,44 @@
 </head>
 
 <body>
+
+    @php
+        $authUser = auth()->user();
+        $unreadNotifications = $authUser->unreadNotifications;
+        $pendingKasKeluarNotif = collect();
+        $pendingKegiatanNotif = collect();
+        $pendingDeletionNotif = collect();
+        $pendingApprovalCenterCount = 0;
+
+        if ($authUser && $authUser->role === 'ketua') {
+            $pendingKasKeluarNotif = \App\Models\KasKeluar::query()
+                ->pending()
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+
+            $pendingKegiatanNotif = \App\Models\JadwalKegiatan::query()
+                ->pending()
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+
+            $pendingDeletionNotif = \App\Models\DeletionRequest::query()
+                ->where('status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+
+            $pendingApprovalCenterCount =
+                \App\Models\KasKeluar::query()->pending()->count() +
+                \App\Models\JadwalKegiatan::query()->pending()->count() +
+                \App\Models\DeletionRequest::query()->where('status', 'pending')->count();
+        }
+
+        $notifCount = $authUser && $authUser->role === 'ketua'
+            ? max($unreadNotifications->count(), $pendingApprovalCenterCount)
+            : $unreadNotifications->count();
+    @endphp
 
     {{-- SIDEBAR OVERLAY (mobile) --}}
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -39,37 +80,36 @@
             </a>
 
             @if(auth()->user()->role != 'ketua')
-            <a href="{{ route('pengurus.index') }}"
-                class="nav-item {{ request()->routeIs('pengurus*') ? 'active' : '' }}">
-                <i class="fa fa-users"></i> Data Pengurus
-            </a>
+                <a href="{{ route('pengurus.index') }}"
+                    class="nav-item {{ request()->routeIs('pengurus*') ? 'active' : '' }}">
+                    <i class="fa fa-users"></i> Data Pengurus
+                </a>
 
-            <a href="{{ route('arsip.index') }}"
-                class="nav-item {{ request()->routeIs('arsip*') ? 'active' : '' }}">
-                <i class="fa fa-folder-open"></i> Arsip & Dokumen
-            </a>
+                <a href="{{ route('arsip.index') }}" class="nav-item {{ request()->routeIs('arsip*') ? 'active' : '' }}">
+                    <i class="fa fa-folder-open"></i> Arsip & Dokumen
+                </a>
 
-            <button
-                class="nav-item {{ request()->routeIs('profil_masjid*') || request()->routeIs('berita*') || request()->routeIs('galeri*') ? 'active open' : '' }}"
-                onclick="toggleDropdown('dd-konten', this)">
-                <i class="fa fa-globe"></i> Kelola Website
-                <i class="fa fa-chevron-right nav-arrow"></i>
-            </button>
-            <div class="nav-dropdown {{ request()->routeIs('profil_masjid*') || request()->routeIs('berita*') || request()->routeIs('galeri*') ? 'open' : '' }}"
-                id="dd-konten">
-                <a href="{{ route('profil_masjid.index') }}"
-                    class="nav-item {{ request()->routeIs('profil_masjid*') ? 'active' : '' }}">
-                    <i class="fa fa-mosque"></i> Profil Masjid
-                </a>
-                <a href="{{ route('berita.index') }}"
-                    class="nav-item {{ request()->routeIs('berita*') ? 'active' : '' }}">
-                    <i class="fa fa-newspaper"></i> Berita
-                </a>
-                <a href="{{ route('galeri.index') }}"
-                    class="nav-item {{ request()->routeIs('galeri*') ? 'active' : '' }}">
-                    <i class="fa fa-images"></i> Galeri
-                </a>
-            </div>
+                <button
+                    class="nav-item {{ request()->routeIs('profil_masjid*') || request()->routeIs('berita*') || request()->routeIs('galeri*') ? 'active open' : '' }}"
+                    onclick="toggleDropdown('dd-konten', this)">
+                    <i class="fa fa-globe"></i> Kelola Website
+                    <i class="fa fa-chevron-right nav-arrow"></i>
+                </button>
+                <div class="nav-dropdown {{ request()->routeIs('profil_masjid*') || request()->routeIs('berita*') || request()->routeIs('galeri*') ? 'open' : '' }}"
+                    id="dd-konten">
+                    <a href="{{ route('profil_masjid.index') }}"
+                        class="nav-item {{ request()->routeIs('profil_masjid*') ? 'active' : '' }}">
+                        <i class="fa fa-mosque"></i> Profil Masjid
+                    </a>
+                    <a href="{{ route('berita.index') }}"
+                        class="nav-item {{ request()->routeIs('berita*') ? 'active' : '' }}">
+                        <i class="fa fa-newspaper"></i> Berita
+                    </a>
+                    <a href="{{ route('galeri.index') }}"
+                        class="nav-item {{ request()->routeIs('galeri*') ? 'active' : '' }}">
+                        <i class="fa fa-images"></i> Galeri
+                    </a>
+                </div>
             @endif
 
             {{-- KEGIATAN --}}
@@ -86,18 +126,18 @@
                     <i class="fa fa-calendar-check"></i> Jadwal Kegiatan
                 </a>
                 @if(auth()->user()->role != 'ketua')
-                <a href="{{ route('imam.data') }}"
-                    class="nav-item {{ request()->routeIs('imam.data*') ? 'active' : '' }}">
-                    <i class="fa fa-user-tie"></i> Data Imam
-                </a>
-                <a href="{{ route('kegiatan.imam') }}"
-                    class="nav-item {{ request()->routeIs('kegiatan.imam*') ? 'active' : '' }}">
-                    <i class="fa fa-calendar-days"></i> Jadwal Imam
-                </a>
-                <a href="{{ route('kegiatan.sholat') }}"
-                    class="nav-item {{ request()->routeIs('kegiatan.sholat*') ? 'active' : '' }}">
-                    <i class="fa fa-mosque"></i> Jadwal Sholat
-                </a>
+                    <a href="{{ route('imam.data') }}"
+                        class="nav-item {{ request()->routeIs('imam.data*') ? 'active' : '' }}">
+                        <i class="fa fa-user-tie"></i> Data Imam
+                    </a>
+                    <a href="{{ route('kegiatan.imam') }}"
+                        class="nav-item {{ request()->routeIs('kegiatan.imam*') ? 'active' : '' }}">
+                        <i class="fa fa-calendar-days"></i> Jadwal Imam
+                    </a>
+                    <a href="{{ route('kegiatan.sholat') }}"
+                        class="nav-item {{ request()->routeIs('kegiatan.sholat*') ? 'active' : '' }}">
+                        <i class="fa fa-mosque"></i> Jadwal Sholat
+                    </a>
                 @endif
             </div>
 
@@ -136,9 +176,9 @@
                 </a>
             </div>
             <a href="{{ route('donatur.index') }}"
-   class="nav-item {{ request()->routeIs('donatur*') ? 'active' : '' }}">
-    <i class="fa fa-users"></i> Data Donatur
-</a>
+                class="nav-item {{ request()->routeIs('donatur*') ? 'active' : '' }}">
+                <i class="fa fa-users"></i> Data Donatur
+            </a>
             <button class="nav-item {{ request()->routeIs('zakat*') ? 'active open' : '' }}"
                 onclick="toggleDropdown('dd-zakat', this)">
                 <i class="fa fa-hand-holding-heart"></i> Zakat
@@ -162,7 +202,8 @@
                     <i class="fa fa-arrow-up"></i> Distribusi
                 </a>
             </div>
-            <a href="{{ route('admin.laporan.index') }}" class="nav-item {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
+            <a href="{{ route('admin.laporan.index') }}"
+                class="nav-item {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
                 <i class="fa fa-chart-line"></i> Laporan
             </a>
 
@@ -170,12 +211,18 @@
             <div class="nav-label">Pengaturan</div>
 
             @if(auth()->user()->role == 'ketua')
-            <a href="{{ route('admin.deletion_approvals.index') }}" class="nav-item {{ request()->routeIs('admin.deletion_approvals*') ? 'active' : '' }}">
-                <i class="fa fa-clipboard-check"></i> Persetujuan Hapus
-            </a>
+                <a href="{{ route('admin.deletion_approvals.index') }}"
+                    class="nav-item {{ request()->routeIs('admin.deletion_approvals*') ? 'active' : '' }}">
+                    <i class="fa fa-clipboard-check"></i> Persetujuan Ketua
+                    @if($pendingApprovalCenterCount > 0)
+                        <span
+                            style="margin-left:auto;background:#f59e0b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;">{{ $pendingApprovalCenterCount }}</span>
+                    @endif
+                </a>
             @endif
 
-            <a href="{{ route('admin.admins.index') }}" class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
+            <a href="{{ route('admin.admins.index') }}"
+                class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
                 <i class="fa fa-user-shield"></i> Kelola Admin
             </a>
 
@@ -221,35 +268,99 @@
                 <div class="notif-wrapper" style="position: relative;">
                     <button class="nav-icon-btn" onclick="toggleNotifDropdown(event)">
                         <i class="fa-solid fa-bell"></i>
-                        @if(auth()->user()->unreadNotifications->count() > 0)
-                        <span class="notif-dot" style="width: auto; height: auto; min-width: 16px; padding: 2px 4px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; top: 0; right: 0;">{{ auth()->user()->unreadNotifications->count() }}</span>
+                        @if($notifCount > 0)
+                            <span class="notif-dot"
+                                style="width: auto; height: auto; min-width: 16px; padding: 2px 4px; border-radius: 10px; font-size: 10px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; top: 0; right: 0;">{{ $notifCount }}</span>
                         @endif
                     </button>
-                    <div class="notif-dropdown" id="notifDropdown" style="display: none; position: absolute; right: 0; top: 120%; background: white; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #eee; z-index: 100;">
-                        <div style="padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="notif-dropdown" id="notifDropdown"
+                        style="display: none; position: absolute; right: 0; top: 120%; background: white; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #eee; z-index: 100;">
+                        <div
+                            style="padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-weight: 600; font-size: 14px;">Notifikasi</span>
-                            @if(auth()->user()->unreadNotifications->count() > 0)
-                            <form action="{{ route('admin.notifications.read_all') }}" method="POST" style="margin: 0;">
-                                @csrf
-                                <button type="submit" style="background: none; border: none; color: #0f8b6d; font-size: 12px; cursor: pointer;">Tandai Semua Dibaca</button>
-                            </form>
+                            @if($unreadNotifications->count() > 0)
+                                <form action="{{ route('admin.notifications.read_all') }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button type="submit"
+                                        style="background: none; border: none; color: #0f8b6d; font-size: 12px; cursor: pointer;">Tandai
+                                        Semua Dibaca</button>
+                                </form>
                             @endif
                         </div>
                         <div style="max-height: 300px; overflow-y: auto;">
-                            @forelse(auth()->user()->unreadNotifications->take(5) as $notif)
-                            <form action="{{ route('admin.notifications.read', $notif->id) }}" method="POST" style="margin: 0;">
-                                @csrf
-                                <button type="submit" style="width: 100%; text-align: left; padding: 12px 16px; border: none; background: #fff; border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='#fff'">
-                                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px;">{{ $notif->data['title'] ?? 'Notifikasi' }}</div>
-                                    <div style="font-size: 12px; color: #666; line-height: 1.4;">{{ $notif->data['message'] ?? '' }}</div>
-                                    <div style="font-size: 10px; color: #999; margin-top: 6px;">{{ $notif->created_at->diffForHumans() }}</div>
-                                </button>
-                            </form>
-                            @empty
-                            <div style="padding: 20px; text-align: center; color: #999; font-size: 13px;">
-                                Belum ada notifikasi baru.
-                            </div>
-                            @endforelse
+                            @if($unreadNotifications->isNotEmpty())
+                                @foreach($unreadNotifications->take(5) as $notif)
+                                    <form action="{{ route('admin.notifications.read', $notif->id) }}" method="POST"
+                                        style="margin: 0;">
+                                        @csrf
+                                        <button type="submit"
+                                            style="width: 100%; text-align: left; padding: 12px 16px; border: none; background: #fff; border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: background 0.2s;"
+                                            onmouseover="this.style.background='#f8f9fa'"
+                                            onmouseout="this.style.background='#fff'">
+                                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px;">
+                                                {{ $notif->data['title'] ?? 'Notifikasi' }}</div>
+                                            <div style="font-size: 12px; color: #666; line-height: 1.4;">
+                                                {{ $notif->data['message'] ?? '' }}</div>
+                                            <div style="font-size: 10px; color: #999; margin-top: 6px;">
+                                                {{ $notif->created_at->diffForHumans() }}</div>
+                                        </button>
+                                    </form>
+                                @endforeach
+                            @endif
+
+                            @if($authUser && $authUser->role === 'ketua')
+                                <div
+                                    style="padding: 10px 16px; background:#f8fafc; border-top:1px solid #eef2f7; border-bottom:1px solid #eef2f7; font-size:12px; font-weight:700; color:#334155;">
+                                    Persetujuan Pending
+                                </div>
+                                @if($pendingApprovalCenterCount > 0)
+                                    @foreach($pendingKasKeluarNotif as $item)
+                                        <a href="{{ route('admin.deletion_approvals.index') }}"
+                                            style="display:block; text-decoration:none; padding:12px 16px; border-bottom:1px solid #f5f5f5; color:inherit;">
+                                            <div style="font-size:13px; font-weight:600; color:#333;">Kas Keluar Menunggu Approval
+                                            </div>
+                                            <div style="font-size:12px; color:#666; line-height:1.4;">
+                                                Rp.{{ number_format($item->nominal, 0, ',', '.') }} - {{ $item->jenis_pengeluaran }}
+                                            </div>
+                                            <div style="font-size:10px; color:#999; margin-top:6px;">
+                                                {{ $item->created_at->diffForHumans() }}</div>
+                                        </a>
+                                    @endforeach
+
+                                    @foreach($pendingKegiatanNotif as $item)
+                                        <a href="{{ route('admin.deletion_approvals.index') }}"
+                                            style="display:block; text-decoration:none; padding:12px 16px; border-bottom:1px solid #f5f5f5; color:inherit;">
+                                            <div style="font-size:13px; font-weight:600; color:#333;">Jadwal Kegiatan Menunggu
+                                                Approval</div>
+                                            <div style="font-size:12px; color:#666; line-height:1.4;">{{ $item->nama_kegiatan }} -
+                                                {{ optional($item->tanggal)->translatedFormat('d M Y') }}</div>
+                                            <div style="font-size:10px; color:#999; margin-top:6px;">
+                                                {{ $item->created_at->diffForHumans() }}</div>
+                                        </a>
+                                    @endforeach
+
+                                    @foreach($pendingDeletionNotif as $item)
+                                        <a href="{{ route('admin.deletion_approvals.index') }}"
+                                            style="display:block; text-decoration:none; padding:12px 16px; border-bottom:1px solid #f5f5f5; color:inherit;">
+                                            <div style="font-size:13px; font-weight:600; color:#333;">Permintaan Hapus Menunggu
+                                                Persetujuan</div>
+                                            <div style="font-size:12px; color:#666; line-height:1.4;">
+                                                {{ class_basename($item->model_type) }} diajukan {{ $item->user?->name ?? 'Admin' }}
+                                            </div>
+                                            <div style="font-size:10px; color:#999; margin-top:6px;">
+                                                {{ $item->created_at->diffForHumans() }}</div>
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <div style="padding: 20px; text-align: center; color: #999; font-size: 13px;">
+                                        Tidak ada approval yang pending.
+                                    </div>
+                                @endif
+                            @elseif($unreadNotifications->isEmpty())
+                                <div style="padding: 20px; text-align: center; color: #999; font-size: 13px;">
+                                    Belum ada notifikasi baru.
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -313,7 +424,7 @@
         }
 
         // Close notif dropdown when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const notifWrapper = document.querySelector('.notif-wrapper');
             const notifDropdown = document.getElementById('notifDropdown');
             if (notifWrapper && notifDropdown && notifDropdown.style.display === 'block') {

@@ -13,7 +13,7 @@ class NotificationController extends Controller
         $notification->markAsRead();
 
         // Redirect based on type
-        if ($notification->data['type'] === 'deletion_request') {
+        if (in_array($notification->data['type'] ?? null, ['deletion_request', 'approval_request'], true)) {
             return redirect()->route('admin.deletion_approvals.index');
         }
 

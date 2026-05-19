@@ -7,6 +7,7 @@ use App\Http\Requests\StoreKasKeluarRequest;
 use App\Http\Requests\UpdateKasKeluarRequest;
 use App\Models\Admin;
 use App\Models\KasKeluar;
+use App\Notifications\ApprovalRequested;
 use App\Services\CashBalanceService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -18,21 +19,27 @@ class KasKeluarController extends Controller
     {
         $this->authorize('viewAny', KasKeluar::class);
 
-        $data            = KasKeluar::with('approver')
+        $data = KasKeluar::with('approver')
             ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
             ->orderBy('tanggal', 'desc')
             ->get();
-        $totalKeluar     = KasKeluar::approved()->sum('nominal');
-        $pendingKeluar   = KasKeluar::pending()->sum('nominal');
-        $keluarBulanIni  = KasKeluar::approved()->whereMonth('tanggal', Carbon::now()->month)
-                               ->whereYear('tanggal', Carbon::now()->year)
-                               ->sum('nominal');
-        $jmlBulanIni     = KasKeluar::approved()->whereMonth('tanggal', Carbon::now()->month)
-                               ->whereYear('tanggal', Carbon::now()->year)
-                               ->count();
+        $totalKeluar = KasKeluar::approved()->sum('nominal');
+        $pendingKeluar = KasKeluar::pending()->sum('nominal');
+        $keluarBulanIni = KasKeluar::approved()
+            ->whereMonth('approved_at', Carbon::now()->month)
+            ->whereYear('approved_at', Carbon::now()->year)
+            ->sum('nominal');
+        $jmlBulanIni = KasKeluar::approved()
+            ->whereMonth('approved_at', Carbon::now()->month)
+            ->whereYear('approved_at', Carbon::now()->year)
+            ->count();
 
         return view('admin.kas_keluar.index', compact(
-            'data', 'totalKeluar', 'pendingKeluar', 'keluarBulanIni', 'jmlBulanIni'
+            'data',
+            'totalKeluar',
+            'pendingKeluar',
+            'keluarBulanIni',
+            'jmlBulanIni'
         ));
     }
 
@@ -46,6 +53,12 @@ class KasKeluarController extends Controller
     public function store(StoreKasKeluarRequest $request): RedirectResponse
     {
         KasKeluar::create($request->validated());
+
+        $ketuas = Admin::where('role', 'ketua')->get();
+        $adminName = auth()->user()->name ?? 'Admin';
+        foreach ($ketuas as $ketua) {
+            $ketua->notify(new ApprovalRequested($adminName, 'Kas Keluar'));
+        }
 
         return redirect()->route('kas.keluar.index')
             ->with('success', 'Kas keluar berhasil ditambahkan dengan status pending.');

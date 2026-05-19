@@ -29,7 +29,7 @@
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-calendar" style="color:#17a2b8;"></i> Bulan Ini</div>
         <div class="s-value" style="color:#17a2b8;">Rp.{{ number_format($keluarBulanIni, 0, ',', '.') }}</div>
-        <div style="font-size:11px;color:#aaa;margin-top:4px;">Approved {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</div>
+        <div style="font-size:11px;color:#aaa;margin-top:4px;">Disetujui Ketua {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</div>
     </div>
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-hourglass-half" style="color:#6f42c1;"></i> Menunggu Approval</div>
