@@ -51,10 +51,8 @@ class AuthenticatedSessionController extends Controller
             $admin = Auth::user();
             assert($admin instanceof Admin);
 
-            // Record successful login
-            $admin->recordLogin($request->ip());
+0            $admin->recordLogin($request->ip());
 
-            // Log successful login
             Log::info('User logged in successfully', [
                 'admin_id' => $admin->id,
                 'email' => $admin->email,
@@ -62,7 +60,7 @@ class AuthenticatedSessionController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
-            // Tambahkan pesan selamat datang
+          
             $request->session()->flash('welcome_message', "Selamat datang " . $admin->name . " pada halaman admin DKM Masjid Al-Musabaqoh");
 
             return redirect()->intended('/admin/dashboard');

@@ -85,7 +85,7 @@
                     @if(auth()->user()?->role === 'ketua')
                         Panel Ketua
                     @else
-                        Panel User
+                        Panel Admin
                     @endif
                 </small>
             </div>
