@@ -20,7 +20,7 @@ use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\ArsipController;
-use App\Http\Controllers\Admin\DeletionApprovalController;
+use App\Http\Controllers\Admin\PersetujuanKetuaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,6 +139,8 @@ Route::post('/donasi/keluar',            [DonasiController::class, 'keluarStore'
 Route::get('/donasi/keluar/{id}/edit',   [DonasiController::class, 'keluarEdit'])->name('donasi.keluar.edit');
 Route::put('/donasi/keluar/{id}',        [DonasiController::class, 'keluarUpdate'])->name('donasi.keluar.update');
 Route::delete('/donasi/keluar/{id}',     [DonasiController::class, 'keluarDelete'])->name('donasi.keluar.delete');
+Route::post('/donasi/keluar/{id}/approve', [DonasiController::class, 'keluarApprove'])->name('donasi.keluar.approve');
+Route::post('/donasi/keluar/{id}/reject', [DonasiController::class, 'keluarReject'])->name('donasi.keluar.reject');
 
 //DONATUR
 Route::get('/donatur',              [DonaturController::class, 'index'])->name('donatur.index');
@@ -177,6 +179,8 @@ Route::post('/zakat/distribusi',            [ZakatController::class, 'distribusi
 Route::get('/zakat/distribusi/{id}/edit',   [ZakatController::class, 'distribusiEdit'])->name('zakat.distribusi.edit');
 Route::put('/zakat/distribusi/{id}',        [ZakatController::class, 'distribusiUpdate'])->name('zakat.distribusi.update');
 Route::delete('/zakat/distribusi/{id}',     [ZakatController::class, 'distribusiDelete'])->name('zakat.distribusi.delete');
+Route::post('/zakat/distribusi/{id}/approve', [ZakatController::class, 'distribusiApprove'])->name('zakat.distribusi.approve');
+Route::post('/zakat/distribusi/{id}/reject', [ZakatController::class, 'distribusiReject'])->name('zakat.distribusi.reject');
 
 // MANAJEMEN ADMIN
 Route::get('/admins',               [AdminController::class, 'index'])->name('admin.admins.index');
@@ -187,9 +191,9 @@ Route::put('/admins/{id}',          [AdminController::class, 'update'])->name('a
 Route::delete('/admins/{id}',       [AdminController::class, 'destroy'])->name('admin.admins.delete');
 
 // PERSETUJUAN HAPUS
-Route::get('/deletion-approvals',          [DeletionApprovalController::class, 'index'])->name('admin.deletion_approvals.index');
-Route::post('/deletion-approvals/{id}/approve', [DeletionApprovalController::class, 'approve'])->name('admin.deletion_approvals.approve');
-Route::post('/deletion-approvals/{id}/reject',  [DeletionApprovalController::class, 'reject'])->name('admin.deletion_approvals.reject');
+Route::get('/deletion-approvals',          [PersetujuanKetuaController::class, 'index'])->name('admin.deletion_approvals.index');
+Route::post('/deletion-approvals/{id}/approve', [PersetujuanKetuaController::class, 'approve'])->name('admin.deletion_approvals.approve');
+Route::post('/deletion-approvals/{id}/reject',  [PersetujuanKetuaController::class, 'reject'])->name('admin.deletion_approvals.reject');
 
 // NOTIFICATIONS
 Route::post('/notifications/mark-as-read/{id}', [App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.notifications.read');

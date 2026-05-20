@@ -22,4 +22,9 @@ class Arsip extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function deletionRequest()
+    {
+        return $this->morphOne(DeletionRequest::class, 'model')->where('status', 'pending');
+    }
 }

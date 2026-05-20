@@ -297,7 +297,7 @@
                     </svg>
                 </div>
                 <h2>DKM Masjid AL-MUSABAQOH</h2>
-                <p>@yield('subtitle', 'Login Admin Website DKM')</p>
+                <p>@yield('subtitle', 'Login User Website DKM')</p>
             </div>
         </div>
         <div class="right">

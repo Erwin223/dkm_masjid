@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreArsipRequest;
 use App\Http\Requests\UpdateArsipRequest;
+use App\Models\Admin;
 use App\Models\Arsip;
+use App\Notifications\DeletionRequested;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -114,15 +116,23 @@ class ArsipController extends Controller
     {
         $data = Arsip::findOrFail($id);
 
-        // HAPUS FILE JIKA ADA
-        if ($data->file && Storage::disk('public')->exists($data->file)) {
-            Storage::disk('public')->delete($data->file);
+        if (! $data->deletionRequest) {
+            \App\Models\DeletionRequest::create([
+                'model_type' => get_class($data),
+                'model_id' => $data->id,
+                'user_id' => auth()->id(),
+                'status' => 'pending',
+            ]);
+
+            $ketuas = Admin::where('role', 'ketua')->get();
+            $adminName = auth()->user()->name ?? 'Admin';
+            foreach ($ketuas as $ketua) {
+                $ketua->notify(new DeletionRequested($adminName, 'Arsip & Dokumen'));
+            }
         }
 
-        $data->delete();
-
         return redirect()->route('arsip.index')
-            ->with('success', 'Arsip berhasil dihapus');
+            ->with('success', 'Permintaan penghapusan arsip telah dikirim. Menunggu persetujuan ketua.');
     }
 
     // =======================

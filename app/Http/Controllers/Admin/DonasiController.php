@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Models\DonasiMasuk;
 use App\Models\DonasiKeluar;
 use App\Models\Donatur;
+use App\Notifications\ApprovalRequested;
 
 class DonasiController extends Controller
 {
@@ -166,9 +168,13 @@ class DonasiController extends Controller
 
     public function keluar()
     {
-        $data        = DonasiKeluar::orderBy('tanggal', 'desc')->get();
-        $totalKeluar = $data->sum('nilai_dana');
-        return view('admin.donasi.donasi_keluar_index', compact('data', 'totalKeluar'));
+        $data = DonasiKeluar::with('approver')
+            ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
+            ->orderBy('tanggal', 'desc')
+            ->get();
+        $totalKeluar = DonasiKeluar::approved()->get()->sum('nilai_dana');
+        $pendingKeluar = DonasiKeluar::pending()->get()->sum('nilai_dana');
+        return view('admin.donasi.donasi_keluar_index', compact('data', 'totalKeluar', 'pendingKeluar'));
     }
 
     public function keluarCreate()
@@ -209,8 +215,14 @@ class DonasiController extends Controller
             'keterangan'   => $request->keterangan,
         ]);
 
+        $ketuas = Admin::where('role', 'ketua')->get();
+        $adminName = auth()->user()->name ?? 'Admin';
+        foreach ($ketuas as $ketua) {
+            $ketua->notify(new ApprovalRequested($adminName, 'Donasi Keluar'));
+        }
+
         return redirect()->route('donasi.keluar')
-            ->with('success', 'Data donasi keluar berhasil ditambahkan');
+            ->with('success', 'Data donasi keluar berhasil ditambahkan dengan status pending.');
     }
 
     public function keluarEdit($id)
@@ -221,6 +233,12 @@ class DonasiController extends Controller
 
     public function keluarUpdate(Request $request, $id)
     {
+        $donasiKeluar = DonasiKeluar::findOrFail($id);
+        if ($donasiKeluar->isFinalized()) {
+            return redirect()->route('donasi.keluar')
+                ->with('error', 'Hanya donasi keluar berstatus pending yang bisa diubah.');
+        }
+
         $request->merge($this->normalizeDonasiKeluarPayload($request));
 
         $payload = $request->validate([
@@ -242,7 +260,7 @@ class DonasiController extends Controller
             ]);
         }
 
-        DonasiKeluar::findOrFail($id)->update([
+        $donasiKeluar->update([
             'tanggal'      => $request->tanggal,
             'jenis_donasi' => $request->jenis_donasi,
             'tujuan'       => $request->tujuan,
@@ -259,6 +277,11 @@ class DonasiController extends Controller
     public function keluarDelete($id)
     {
         $donasi = DonasiKeluar::findOrFail($id);
+
+        if ($donasi->isFinalized()) {
+            return redirect()->route('donasi.keluar')
+                ->with('error', 'Hanya donasi keluar berstatus pending yang bisa diajukan untuk dihapus.');
+        }
 
         if (!$donasi->deletionRequest) {
             \App\Models\DeletionRequest::create([
@@ -277,6 +300,34 @@ class DonasiController extends Controller
 
         return redirect()->route('donasi.keluar')
             ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
+    }
+
+    public function keluarApprove(Request $request, int $id)
+    {
+        abort_unless($request->user()?->isKetua(), 403);
+
+        $donasiKeluar = DonasiKeluar::findOrFail($id);
+        $donasiKeluar->approve($request->user());
+
+        return redirect()->route('donasi.keluar')
+            ->with('success', 'Donasi keluar berhasil di-approve.');
+    }
+
+    public function keluarReject(Request $request, int $id)
+    {
+        abort_unless($request->user()?->isKetua(), 403);
+
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:2000',
+        ], [
+            'rejection_reason.required' => 'Alasan penolakan wajib diisi.',
+        ]);
+
+        $donasiKeluar = DonasiKeluar::findOrFail($id);
+        $donasiKeluar->reject($request->user(), $validated['rejection_reason']);
+
+        return redirect()->route('donasi.keluar')
+            ->with('success', 'Donasi keluar berhasil ditolak.');
     }
 
     private function isJenisBarang(?string $jenisDonasi): bool

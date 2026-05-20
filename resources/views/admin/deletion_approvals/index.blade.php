@@ -4,161 +4,8 @@
 
 @section('content')
 
-<style>
-.approval-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-.approval-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #ecfccb, #bbf7d0);
-    color: #166534;
-}
-.approval-title {
-    margin: 0;
-    font-size: 22px;
-    color: #0f172a;
-}
-.approval-subtitle {
-    margin: 4px 0 0;
-    color: #64748b;
-    font-size: 13px;
-}
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 20px;
-}
-.summary-card,
-.panel-box {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-}
-.summary-card {
-    padding: 18px;
-}
-.summary-label {
-    font-size: 12px;
-    color: #64748b;
-    margin-bottom: 8px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-}
-.summary-value {
-    font-size: 28px;
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1;
-}
-.summary-note {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #94a3b8;
-}
-.panel-box {
-    margin-bottom: 18px;
-    overflow: hidden;
-}
-.panel-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 18px;
-    border-bottom: 1px solid #e2e8f0;
-}
-.panel-title {
-    margin: 0;
-    font-size: 16px;
-    color: #0f172a;
-}
-.count-pill {
-    background: #f8fafc;
-    color: #475569;
-    border: 1px solid #e2e8f0;
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-.table-wrap {
-    overflow-x: auto;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 13px;
-    vertical-align: top;
-}
-th {
-    background: #f8fafc;
-    color: #475569;
-    text-align: left;
-    font-weight: 700;
-}
-.status-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-.module-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    background: #eff6ff;
-    color: #1d4ed8;
-}
-.action-row {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.btn-approve,
-.btn-reject {
-    border: none;
-    border-radius: 8px;
-    padding: 7px 12px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-}
-.btn-approve { background: #16a34a; }
-.btn-reject { background: #dc2626; }
-.empty-state {
-    text-align: center;
-    padding: 28px 16px;
-    color: #94a3b8;
-}
-@media (max-width: 900px) {
-    .summary-grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+@include('admin.deletion_approvals._styles')    
+
 
 <div class="approval-header">
     <div class="approval-icon">
@@ -179,12 +26,110 @@ th {
     <div class="summary-card">
         <div class="summary-label">Pending Approval</div>
         <div class="summary-value" style="color:#2563eb;">{{ $pendingApprovalCount }}</div>
-        <div class="summary-note">Kas keluar dan jadwal kegiatan yang belum diputuskan</div>
+        <div class="summary-note">Kas keluar, kegiatan, donasi keluar, dan distribusi zakat</div>
     </div>
     <div class="summary-card">
         <div class="summary-label">Pending Hapus</div>
         <div class="summary-value" style="color:#ea580c;">{{ $pendingDeletionCount }}</div>
         <div class="summary-note">Permintaan penghapusan data dari admin</div>
+    </div>
+</div>
+
+<div class="panel-box">
+    <div class="panel-head">
+        <h2 class="panel-title"><i class="fa fa-hand-holding-dollar" style="color:#f97316;"></i> Approval Donasi Keluar</h2>
+        <span class="count-pill">{{ $pendingDonasiKeluar->count() }} pending</span>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Jenis</th>
+                    <th>Tujuan</th>
+                    <th>Nilai</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($pendingDonasiKeluar as $i => $item)
+                <tr>
+                    <td>{{ $i + 1 }}</td>
+                    <td>{{ optional($item->tanggal)->translatedFormat('d M Y') }}</td>
+                    <td>{{ $item->jenis_donasi }}</td>
+                    <td>{{ $item->tujuan }}</td>
+                    <td><strong>Rp.{{ number_format($item->nilai_dana, 0, ',', '.') }}</strong></td>
+                    <td>
+                        <div class="action-row">
+                            <form action="{{ route('donasi.keluar.approve', $item->id) }}" method="POST">
+                                @csrf
+                                <button class="btn-approve" type="submit"><i class="fa fa-check"></i> Approve</button>
+                            </form>
+                            <form id="reject-donasi-keluar-{{ $item->id }}" action="{{ route('donasi.keluar.reject', $item->id) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="rejection_reason" id="reject-donasi-keluar-reason-{{ $item->id }}">
+                                <button class="btn-reject" type="button" onclick="rejectApproval('reject-donasi-keluar-{{ $item->id }}', 'reject-donasi-keluar-reason-{{ $item->id }}', 'donasi keluar ini')"><i class="fa fa-times"></i> Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="empty-state">Tidak ada donasi keluar yang menunggu approval.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel-box">
+    <div class="panel-head">
+        <h2 class="panel-title"><i class="fa fa-hand-holding-heart" style="color:#0f8b6d;"></i> Approval Distribusi Zakat</h2>
+        <span class="count-pill">{{ $pendingDistribusiZakat->count() }} pending</span>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Mustahik</th>
+                    <th>Jenis</th>
+                    <th>Nilai</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($pendingDistribusiZakat as $i => $item)
+                <tr>
+                    <td>{{ $i + 1 }}</td>
+                    <td>{{ optional($item->tanggal)->translatedFormat('d M Y') }}</td>
+                    <td>{{ $item->mustahik->nama ?? '-' }}</td>
+                    <td>{{ $item->jenis_zakat }}</td>
+                    <td><strong>Rp.{{ number_format($item->nilai_dana, 0, ',', '.') }}</strong></td>
+                    <td>
+                        <div class="action-row">
+                            <form action="{{ route('zakat.distribusi.approve', $item->id) }}" method="POST">
+                                @csrf
+                                <button class="btn-approve" type="submit"><i class="fa fa-check"></i> Approve</button>
+                            </form>
+                            <form id="reject-distribusi-{{ $item->id }}" action="{{ route('zakat.distribusi.reject', $item->id) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="rejection_reason" id="reject-distribusi-reason-{{ $item->id }}">
+                                <button class="btn-reject" type="button" onclick="rejectApproval('reject-distribusi-{{ $item->id }}', 'reject-distribusi-reason-{{ $item->id }}', 'distribusi zakat ini')"><i class="fa fa-times"></i> Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="empty-state">Tidak ada distribusi zakat yang menunggu approval.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 

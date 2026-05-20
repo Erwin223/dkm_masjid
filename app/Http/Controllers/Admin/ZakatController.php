@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\DistribusiZakat;
 use App\Models\Mustahik;
 use App\Models\Muzakki;
 use App\Models\PenerimaanZakat;
+use App\Notifications\ApprovalRequested;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -251,7 +253,10 @@ class ZakatController extends Controller
 
     public function distribusi()
     {
-        $data = DistribusiZakat::with('mustahik')->orderBy('tanggal', 'desc')->get();
+        $data = DistribusiZakat::with(['mustahik', 'approver'])
+            ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
+            ->orderBy('tanggal', 'desc')
+            ->get();
         return view('admin.zakat.distribusi_index', compact('data'));
     }
 
@@ -284,8 +289,14 @@ class ZakatController extends Controller
 
         DistribusiZakat::create($validated);
 
+        $ketuas = Admin::where('role', 'ketua')->get();
+        $adminName = auth()->user()->name ?? 'Admin';
+        foreach ($ketuas as $ketua) {
+            $ketua->notify(new ApprovalRequested($adminName, 'Distribusi Zakat'));
+        }
+
         return redirect()->route('zakat.distribusi.index')
-            ->with('success', 'Distribusi zakat berhasil ditambahkan');
+            ->with('success', 'Distribusi zakat berhasil ditambahkan dengan status pending.');
     }
 
     public function distribusiEdit($id)
@@ -301,6 +312,12 @@ class ZakatController extends Controller
 
     public function distribusiUpdate(Request $request, $id)
     {
+        $distribusi = DistribusiZakat::findOrFail($id);
+        if ($distribusi->isFinalized()) {
+            return redirect()->route('zakat.distribusi.index')
+                ->with('error', 'Hanya distribusi zakat berstatus pending yang bisa diubah.');
+        }
+
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'mustahik_id' => 'required|exists:mustahik,id',
@@ -317,7 +334,7 @@ class ZakatController extends Controller
         $this->validateDistribusiBusinessRules($request);
         $validated = $this->prepareDistribusiPayload($validated);
 
-        DistribusiZakat::findOrFail($id)->update($validated);
+        $distribusi->update($validated);
 
         return redirect()->route('zakat.distribusi.index')
             ->with('success', 'Distribusi zakat berhasil diupdate');
@@ -326,6 +343,11 @@ class ZakatController extends Controller
     public function distribusiDelete($id)
     {
         $zakat = DistribusiZakat::findOrFail($id);
+
+        if ($zakat->isFinalized()) {
+            return redirect()->route('zakat.distribusi.index')
+                ->with('error', 'Hanya distribusi zakat berstatus pending yang bisa diajukan untuk dihapus.');
+        }
 
         if (!$zakat->deletionRequest) {
             \App\Models\DeletionRequest::create([
@@ -344,6 +366,34 @@ class ZakatController extends Controller
 
         return redirect()->route('zakat.distribusi.index')
             ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
+    }
+
+    public function distribusiApprove(Request $request, int $id)
+    {
+        abort_unless($request->user()?->isKetua(), 403);
+
+        $distribusi = DistribusiZakat::findOrFail($id);
+        $distribusi->approve($request->user());
+
+        return redirect()->route('zakat.distribusi.index')
+            ->with('success', 'Distribusi zakat berhasil di-approve.');
+    }
+
+    public function distribusiReject(Request $request, int $id)
+    {
+        abort_unless($request->user()?->isKetua(), 403);
+
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:2000',
+        ], [
+            'rejection_reason.required' => 'Alasan penolakan wajib diisi.',
+        ]);
+
+        $distribusi = DistribusiZakat::findOrFail($id);
+        $distribusi->reject($request->user(), $validated['rejection_reason']);
+
+        return redirect()->route('zakat.distribusi.index')
+            ->with('success', 'Distribusi zakat berhasil ditolak.');
     }
 
     private function preparePenerimaanPayload(array $validated): array

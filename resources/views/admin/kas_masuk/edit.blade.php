@@ -48,9 +48,10 @@
                 <div style="position:relative;">
                     <span
                         style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
-                    <input type="text" name="jumlah" value="{{ old('jumlah', number_format($data->jumlah, 0, ',', '.')) }}"
-                        onkeyup="formatRupiah(this)" required style="padding-left:32px;">
+                    <input type="text" name="jumlah" id="jumlahInput" value="{{ old('jumlah', number_format($data->jumlah, 0, ',', '.')) }}"
+                        onkeyup="formatRupiah(this)" inputmode="numeric" required style="padding-left:32px;">
                 </div>
+                <div style="margin-top:6px;font-size:12px;color:#64748b;">Gunakan format seperti `600.000` agar mudah dibaca.</div>
             </div>
 
             <div class="form-group">

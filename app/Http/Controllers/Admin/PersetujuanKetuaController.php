@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DeletionRequest;
+use App\Models\Arsip;
+use App\Models\DistribusiZakat;
+use App\Models\DonasiKeluar;
 use App\Models\JadwalKegiatan;
 use App\Models\KasKeluar;
 use App\Notifications\DeletionProcessed;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class DeletionApprovalController extends Controller
+class PersetujuanKetuaController extends Controller
 {
     public function index()
     {
@@ -30,13 +34,29 @@ class DeletionApprovalController extends Controller
             ->orderBy('tanggal', 'asc')
             ->get();
 
-        $pendingApprovalCount = $pendingKasKeluar->count() + $pendingKegiatan->count();
+        $pendingDonasiKeluar = DonasiKeluar::with('approver')
+            ->pending()
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $pendingDistribusiZakat = DistribusiZakat::with(['mustahik', 'approver'])
+            ->pending()
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $pendingApprovalCount =
+            $pendingKasKeluar->count() +
+            $pendingKegiatan->count() +
+            $pendingDonasiKeluar->count() +
+            $pendingDistribusiZakat->count();
         $pendingDeletionCount = $requests->count();
 
         return view('admin.deletion_approvals.index', compact(
             'requests',
             'pendingKasKeluar',
             'pendingKegiatan',
+            'pendingDonasiKeluar',
+            'pendingDistribusiZakat',
             'pendingApprovalCount',
             'pendingDeletionCount'
         ));
@@ -53,6 +73,10 @@ class DeletionApprovalController extends Controller
         }
 
         if ($request->model) {
+            if ($request->model instanceof Arsip && $request->model->file && Storage::disk('public')->exists($request->model->file)) {
+                Storage::disk('public')->delete($request->model->file);
+            }
+
             $request->model->delete();
         }
 

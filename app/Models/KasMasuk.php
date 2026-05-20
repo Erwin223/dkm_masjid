@@ -15,6 +15,11 @@ class KasMasuk extends Model
         'keterangan',
     ];
 
+    protected $casts = [
+        'tanggal' => 'date',
+        'jumlah' => 'integer',
+    ];
+
     public function deletionRequest()
     {
         return $this->morphOne(DeletionRequest::class, 'model')->where('status', 'pending');

@@ -17,6 +17,7 @@ use App\Models\PenerimaanZakat;
 use App\Models\DistribusiZakat;
 use App\Models\Berita;
 use App\Models\Galeri;
+use App\Models\DeletionRequest;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -28,6 +29,9 @@ class DashboardController extends Controller
         $kasKeluar = KasKeluar::with('approver')->orderBy('tanggal', 'desc')->limit(5)->get();
         $totalKasMasuk  = KasMasuk::sum('jumlah');
         $totalKasKeluar = KasKeluar::approved()->sum('nominal');
+        $approvedKasKeluarCount = KasKeluar::approved()->count();
+        $pendingKasKeluarCount = KasKeluar::pending()->count();
+        $pendingKasKeluarNominal = KasKeluar::pending()->sum('nominal');
 
         // ANGGARAN KEGIATAN
         $totalAnggaranKegiatan = JadwalKegiatan::with('kasKeluar')
@@ -35,6 +39,11 @@ class DashboardController extends Controller
             ->whereNotNull('kas_keluar_id')
             ->get()
             ->sum(fn($k) => $k->kasKeluar->nominal ?? 0);
+        $pendingKegiatanCount = JadwalKegiatan::pending()->count();
+        $pendingDonasiKeluarCount = DonasiKeluar::pending()->count();
+        $pendingDistribusiZakatCount = DistribusiZakat::pending()->count();
+        $pendingDeletionCount = DeletionRequest::query()->where('status', 'pending')->count();
+        $totalPendingPersetujuan = $pendingKasKeluarCount + $pendingKegiatanCount + $pendingDonasiKeluarCount + $pendingDistribusiZakatCount + $pendingDeletionCount;
 
         // STAT KEGIATAN
         $totalJadwal  = JadwalKegiatan::approved()->whereDate('tanggal', '>=', now())->count();
@@ -62,7 +71,7 @@ class DashboardController extends Controller
 
         // DONASI
         $allDonasiMasuk = DonasiMasuk::query()->get();
-        $allDonasiKeluar = DonasiKeluar::query()->get();
+        $allDonasiKeluar = DonasiKeluar::approved()->get();
         $totalDonasiMasuk  = $this->sumDonasiMasuk($allDonasiMasuk);
         $totalDonasiKeluar = $this->sumDonasiKeluar($allDonasiKeluar);
         $jmlDonasiMasuk    = $allDonasiMasuk->count();
@@ -72,20 +81,20 @@ class DashboardController extends Controller
 
         // DATA TERBARU DONASI
         $donasiMasukList  = DonasiMasuk::with('donatur')->orderBy('tanggal', 'desc')->limit(5)->get();
-        $donasiKeluarList = DonasiKeluar::orderBy('tanggal', 'desc')->limit(5)->get();
+        $donasiKeluarList = DonasiKeluar::with('approver')->orderBy('tanggal', 'desc')->limit(5)->get();
 
         $latestDonasiMasuk  = $donasiMasukList->first();
         $latestDonasiKeluar = $donasiKeluarList->first();
 
         // ZAKAT
         $penerimaanZakatList = PenerimaanZakat::with('muzakki')->orderBy('tanggal', 'desc')->limit(5)->get();
-        $distribusiZakatList = DistribusiZakat::with('mustahik')->orderBy('tanggal', 'desc')->limit(5)->get();
+        $distribusiZakatList = DistribusiZakat::with(['mustahik', 'approver'])->orderBy('tanggal', 'desc')->limit(5)->get();
 
         $latestPenerimaanZakat = $penerimaanZakatList->first();
         $latestDistribusiZakat = $distribusiZakatList->first();
 
         $allPenerimaanZakat = PenerimaanZakat::query()->get();
-        $allDistribusiZakat = DistribusiZakat::query()->get();
+        $allDistribusiZakat = DistribusiZakat::approved()->get();
         $totalZakatMasuk = $this->sumPenerimaanZakat($allPenerimaanZakat);
         $totalZakatKeluar = $this->sumDistribusiZakat($allDistribusiZakat);
         $jmlPenerimaanZakat = $allPenerimaanZakat->count();
@@ -111,9 +120,17 @@ class DashboardController extends Controller
             'kasKeluar',
             'totalKasMasuk',
             'totalKasKeluar',
+            'approvedKasKeluarCount',
+            'pendingKasKeluarCount',
+            'pendingKasKeluarNominal',
             'totalAnggaranKegiatan',
             'totalJadwal',
             'statKegiatan',
+            'pendingKegiatanCount',
+            'pendingDonasiKeluarCount',
+            'pendingDistribusiZakatCount',
+            'pendingDeletionCount',
+            'totalPendingPersetujuan',
             'kegiatanTerdekat',
             'dataPengurus',
             'totalPengurus',

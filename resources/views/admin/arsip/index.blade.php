@@ -149,12 +149,32 @@
                             </a>
                         </td>
                         <td style="text-align:center;">
-                            <form id="del-arsip-{{ $arsip->id }}" action="{{ route('arsip.delete', $arsip->id) }}" method="POST" style="display:inline;">
-                                @csrf @method('DELETE')
-                                <button type="button" onclick="hapusArsip('del-arsip-{{ $arsip->id }}')" class="arsip-btn-action-cell arsip-btn-delete" title="Hapus">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
+                            @if($arsip->deletionRequest)
+                                @if(auth()->user()->role == 'ketua')
+                                    <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+                                        <span style="font-size:11px;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:12px;font-weight:600;">Menunggu Dihapus</span>
+                                        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;">
+                                            <form action="{{ route('admin.deletion_approvals.approve', $arsip->deletionRequest->id) }}" method="POST">
+                                                @csrf
+                                                <button style="background:#10b981;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;" type="submit"><i class="fa fa-check"></i></button>
+                                            </form>
+                                            <form action="{{ route('admin.deletion_approvals.reject', $arsip->deletionRequest->id) }}" method="POST">
+                                                @csrf
+                                                <button style="background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;" type="submit"><i class="fa fa-times"></i></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span style="font-size:11px;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:12px;font-weight:600;">Menunggu Dihapus</span>
+                                @endif
+                            @else
+                                <form id="del-arsip-{{ $arsip->id }}" action="{{ route('arsip.delete', $arsip->id) }}" method="POST" style="display:inline;">
+                                    @csrf @method('DELETE')
+                                    <button type="button" onclick="hapusArsip('del-arsip-{{ $arsip->id }}')" class="arsip-btn-action-cell arsip-btn-delete" title="Hapus">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                     @empty

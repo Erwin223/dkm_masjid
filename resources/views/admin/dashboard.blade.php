@@ -27,6 +27,13 @@
     transition:background .15s; z-index:1; white-space:nowrap;
 }
 .dash-hero-btn:hover { background:rgba(255,255,255,0.28); }
+.dash-hero-actions {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    z-index:1;
+}
 
 /* Cards section label */
 .cards-label {
@@ -122,8 +129,15 @@
     $saldoBersihTotal = $saldo + $saldoDonasi;
     $jmlMasuk         = isset($kasMasuk)  ? $kasMasuk->count()  : 0;
     $jmlKeluar        = isset($kasKeluar) ? $kasKeluar->count() : 0;
+    $jmlKeluarApproved = $approvedKasKeluarCount ?? 0;
     $anggaranKeg      = $totalAnggaranKegiatan ?? 0;
     $jmlJadwal        = $totalJadwal ?? 0;
+    $pendingKasKeluarCount   = $pendingKasKeluarCount ?? 0;
+    $pendingKasKeluarNominal = $pendingKasKeluarNominal ?? 0;
+    $pendingKegiatanCount    = $pendingKegiatanCount ?? 0;
+    $pendingDeletionCount    = $pendingDeletionCount ?? 0;
+    $totalPendingPersetujuan = $totalPendingPersetujuan ?? 0;
+    $isKetua = auth()->user()->role === 'ketua';
     $ringkasanDonasiMasuk     = $ringkasanDonasiMasuk     ?? ['uang_total'=>0,'uang_count'=>0,'barang_count'=>0,'barang_preview'=>'Belum ada data barang','kategori_count'=>0];
     $ringkasanDonasiKeluar    = $ringkasanDonasiKeluar    ?? ['uang_total'=>0,'uang_count'=>0,'barang_count'=>0,'barang_preview'=>'Belum ada data barang','tujuan_count'=>0];
     $ringkasanPenerimaanZakat = $ringkasanPenerimaanZakat ?? ['uang_total'=>0,'uang_count'=>0,'barang_count'=>0,'barang_preview'=>'Belum ada data barang','total_jiwa'=>0,'fitrah_uang_count'=>0];
@@ -132,16 +146,70 @@
 
 <div class="dash-page">
 
-    {{-- ① HERO ──────────────────────────────────── --}}
     <div class="dash-hero">
         <div class="dash-hero-left">
             <h2><i class="fa fa-mosque"></i> Dashboard Admin</h2>
-            <p>Selamat datang kembali, {{ auth()->user()->name ?? 'Admin' }}. Berikut ringkasan keuangan masjid.</p>
+            @if($isKetua)
+            <p>Selamat datang kembali, {{ auth()->user()->name ?? 'Admin' }}. Saat ini ada {{ $totalPendingPersetujuan }} item yang menunggu keputusan ketua.</p>
+            @else
+            <p>Selamat datang kembali, {{ auth()->user()->name ?? 'Admin' }}. Berikut ringkasan keuangan dan aktivitas masjid.</p>
+            @endif
         </div>
-        <a href="{{ route('admin.statistik') }}" class="dash-hero-btn">
-            <i class="fa fa-chart-bar"></i> Lihat Statistik
-        </a>
+        <div class="dash-hero-actions">
+            @if($isKetua)
+            <a href="{{ route('admin.deletion_approvals.index') }}" class="dash-hero-btn">
+                <i class="fa fa-clipboard-check"></i> Buka Persetujuan Ketua
+            </a>
+            <a href="{{ route('admin.statistik') }}" class="dash-hero-btn">
+                <i class="fa fa-chart-bar"></i> Lihat Statistik
+            </a>
+            @else
+            <a href="{{ route('admin.statistik') }}" class="dash-hero-btn">
+                <i class="fa fa-chart-bar"></i> Lihat Statistik
+            </a>
+            @endif
+        </div>
     </div>
+
+    @if($isKetua)
+    <div>
+        <div class="cards-label">Persetujuan Ketua</div>
+        <div class="cards">
+            <div class="card">
+                <div>
+                    <h3>Total Pending</h3>
+                    <p class="card-value">{{ $totalPendingPersetujuan }}</p>
+                    <p class="card-sub">approval dan hapus data</p>
+                </div>
+                <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div class="card">
+                <div>
+                    <h3>Kas Keluar Pending</h3>
+                    <p class="card-value">Rp.{{ number_format($pendingKasKeluarNominal, 0, ',', '.') }}</p>
+                    <p class="card-sub">{{ $pendingKasKeluarCount }} transaksi menunggu approval</p>
+                </div>
+                <i class="fa-solid fa-money-bill-transfer"></i>
+            </div>
+            <div class="card">
+                <div>
+                    <h3>Kegiatan Pending</h3>
+                    <p class="card-value">{{ $pendingKegiatanCount }}</p>
+                    <p class="card-sub">jadwal menunggu persetujuan</p>
+                </div>
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="card">
+                <div>
+                    <h3>Hapus Pending</h3>
+                    <p class="card-value">{{ $pendingDeletionCount }}</p>
+                    <p class="card-sub">permintaan penghapusan data</p>
+                </div>
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+        </div>
+    </div>
+    @endif
 
     {{-- ② KPI CARDS ──────────────────────────────── --}}
 
@@ -169,7 +237,7 @@
                 <div>
                     <h3>Total Kas Keluar</h3>
                     <p class="card-value">Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</p>
-                    <p class="card-sub">{{ $jmlKeluar }} transaksi</p>
+                    <p class="card-sub">{{ $jmlKeluarApproved }} transaksi approved</p>
                 </div>
                 <i class="fa-solid fa-money-bill-transfer"></i>
             </div>
@@ -266,11 +334,11 @@
                 <div>
                     <h3>Jadwal Kegiatan</h3>
                     <p class="card-value">{{ $jmlJadwal }}</p>
-                    <p class="card-sub">kegiatan akan datang</p>
+                    <p class="card-sub">{{ $isKetua ? $pendingKegiatanCount . ' pending approval' : 'kegiatan akan datang' }}</p>
                 </div>
                 <i class="fa-solid fa-calendar-days"></i>
             </div>
-            @if(auth()->user()->role != 'ketua')
+            @if(!$isKetua)
             <div class="card">
                 <div>
                     <h3>Kelola Website</h3>
@@ -368,12 +436,12 @@
                     <div class="summary-chip">
                         <div class="summary-chip-label">Total kas keluar</div>
                         <div class="summary-chip-value" style="color:#b02a37;">Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</div>
-                        <div class="summary-chip-note">{{ $jmlKeluar }} transaksi</div>
+                        <div class="summary-chip-note">{{ $jmlKeluarApproved }} transaksi approved</div>
                     </div>
                     <div class="summary-chip">
                         <div class="summary-chip-label">Rata-rata pengeluaran</div>
-                        <div class="summary-chip-value" style="color:#fd7e14;">Rp.{{ number_format($jmlKeluar ? ($totalKeluar / $jmlKeluar) : 0, 0, ',', '.') }}</div>
-                        <div class="summary-chip-note">Per transaksi kas keluar</div>
+                        <div class="summary-chip-value" style="color:#fd7e14;">Rp.{{ number_format($jmlKeluarApproved ? ($totalKeluar / $jmlKeluarApproved) : 0, 0, ',', '.') }}</div>
+                        <div class="summary-chip-note">Per transaksi approved</div>
                     </div>
                     <div class="summary-chip">
                         <div class="summary-chip-label">Anggaran kegiatan</div>
@@ -385,7 +453,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Tanggal</th><th>Jenis Pengeluaran</th><th>Nominal</th><th>Keterangan</th>
+                                <th>Tanggal</th><th>Jenis Pengeluaran</th><th>Nominal</th><th>Keterangan</th><th>Status Approval</th><th>Catatan Approval</th>
                                 <th style="text-align:center;">Hapus</th><th style="text-align:center;">Edit</th>
                             </tr>
                         </thead>
@@ -397,6 +465,34 @@
                                     <td>{{ $keluar->jenis_pengeluaran }}</td>
                                     <td>Rp.{{ number_format($keluar->nominal, 0, ',', '.') }}</td>
                                     <td>{{ $keluar->keterangan ?? '-' }}</td>
+                                    <td>
+                                        @php
+                                            $statusClasses = [
+                                                \App\Models\KasKeluar::STATUS_PENDING => ['#fef3c7', '#b45309', 'Pending'],
+                                                \App\Models\KasKeluar::STATUS_APPROVED => ['#dcfce7', '#166534', 'Approved'],
+                                                \App\Models\KasKeluar::STATUS_REJECTED => ['#fee2e2', '#b91c1c', 'Rejected'],
+                                            ];
+                                            [$bg, $color, $label] = $statusClasses[$keluar->status] ?? ['#e5e7eb', '#374151', ucfirst($keluar->status ?? 'Unknown')];
+                                        @endphp
+                                        <span style="font-size:12px;background:{{ $bg }};color:{{ $color }};padding:4px 10px;border-radius:999px;font-weight:700;">
+                                            {{ $label }}
+                                        </span>
+                                    </td>
+                                    <td style="font-size:12px;color:#475569;">
+                                        @if($keluar->status === \App\Models\KasKeluar::STATUS_APPROVED)
+                                            Disetujui {{ optional($keluar->approved_at)->translatedFormat('d M Y H:i') ?? '-' }}
+                                            @if($keluar->approver)
+                                                <div style="margin-top:4px;color:#64748b;">oleh {{ $keluar->approver->name }}</div>
+                                            @endif
+                                        @elseif($keluar->status === \App\Models\KasKeluar::STATUS_REJECTED)
+                                            {{ $keluar->rejection_reason ?: 'Ditolak Ketua' }}
+                                            @if($keluar->approver)
+                                                <div style="margin-top:4px;color:#64748b;">oleh {{ $keluar->approver->name }}</div>
+                                            @endif
+                                        @else
+                                            Menunggu persetujuan Ketua
+                                        @endif
+                                    </td>
                                     <td style="text-align:center;">
                                         <form id="delete-keluar-{{ $keluar->id }}" action="{{ route('kas.keluar.delete', $keluar->id) }}" method="POST" style="display:inline;">
                                             @csrf @method('DELETE')
@@ -407,7 +503,7 @@
                                 </tr>
                                 @endforeach
                             @else
-                                <tr><td colspan="7" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data</td></tr>
+                                <tr><td colspan="8" style="text-align:center;color:#999;padding:1.5rem;">Belum ada data</td></tr>
                             @endif
                         </tbody>
                     </table>

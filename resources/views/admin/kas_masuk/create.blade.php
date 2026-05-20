@@ -45,8 +45,10 @@
                 <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
                 <input type="text" name="jumlah" id="jumlahInput"
                     onkeyup="formatRupiah(this)"
-                    placeholder="0" required style="padding-left:32px;" value="{{ old('jumlah') }}">
+                    inputmode="numeric"
+                    placeholder="600.000" required style="padding-left:32px;" value="{{ old('jumlah') }}">
             </div>
+            <div style="margin-top:6px;font-size:12px;color:#64748b;">Gunakan format seperti `600.000` agar mudah dibaca.</div>
         </div>
 
         <div class="form-group">
@@ -67,9 +69,6 @@ function formatRupiah(el){
     let angka = el.value.replace(/[^0-9]/g, '');
     el.value = new Intl.NumberFormat('id-ID').format(angka);
 }
-
-// Format saat disubmit akan dihandle di controller (str_replace('.', '', $request->jumlah))
-// Jadi kita tidak perlu onblur="bersihkanRupiah" karena controller sudah siap menerima format dengan titik
 </script>
 
 @endsection

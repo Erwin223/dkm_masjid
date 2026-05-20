@@ -26,19 +26,20 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Check if account is locked before attempting authentication
-        $email = $request->input('email');
-        $admin = Admin::where('email', $email)->first();
+        $login = $request->input('login');
+        $admin = Admin::where('email', $login)
+            ->orWhere('name', $login)
+            ->first();
         if ($admin && $admin->isLocked()) {
             Log::warning('Login attempt on locked account', [
-                'email' => $email,
+                'login' => $login,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
 
             return back()->withErrors([
-                'email' => 'Akun Anda terkunci sementara. Silakan coba lagi nanti.'
-            ])->withInput(['email' => $email]);
+                'login' => 'Akun Anda terkunci sementara. Silakan coba lagi nanti.'
+            ])->withInput(['login' => $login]);
         }
 
         try {
@@ -71,7 +72,7 @@ class AuthenticatedSessionController extends Controller
                 $admin->incrementFailedAttempts();
 
                 Log::warning('Failed login attempt', [
-                    'email' => $email,
+                    'login' => $login,
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                     'attempts' => $admin->failed_login_attempts,

@@ -57,41 +57,14 @@ class UpdateKasMasukRequest extends FormRequest
     }
 
     /**
-     * Normalize number format (handle comma and dot as decimal separator)
+     * Normalize number format - remove dots used as thousand separators
      */
     private function normalizeNumber($value)
     {
         if ($value === null || $value === '') {
-            return 0;
+            return null;
         }
 
-        if (is_numeric($value)) {
-            return $value + 0;
-        }
-
-        $value = preg_replace('/[^0-9,.-]/', '', (string) $value) ?? '';
-        $value = trim($value);
-
-        if ($value === '') {
-            return 0;
-        }
-
-        $hasDot = str_contains($value, '.');
-        $hasComma = str_contains($value, ',');
-
-        if ($hasDot && $hasComma) {
-            $value = str_replace('.', '', $value);
-            $value = str_replace(',', '.', $value);
-        } elseif ($hasComma) {
-            $value = str_replace('.', '', $value);
-            $value = str_replace(',', '.', $value);
-        } elseif ($hasDot) {
-            $parts = explode('.', $value);
-            if (count($parts) > 2 || (isset($parts[1]) && strlen($parts[1]) === 3)) {
-                $value = str_replace('.', '', $value);
-            }
-        }
-
-        return is_numeric($value) ? $value + 0 : 0;
+        return (int) str_replace('.', '', (string) $value);
     }
 }

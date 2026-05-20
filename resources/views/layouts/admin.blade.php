@@ -21,6 +21,8 @@
         $unreadNotifications = $authUser->unreadNotifications;
         $pendingKasKeluarNotif = collect();
         $pendingKegiatanNotif = collect();
+        $pendingDonasiKeluarNotif = collect();
+        $pendingDistribusiZakatNotif = collect();
         $pendingDeletionNotif = collect();
         $pendingApprovalCenterCount = 0;
 
@@ -37,6 +39,18 @@
                 ->limit(3)
                 ->get();
 
+            $pendingDonasiKeluarNotif = \App\Models\DonasiKeluar::query()
+                ->pending()
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+
+            $pendingDistribusiZakatNotif = \App\Models\DistribusiZakat::query()
+                ->pending()
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+
             $pendingDeletionNotif = \App\Models\DeletionRequest::query()
                 ->where('status', 'pending')
                 ->orderBy('created_at', 'desc')
@@ -46,6 +60,8 @@
             $pendingApprovalCenterCount =
                 \App\Models\KasKeluar::query()->pending()->count() +
                 \App\Models\JadwalKegiatan::query()->pending()->count() +
+                \App\Models\DonasiKeluar::query()->pending()->count() +
+                \App\Models\DistribusiZakat::query()->pending()->count() +
                 \App\Models\DeletionRequest::query()->where('status', 'pending')->count();
         }
 
@@ -65,7 +81,13 @@
             <div class="logo-icon"><i class="fa-solid fa-mosque"></i></div>
             <div class="logo-text">
                 <span>DKM Masjid Al-Musabaqoh</span>
-                <small>Panel Admin</small>
+                <small>
+                    @if(auth()->user()?->role === 'ketua')
+                        Panel Ketua
+                    @else
+                        Panel User
+                    @endif
+                </small>
             </div>
         </div>
 
@@ -79,14 +101,15 @@
                 <i class="fa fa-home"></i> Dashboard
             </a>
 
+            <a href="{{ route('admin.statistik') }}"
+                class="nav-item {{ request()->routeIs('admin.statistik') ? 'active' : '' }}">
+                <i class="fa fa-chart-pie"></i> Statistik
+            </a>
+
             @if(auth()->user()->role != 'ketua')
                 <a href="{{ route('pengurus.index') }}"
                     class="nav-item {{ request()->routeIs('pengurus*') ? 'active' : '' }}">
                     <i class="fa fa-users"></i> Data Pengurus
-                </a>
-
-                <a href="{{ route('arsip.index') }}" class="nav-item {{ request()->routeIs('arsip*') ? 'active' : '' }}">
-                    <i class="fa fa-folder-open"></i> Arsip & Dokumen
                 </a>
 
                 <button
@@ -111,6 +134,10 @@
                     </a>
                 </div>
             @endif
+
+            <a href="{{ route('arsip.index') }}" class="nav-item {{ request()->routeIs('arsip*') ? 'active' : '' }}">
+                <i class="fa fa-folder-open"></i> Arsip & Dokumen
+            </a>
 
             {{-- KEGIATAN --}}
             <button
@@ -175,28 +202,34 @@
                     <i class="fa fa-arrow-up"></i> Donasi Keluar
                 </a>
             </div>
-            <a href="{{ route('donatur.index') }}"
-                class="nav-item {{ request()->routeIs('donatur*') ? 'active' : '' }}">
-                <i class="fa fa-users"></i> Data Donatur
-            </a>
+            @if(auth()->user()->role != 'ketua')
+                <a href="{{ route('donatur.index') }}"
+                    class="nav-item {{ request()->routeIs('donatur*') ? 'active' : '' }}">
+                    <i class="fa fa-users"></i> Data Donatur
+                </a>
+            @endif
             <button class="nav-item {{ request()->routeIs('zakat*') ? 'active open' : '' }}"
                 onclick="toggleDropdown('dd-zakat', this)">
                 <i class="fa fa-hand-holding-heart"></i> Zakat
                 <i class="fa fa-chevron-right nav-arrow"></i>
             </button>
             <div class="nav-dropdown {{ request()->routeIs('zakat*') ? 'open' : '' }}" id="dd-zakat">
-                <a href="{{ route('zakat.muzakki.index') }}"
-                    class="nav-item {{ request()->routeIs('zakat.muzakki*') ? 'active' : '' }}">
-                    <i class="fa fa-user-plus"></i> Muzakki
-                </a>
+                @if(auth()->user()->role != 'ketua')
+                    <a href="{{ route('zakat.muzakki.index') }}"
+                        class="nav-item {{ request()->routeIs('zakat.muzakki*') ? 'active' : '' }}">
+                        <i class="fa fa-user-plus"></i> Muzakki
+                    </a>
+                @endif
                 <a href="{{ route('zakat.penerimaan.index') }}"
                     class="nav-item {{ request()->routeIs('zakat.penerimaan*') ? 'active' : '' }}">
                     <i class="fa fa-arrow-down"></i> Penerimaan
                 </a>
-                <a href="{{ route('zakat.mustahik.index') }}"
-                    class="nav-item {{ request()->routeIs('zakat.mustahik*') ? 'active' : '' }}">
-                    <i class="fa fa-users"></i> Mustahik
-                </a>
+                @if(auth()->user()->role != 'ketua')
+                    <a href="{{ route('zakat.mustahik.index') }}"
+                        class="nav-item {{ request()->routeIs('zakat.mustahik*') ? 'active' : '' }}">
+                        <i class="fa fa-users"></i> Mustahik
+                    </a>
+                @endif
                 <a href="{{ route('zakat.distribusi.index') }}"
                     class="nav-item {{ request()->routeIs('zakat.distribusi*') ? 'active' : '' }}">
                     <i class="fa fa-arrow-up"></i> Distribusi
@@ -223,19 +256,13 @@
 
             <a href="{{ route('admin.admins.index') }}"
                 class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
-                <i class="fa fa-user-shield"></i> Kelola Admin
+                <i class="fa fa-user-shield"></i> Kelola User
             </a>
 
         </div>
 
         {{-- BOTTOM --}}
         <div class="sidebar-bottom">
-
-            {{-- TAMBAH ADMIN --}}
-            <a href="{{ route('admin.admins.create') }}" class="btn-tambah-admin">
-                <div class="icon-circle"><i class="fa fa-user-plus"></i></div>
-                Tambah Admin Baru
-            </a>
 
             {{-- LOGOUT --}}
             <form method="POST" action="{{ route('logout') }}">
@@ -334,6 +361,32 @@
                                                 Approval</div>
                                             <div style="font-size:12px; color:#666; line-height:1.4;">{{ $item->nama_kegiatan }} -
                                                 {{ optional($item->tanggal)->translatedFormat('d M Y') }}</div>
+                                            <div style="font-size:10px; color:#999; margin-top:6px;">
+                                                {{ $item->created_at->diffForHumans() }}</div>
+                                        </a>
+                                    @endforeach
+
+                                    @foreach($pendingDonasiKeluarNotif as $item)
+                                        <a href="{{ route('admin.deletion_approvals.index') }}"
+                                            style="display:block; text-decoration:none; padding:12px 16px; border-bottom:1px solid #f5f5f5; color:inherit;">
+                                            <div style="font-size:13px; font-weight:600; color:#333;">Donasi Keluar Menunggu Approval
+                                            </div>
+                                            <div style="font-size:12px; color:#666; line-height:1.4;">
+                                                {{ $item->tujuan }} - Rp.{{ number_format($item->nilai_dana, 0, ',', '.') }}
+                                            </div>
+                                            <div style="font-size:10px; color:#999; margin-top:6px;">
+                                                {{ $item->created_at->diffForHumans() }}</div>
+                                        </a>
+                                    @endforeach
+
+                                    @foreach($pendingDistribusiZakatNotif as $item)
+                                        <a href="{{ route('admin.deletion_approvals.index') }}"
+                                            style="display:block; text-decoration:none; padding:12px 16px; border-bottom:1px solid #f5f5f5; color:inherit;">
+                                            <div style="font-size:13px; font-weight:600; color:#333;">Distribusi Zakat Menunggu Approval
+                                            </div>
+                                            <div style="font-size:12px; color:#666; line-height:1.4;">
+                                                {{ $item->mustahik->nama ?? 'Mustahik' }} - Rp.{{ number_format($item->nilai_dana, 0, ',', '.') }}
+                                            </div>
                                             <div style="font-size:10px; color:#999; margin-top:6px;">
                                                 {{ $item->created_at->diffForHumans() }}</div>
                                         </a>
