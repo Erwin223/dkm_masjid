@@ -22,5 +22,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
             'is_admin' => true,
         ]);
+
+        $this->call(BeritaSeeder::class);
+        $this->call(GaleriSeeder::class);
     }
 }

@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -55,23 +56,13 @@ return new class extends Migration
 
         $foreignKeyName = $tableName.'_approved_by_foreign';
 
-        try {
-            Schema::table($tableName, function (Blueprint $table) use ($foreignKeyName) {
-                $table->dropForeign($foreignKeyName);
-            });
-        } catch (QueryException) {
-            // Ignore missing foreign key in partially applied migrations.
-        }
-
-        try {
+        if (!$this->hasForeignKey($tableName, $foreignKeyName)) {
             Schema::table($tableName, function (Blueprint $table) {
                 $table->foreign('approved_by')
                     ->references('id')
                     ->on('users')
                     ->nullOnDelete();
             });
-        } catch (QueryException) {
-            // Ignore if the foreign key is already present.
         }
     }
 
@@ -79,14 +70,10 @@ return new class extends Migration
     {
         $foreignKeyName = $tableName.'_approved_by_foreign';
 
-        if (Schema::hasColumn($tableName, 'approved_by')) {
-            try {
-                Schema::table($tableName, function (Blueprint $table) use ($foreignKeyName) {
-                    $table->dropForeign($foreignKeyName);
-                });
-            } catch (QueryException) {
-                // Ignore missing foreign key during rollback.
-            }
+        if ($this->hasForeignKey($tableName, $foreignKeyName)) {
+            Schema::table($tableName, function (Blueprint $table) use ($foreignKeyName) {
+                $table->dropForeign($foreignKeyName);
+            });
         }
 
         $columns = array_filter([
@@ -101,5 +88,26 @@ return new class extends Migration
                 $table->dropColumn($columns);
             });
         }
+    }
+
+    private function hasForeignKey(string $tableName, string $foreignKey): bool
+    {
+        $connection = Schema::getConnection();
+        $driver = $connection->getDriverName();
+
+        if ($driver === 'sqlite') {
+            return false;
+        }
+
+        $result = DB::selectOne(
+            'SELECT CONSTRAINT_NAME
+             FROM information_schema.TABLE_CONSTRAINTS
+             WHERE TABLE_NAME = ?
+               AND CONSTRAINT_NAME = ?
+               AND CONSTRAINT_TYPE = ?',
+            [$tableName, $foreignKey, 'FOREIGN KEY']
+        );
+
+        return $result !== null;
     }
 };

@@ -1,3 +1,118 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer base {
+    body.frontend-shell {
+        @apply bg-stone-50 text-stone-800 antialiased;
+        background-image:
+            radial-gradient(circle at top left, rgba(16, 185, 129, 0.12), transparent 32%),
+            radial-gradient(circle at top right, rgba(217, 119, 6, 0.10), transparent 28%),
+            linear-gradient(180deg, #fffefc 0%, #faf9f6 34%, #f5f5f4 100%);
+    }
+}
+
+@layer components {
+    .frontend-page {
+        @apply relative isolate overflow-hidden;
+    }
+
+    .frontend-page::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            radial-gradient(circle at 1px 1px, rgba(120, 113, 108, 0.08) 1px, transparent 0);
+        background-size: 24px 24px;
+        opacity: 0.5;
+    }
+
+    .page-hero {
+        @apply relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-stone-900 text-white;
+    }
+
+    .page-hero::before,
+    .page-hero::after {
+        content: "";
+        position: absolute;
+        border-radius: 9999px;
+        pointer-events: none;
+    }
+
+    .page-hero::before {
+        width: 26rem;
+        height: 26rem;
+        right: -10rem;
+        top: -9rem;
+        background: radial-gradient(circle, rgba(251, 191, 36, 0.18), transparent 65%);
+    }
+
+    .page-hero::after {
+        width: 20rem;
+        height: 20rem;
+        left: -7rem;
+        bottom: -10rem;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.14), transparent 65%);
+    }
+
+    .page-shell {
+        @apply relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .page-section {
+        @apply relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8;
+    }
+
+    .section-kicker {
+        @apply text-xs font-extrabold uppercase tracking-widest text-emerald-700;
+    }
+
+    .section-heading {
+        @apply mt-2 text-2xl font-black tracking-tight text-stone-900 sm:text-3xl;
+    }
+
+    .section-copy {
+        @apply mt-3 text-sm leading-7 text-stone-600;
+    }
+
+    .surface-card {
+        @apply rounded-3xl border border-stone-200 bg-white shadow-sm transition duration-300;
+    }
+
+    .surface-card-hover {
+        @apply hover:-translate-y-1 hover:shadow-lg;
+    }
+
+    .soft-panel {
+        @apply rounded-3xl border border-white/10 bg-white/10 shadow-2xl backdrop-blur-xl;
+    }
+
+    .hero-badge {
+        @apply inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-amber-200 backdrop-blur;
+    }
+
+    .hero-stat {
+        @apply rounded-2xl border border-white/10 bg-white/10 p-4 shadow-lg backdrop-blur;
+    }
+
+    .hero-stat-label {
+        @apply text-[10px] font-bold uppercase tracking-widest text-emerald-100;
+    }
+
+    .hero-stat-value {
+        @apply mt-2 block text-xl font-black tracking-tight text-white;
+    }
+
+    .hero-stat-copy {
+        @apply mt-2 text-xs leading-6 text-emerald-50;
+    }
+
+    .page-grid-note {
+        @apply rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-600 shadow-sm;
+    }
+}

@@ -51,7 +51,7 @@ class AuthenticatedSessionController extends Controller
             $admin = Auth::user();
             assert($admin instanceof Admin);
 
-0            $admin->recordLogin($request->ip());
+            $admin->recordLogin($request->ip());
 
             Log::info('User logged in successfully', [
                 'admin_id' => $admin->id,

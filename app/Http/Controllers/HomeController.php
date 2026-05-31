@@ -9,6 +9,7 @@ use App\Models\JadwalKegiatan;
 use App\Models\KasKeluar;
 use App\Models\KasMasuk;
 use App\Models\ProfilMasjid;
+use App\Models\Pengurus;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
@@ -30,7 +31,7 @@ class HomeController extends Controller
         $beritaTerbaru = Berita::query()
             ->latest('tanggal')
             ->latest('id')
-            ->limit(3)
+            ->limit(4)
             ->get();
 
         $kasMasukTotal = (float) KasMasuk::query()->sum('jumlah');
@@ -158,13 +159,7 @@ class HomeController extends Controller
                 ['id' => '1226', 'name' => 'Kota Sukabumi'],
                 ['id' => '1227', 'name' => 'Kota Tasikmalaya'],
             ],
-            'navItems' => [
-                ['label' => 'Beranda', 'href' => '#beranda'],
-                ['label' => 'Kegiatan', 'href' => '#kegiatan'],
-                ['label' => 'Berita', 'href' => '#berita'],
-                ['label' => 'Laporan', 'href' => '#laporan'],
-                ['label' => 'Donasi', 'href' => '#donasi'],
-            ],
+            'navItems' => $this->frontendNavItems(),
             'quotes' => [
                 [
                     'title' => 'Mutiara Nasihat',
@@ -210,5 +205,111 @@ class HomeController extends Controller
         }
 
         return 'Rp ' . number_format($amount, 0, ',', '.');
+    }
+
+    public function profil()
+    {
+        $profil = ProfilMasjid::query()->latest('id')->first();
+
+        $order = ['Ketua DKM', 'Sekretaris', 'Bendahara', 'Bidang Ibadah'];
+
+        $pengurus = Pengurus::query()
+            ->orderBy('id')
+            ->get()
+            ->sortBy(function ($p) use ($order) {
+                $i = array_search($p->jabatan, $order);
+                return $i === false ? 999 : $i;
+            })
+            ->values()
+            ->map(function ($p) {
+                return [
+                    'jabatan' => $p->jabatan,
+                    'nama' => $p->nama,
+                    'foto' => $p->foto ? asset('storage/' . ltrim($p->foto, '/')) : null,
+                    'no_hp' => $p->no_hp ?? null,
+                    'tugas' => $p->tugas ?? null,
+                ];
+            })
+            ->all();
+
+        return view('frontend.profil', [
+            'profil' => $profil,
+            'pengurus' => $pengurus,
+            'navItems' => $this->frontendNavItems(),
+        ]);
+    }
+
+    public function berita()
+    {
+        $beritaPaginated = Berita::query()
+            ->latest('tanggal')
+            ->latest('id')
+            ->paginate(6);
+
+        $berita = $beritaPaginated->map(fn (Berita $item) => [
+            'tanggal' => $item->tanggal,
+            'judul' => $item->judul,
+            'excerpt' => $item->sinopsis ?: Str::limit(strip_tags((string) $item->isi_berita), 140),
+            'thumbnail' => $item->gambar ? asset('storage/' . ltrim($item->gambar, '/')) : asset('favicon.ico'),
+            'slug' => Str::slug($item->judul),
+            'url' => '#',
+        ]);
+
+        return view('frontend.berita', [
+            'berita' => $berita,
+            'beritaPaginated' => $beritaPaginated,
+            'navItems' => $this->frontendNavItems(),
+        ]);
+    }
+
+    public function galeri()
+    {
+        $galeriPaginated = \App\Models\Galeri::query()
+            ->latest('tanggal')
+            ->latest('id')
+            ->paginate(6);
+
+        $galeri = $galeriPaginated->map(fn (\App\Models\Galeri $item) => [
+            'tanggal' => $item->tanggal,
+            'judul' => $item->judul,
+            'deskripsi' => $item->deskripsi,
+            'thumbnail' => $item->gambar ? asset('storage/' . ltrim($item->gambar, '/')) : asset('favicon.ico'),
+        ]);
+
+        return view('frontend.galeri', [
+            'galeri' => $galeri,
+            'galeriPaginated' => $galeriPaginated,
+            'navItems' => $this->frontendNavItems(),
+        ]);
+    }
+
+    private function frontendNavItems(): array
+    {
+        return [
+            [
+                'label' => 'Beranda',
+                'href' => route('frontend.home'),
+                'active' => request()->routeIs('frontend.home'),
+                'icon' => 'bi-house-door',
+            ],
+            [
+                'label' => 'Profil Masjid',
+                'href' => route('frontend.profil'),
+                'active' => request()->routeIs('frontend.profil'),
+                'icon' => 'bi-building',
+            ],
+            [
+                'label' => 'Berita',
+                'href' => route('frontend.berita'),
+                'active' => request()->routeIs('frontend.berita'),
+                'icon' => 'bi-newspaper',
+            ],
+            [
+                'label' => 'Galeri',
+                'href' => route('frontend.galeri'),
+                'active' => request()->routeIs('frontend.galeri'),
+                'icon' => 'bi-images',
+            ],
+        ];
     }
 }
