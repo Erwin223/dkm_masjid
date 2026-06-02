@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,129 +16,243 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
+
 <body class="frontend-shell">
     @php
         $navItems = [
             ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => request()->routeIs('frontend.home')],
             ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => request()->routeIs('frontend.profil')],
+            ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => request()->routeIs('frontend.kegiatan')],
             ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => request()->routeIs('frontend.berita')],
             ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => request()->routeIs('frontend.galeri')],
+            ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => request()->routeIs('frontend.laporan')],
         ];
 
         $sejarah = $profil?->sejarah ?? 'Masjid ini berdiri sebagai pusat ibadah dan pembinaan umat yang tumbuh bersama kebutuhan jamaah di lingkungan sekitar. Dalam perjalanannya, masjid terus berupaya menghadirkan suasana yang nyaman, tertib, dan bermanfaat untuk kegiatan ibadah, dakwah, dan sosial kemasyarakatan.';
         $visi = $profil?->visi ?? 'Menjadi masjid yang makmur, bersih, tertib, dan menjadi pusat pembinaan umat yang ramah bagi seluruh lapisan jamaah.';
         $misi = $profil?->misi ?? '1. Menyelenggarakan ibadah berjamaah dengan tertib dan khusyuk. 2. Menghidupkan kajian, dakwah, dan pembinaan generasi muda. 3. Mengelola masjid secara amanah, transparan, dan profesional. 4. Menjadi pusat layanan sosial yang mudah diakses jamaah.';
         $backgroundImage = asset('storage/icon/FOTO.jpeg');
-
-        $pengurus = $pengurus ?? [
-            ['jabatan' => 'Ketua DKM', 'nama' => 'Ustadz Ahmad Fauzi', 'tugas' => 'Memimpin arah kebijakan umum, mengoordinasikan program, dan memastikan pelayanan jamaah berjalan tertib.'],
-            ['jabatan' => 'Sekretaris', 'nama' => 'H. Abdul Karim', 'tugas' => 'Mengelola administrasi, surat-menyurat, dan dokumentasi kegiatan masjid.'],
-            ['jabatan' => 'Bendahara', 'nama' => 'Hj. Siti Rahmah', 'tugas' => 'Mengelola kas, laporan keuangan, dan transparansi donasi serta infak jamaah.'],
-            ['jabatan' => 'Bidang Ibadah', 'nama' => 'Ustadz Yusuf Hidayat', 'tugas' => 'Menyiapkan kegiatan rutin, imam, kajian, dan agenda ibadah harian.'],
-        ];
+        $pengurus = $pengurus ?? [];
     @endphp
 
     <div class="frontend-page min-h-screen flex flex-col">
         @include('frontend.partials.navbar')
 
         <main class="flex-1">
-            <section class="page-hero min-h-[80vh] flex items-center" data-aos="fade-up" data-aos-delay="80" style="background-image: linear-gradient(135deg, rgba(6, 78, 59, 0.96), rgba(15, 23, 42, 0.92)), url('{{ asset('storage/icon/FOTO.jpeg') }}'); background-size: cover; background-position: center;">
-                <div class="page-shell py-16 sm:py-20">
-                    <div class="relative z-10 grid gap-8 lg:grid-cols-[1.25fr_.75fr] lg:items-end">
-                        <div class="max-w-3xl">
-                            <p class="hero-badge">Profil Masjid</p>
-                            <h1 class="mt-5 text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
-                                Informasi ringkas masjid untuk jamaah dan pengurus
-                            </h1>
-                            <p class="mt-5 max-w-2xl text-base leading-8 text-emerald-50/85 sm:text-lg">
-                                Halaman ini menyajikan sejarah singkat masjid, arah visi misi, dan struktur kepengurusan DKM dalam susunan yang rapi, bersih, dan mudah dibaca.
+            <x-hero-banner
+                badge="Profil Masjid"
+                title="Profil Masjid"
+                accent="Al-Musabaqoh"
+                subtitle="Pusat ibadah dan pembinaan umat yang terus berupaya menghadirkan suasana nyaman, tertib, dan bermanfaat untuk jamaah."
+                :bg-image="$backgroundImage"
+                icon="bi-building"
+                badge-icon="bi-building"
+                cta-label="Lihat Profil Lengkap"
+                cta-href="#sejarah"
+            />
+
+            <!-- ===== SEJARAH MASJID SECTION ===== -->
+            <section id="sejarah" class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white" data-aos="fade-up">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid gap-12 lg:gap-16 lg:grid-cols-2 items-center">
+                        <!-- Text Content -->
+                        <div data-aos="fade-right" data-aos-delay="100">
+                            <p class="text-amber-600 font-bold text-sm tracking-widest uppercase">Sejarah Masjid</p>
+                            <h2 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-900 leading-tight">
+                                Perjalanan Tumbuh Bersama Jamaah
+                            </h2>
+                            <p class="mt-6 text-lg leading-relaxed text-stone-700">
+                                {{ $sejarah }}
                             </p>
+                            <div class="mt-8 flex gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-1 h-12 bg-gradient-to-b from-amber-400 to-transparent"></div>
+                                    <div>
+                                        <p class="text-2xl font-bold text-emerald-900">{{ count($pengurus) }}</p>
+                                        <p class="text-sm text-stone-600">Pengurus Aktif</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Content -->
+                        <div data-aos="fade-left" data-aos-delay="100" class="relative">
+                            <div class="rounded-3xl overflow-hidden shadow-2xl border-8 border-amber-100">
+                                <img src="{{ $backgroundImage }}" 
+                                    alt="Masjid Al-Musabaqoh" 
+                                    class="w-full h-96 object-cover">
+                            </div>
+                            <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-amber-100/30 rounded-full blur-2xl"></div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="page-section" data-aos="fade-up" data-aos-delay="120">
-                <div class="grid gap-8 lg:grid-cols-[1.3fr_.7fr]">
-                    <article class="surface-card surface-card-soft lg:col-span-1" data-aos="zoom-in">
-                        <div class="border-b border-stone-100 px-6 py-5 sm:px-8">
-                            <p class="section-kicker">Sejarah Singkat Masjid</p>
-                            <h2 class="section-heading">Perjalanan tumbuh bersama jamaah</h2>
-                        </div>
-                        <div class="px-6 py-6 sm:px-8">
-                            <p class="text-lg leading-8 text-stone-800">{{ $profil?->sejarah ?? $sejarah }}</p>
-                        </div>
-                    </article>
+            <!-- ===== VISI & MISI SECTION ===== -->
+            <section class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 to-emerald-100/50" data-aos="fade-up">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-16">
+                        <p class="text-amber-600 font-bold text-sm tracking-widest uppercase">Arah & Tujuan</p>
+                        <h2 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-900">
+                            Visi & Misi Kami
+                        </h2>
+                    </div>
 
-                    <aside class="surface-card surface-card-soft overflow-hidden" data-aos="zoom-in" data-aos-delay="160">
-                        <div class="aspect-[4/4] w-full overflow-hidden bg-emerald-100">
-                            <div class="h-full w-full bg-center bg-cover transition duration-500 hover:scale-105" style="background-image: url('{{ $backgroundImage }}');"></div>
-                        </div>
-                        <div class="p-6">
-                            <p class="section-kicker">Ketua DKM</p>
-                            <h2 class="mt-2 text-xl font-black tracking-tight text-stone-900">Ustadz Ahmad Fauzi</h2>
-                            <p class="mt-4 text-sm leading-7 text-stone-600">
-                                Memimpin pengurus dengan pendekatan yang tertib, komunikatif, dan mengutamakan kenyamanan jamaah dalam setiap pelayanan masjid.
+                    <div class="grid gap-8 lg:gap-12 lg:grid-cols-2">
+                        <!-- Visi Card -->
+                        <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border-l-8 border-amber-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                            data-aos="zoom-in" data-aos-delay="100">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center">
+                                    <i class="bi bi-eye text-white text-xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-black text-emerald-900">Visi</h3>
+                            </div>
+                            <p class="text-lg leading-relaxed text-stone-700">
+                                {{ $visi }}
                             </p>
                         </div>
-                    </aside>
-                </div>
-            </section>
 
-            <section class="page-section pt-0" data-aos="fade-up">
-                <div class="grid gap-8 lg:grid-cols-2">
-                    <article class="surface-card surface-card-soft p-6 sm:p-8" data-aos="zoom-in">
-                        <p class="section-kicker">Visi</p>
-                        <h2 class="section-heading">Arah besar masjid</h2>
-                        <p class="mt-4 text-lg leading-8 text-stone-800">{{ $profil?->visi ?? $visi }}</p>
-                    </article>
-
-                    <article class="surface-card surface-card-soft p-6 sm:p-8" data-aos="zoom-in" data-aos-delay="80">
-                        <p class="section-kicker">Misi</p>
-                        <h2 class="section-heading">Langkah kerja yang jelas</h2>
-                        <p class="mt-4 whitespace-pre-line text-lg leading-8 text-stone-800">{{ $profil?->misi ?? $misi }}</p>
-                    </article>
-                </div>
-            </section>
-
-            <section class="page-section" data-aos="fade-up" data-aos-delay="120">
-                <div class="mb-8 max-w-2xl">
-                    <p class="section-kicker">Struktur Kepengurusan DKM</p>
-                    <h2 class="section-heading">Susunan pengurus inti</h2>
-                  
-                </div>
-
-                <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    @foreach ($pengurus as $item)
-                        <article class="surface-card surface-card-soft p-6" data-aos="zoom-in">
-                            <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-amber-700">{{ $item['jabatan'] }}</p>
-
-                            @if(!empty($item['foto']))
-                                <div class="mt-3 mb-2 w-20 h-20 rounded-full overflow-hidden">
-                                    <img src="{{ $item['foto'] }}" alt="{{ $item['nama'] }}" class="w-full h-full object-cover object-center">
+                        <!-- Misi Card -->
+                        <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border-l-8 border-emerald-600 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                            data-aos="zoom-in" data-aos-delay="200">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-14 h-14 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center">
+                                    <i class="bi bi-target text-white text-xl"></i>
                                 </div>
-                            @endif
+                                <h3 class="text-2xl font-black text-emerald-900">Misi</h3>
+                            </div>
+                            <div class="space-y-3 text-stone-700 leading-relaxed">
+                                @foreach(preg_split('/\d+\.\s+/', trim($misi)) as $item)
+                                    @if(!empty(trim($item)))
+                                        <div class="flex gap-3">
+                                            <i class="bi bi-check-circle-fill text-amber-400 mt-1 flex-shrink-0"></i>
+                                            <p class="text-base">{{ trim($item) }}</p>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                            <h3 class="mt-3 text-lg font-black tracking-tight text-stone-900">{{ $item['nama'] }}</h3>
-                            <p class="mt-3 text-lg leading-7 text-stone-700">{{ $item['tugas'] ?? 'Deskripsi tugas belum diisi oleh admin.' }}</p>
-                        </article>
-                    @endforeach
+            <!-- ===== STRUKTUR KEPENGURUSAN SECTION ===== -->
+            <section class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white" data-aos="fade-up">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-16">
+                        <p class="text-amber-600 font-bold text-sm tracking-widest uppercase">Organisasi</p>
+                        <h2 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-900">
+                            Struktur Kepengurusan DKM
+                        </h2>
+                        <p class="mt-4 text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
+                            Berikut adalah susunan pengurus inti yang memimpin dan mengelola Masjid Al-Musabaqoh
+                        </p>
+                    </div>
+
+                    @if(count($pengurus) > 0)
+                        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                            @foreach($pengurus as $item)
+                                <div class="bg-white rounded-3xl overflow-hidden shadow-lg border border-stone-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                                    data-aos="zoom-in" data-aos-delay="{{ 100 + ($loop->index * 50) }}">
+                                    
+                                    <!-- Photo Section -->
+                                    @if(!empty($item['foto']))
+                                        <div class="relative h-48 bg-gradient-to-br from-emerald-100 to-amber-50 overflow-hidden">
+                                            <img src="{{ $item['foto'] }}" 
+                                                alt="{{ $item['nama'] }}" 
+                                                class="w-full h-full object-cover">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                        </div>
+                                    @else
+                                        <div class="h-48 bg-gradient-to-br from-emerald-400 to-amber-300 flex items-center justify-center">
+                                            <i class="bi bi-person-circle text-white text-6xl"></i>
+                                        </div>
+                                    @endif
+
+                                    <!-- Content Section -->
+                                    <div class="p-6 sm:p-8">
+                                        <p class="text-xs font-bold tracking-widest uppercase text-amber-600">
+                                            {{ $item['jabatan'] ?? 'Pengurus' }}
+                                        </p>
+                                        <h3 class="mt-3 text-2xl font-black text-emerald-900">
+                                            {{ $item['nama'] ?? 'Nama Pengurus' }}
+                                        </h3>
+                                        <p class="mt-2 text-sm font-semibold text-stone-600">
+                                            {{ $item['jabatan'] ?? 'Pengurus DKM' }}
+                                        </p>
+                                        <p class="mt-4 text-base leading-relaxed text-stone-700">
+                                            {{ $item['tugas'] ?? 'Deskripsi tugas belum diisi oleh admin.' }}
+                                        </p>
+                                        
+                                        @if(!empty($item['no_hp']))
+                                            <div class="mt-5 pt-5 border-t border-stone-200">
+                                                <p class="text-sm text-stone-500">
+                                                    <i class="bi bi-telephone text-amber-600 mr-2"></i>
+                                                    {{ $item['no_hp'] }}
+                                                </p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-12 text-center">
+                            <i class="bi bi-info-circle text-3xl text-amber-600 mb-4"></i>
+                            <p class="text-lg font-semibold text-stone-700">
+                                Data pengurus belum tersedia
+                            </p>
+                            <p class="mt-2 text-stone-600">
+                                Silakan lengkapi data pengurus di admin panel
+                            </p>
+                        </div>
+                    @endif
+                </div>
+            </section>
+
+            <!-- ===== CTA SECTION ===== -->
+            <section class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-emerald-900 to-emerald-800" data-aos="fade-up">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                        Ingin Bergabung atau Berkontribusi?
+                    </h2>
+                    <p class="mt-6 text-lg text-emerald-50/90 leading-relaxed max-w-2xl mx-auto">
+                        Masjid Al-Musabaqoh selalu terbuka untuk menerima jamaah dan kontribusi dari masyarakat dalam berbagai bentuk kegiatan ibadah dan sosial.
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="{{ route('frontend.home') }}#donasi" 
+                            class="px-8 py-4 bg-amber-400 text-emerald-900 font-bold rounded-full hover:bg-amber-300 transition-all duration-300 text-lg inline-flex items-center gap-2">
+                            <i class="bi bi-heart-fill"></i> Donasi & Infak
+                        </a>
+                        <a href="{{ route('frontend.berita') }}" 
+                            class="px-8 py-4 border-2 border-amber-400 text-amber-400 font-bold rounded-full hover:bg-amber-400/10 transition-all duration-300 text-lg inline-flex items-center gap-2">
+                            <i class="bi bi-newspaper"></i> Lihat Berita Terbaru
+                        </a>
+                        <a href="{{ route('frontend.home') }}#kegiatan" 
+                            class="px-8 py-4 bg-emerald-600 text-white font-bold rounded-full hover:bg-emerald-700 transition-all duration-300 text-lg inline-flex items-center gap-2">
+                            <i class="bi bi-calendar-check"></i> Jadwal Kegiatan
+                        </a>
+                    </div>
                 </div>
             </section>
         </main>
 
         @include('frontend.partials.footer')
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (window.AOS) {
                 AOS.init({
                     duration: 800,
                     once: true,
-                    easing: 'ease-out-cubic'
+                    easing: 'ease-out-cubic',
+                    offset: 100
                 });
             }
         });
     </script>
 </body>
+
 </html>

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Arsip;
 use App\Models\Berita;
+use App\Models\DistribusiZakat;
 use App\Models\DonasiKeluar;
 use App\Models\DonasiMasuk;
 use App\Models\JadwalKegiatan;
 use App\Models\KasKeluar;
 use App\Models\KasMasuk;
+use App\Models\PenerimaanZakat;
 use App\Models\ProfilMasjid;
 use App\Models\Pengurus;
 use Carbon\Carbon;
@@ -25,13 +28,13 @@ class HomeController extends Controller
             ->orderByRaw("CASE WHEN tanggal >= ? THEN 0 ELSE 1 END", [$today->toDateString()])
             ->orderByRaw("CASE WHEN tanggal >= ? THEN tanggal END asc", [$today->toDateString()])
             ->orderByRaw("CASE WHEN tanggal < ? THEN tanggal END desc", [$today->toDateString()])
-            ->limit(3)
+            ->limit(6)
             ->get();
 
         $beritaTerbaru = Berita::query()
             ->latest('tanggal')
             ->latest('id')
-            ->limit(4)
+            ->limit(6)
             ->get();
 
         $kasMasukTotal = (float) KasMasuk::query()->sum('jumlah');
@@ -247,18 +250,41 @@ class HomeController extends Controller
             ->paginate(6);
 
         $berita = $beritaPaginated->map(fn (Berita $item) => [
+            'id' => $item->id,
             'tanggal' => $item->tanggal,
             'judul' => $item->judul,
             'excerpt' => $item->sinopsis ?: Str::limit(strip_tags((string) $item->isi_berita), 140),
             'thumbnail' => $item->gambar ? asset('storage/' . ltrim($item->gambar, '/')) : asset('favicon.ico'),
             'slug' => Str::slug($item->judul),
-            'url' => '#',
+            'url' => route('frontend.berita.show', $item->id),
         ]);
 
         return view('frontend.berita', [
             'berita' => $berita,
             'beritaPaginated' => $beritaPaginated,
             'navItems' => $this->frontendNavItems(),
+        ]);
+    }
+
+    /**
+     * Tampilkan halaman detail berita
+     *
+     * @param \App\Models\Berita $berita
+     * @return \Illuminate\View\View
+     */
+    public function showBerita(Berita $berita)
+    {
+        // Ambil 3 berita terbaru lainnya (exclude berita yang sedang dibaca)
+        $berita_lain = Berita::query()
+            ->where('id', '!=', $berita->id)
+            ->latest('tanggal')
+            ->latest('id')
+            ->limit(3)
+            ->get();
+
+        return view('frontend.berita.show', [
+            'berita' => $berita,
+            'berita_lain' => $berita_lain,
         ]);
     }
 
@@ -281,6 +307,109 @@ class HomeController extends Controller
             'galeriPaginated' => $galeriPaginated,
             'navItems' => $this->frontendNavItems(),
         ]);
+    }
+
+    public function laporan()
+    {
+        [$preset, $dateFrom, $dateTo, $periodLabel] = $this->resolveFrontendReportPeriod();
+
+        $kasMasukTotal = (float) KasMasuk::query()
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->sum('jumlah');
+
+        $kasKeluarTotal = (float) KasKeluar::query()
+            ->approved()
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->sum('nominal');
+
+        $donasiMasukTotal = (float) DonasiMasuk::query()
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->sum('total');
+
+        $donasiKeluarTotal = (float) DonasiKeluar::query()
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->sum('jumlah');
+
+        $zakatMasukTotal = (float) PenerimaanZakat::query()
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->sum('nominal');
+
+        $zakatKeluarTotal = (float) DistribusiZakat::query()
+            ->whereBetween('tanggal', [$dateFrom->toDateString(), $dateTo->toDateString()])
+            ->sum('nominal');
+
+        $daftarLaporan = Arsip::query()
+            ->where('kategori', 'Laporan')
+            ->orderByDesc('tanggal_arsip')
+            ->orderByDesc('id')
+            ->get()
+            ->map(function (Arsip $item) {
+                return (object) [
+                    'periode' => $item->judul,
+                    'keterangan' => $item->deskripsi,
+                    'file_path' => $item->file,
+                    'nama_file_asli' => $item->nama_file_asli,
+                ];
+            });
+
+        return view('frontend.laporan.index', [
+            'navItems' => $this->frontendNavItems(),
+            'daftar_laporan' => $daftarLaporan,
+            'total_pemasukan' => $kasMasukTotal + $donasiMasukTotal + $zakatMasukTotal,
+            'total_pengeluaran' => $kasKeluarTotal + $donasiKeluarTotal + $zakatKeluarTotal,
+            'saldo_akhir' => ($kasMasukTotal + $donasiMasukTotal + $zakatMasukTotal) - ($kasKeluarTotal + $donasiKeluarTotal + $zakatKeluarTotal),
+            'periode_label' => $periodLabel,
+            'filter_preset' => $preset,
+            'filter_date_from' => $dateFrom->format('Y-m-d'),
+            'filter_date_to' => $dateTo->format('Y-m-d'),
+        ]);
+    }
+
+    private function resolveFrontendReportPeriod(): array
+    {
+        $preset = request()->string('preset')->toString() ?: 'this_month';
+        $today = Carbon::today();
+
+        if ($preset === 'custom' || request()->filled('date_from') || request()->filled('date_to')) {
+            $preset = 'custom';
+            $dateFrom = request()->filled('date_from')
+                ? Carbon::parse(request()->input('date_from'))->startOfDay()
+                : $today->copy()->startOfMonth();
+            $dateTo = request()->filled('date_to')
+                ? Carbon::parse(request()->input('date_to'))->endOfDay()
+                : $today->copy()->endOfMonth();
+        } else {
+            switch ($preset) {
+                case 'today':
+                    $dateFrom = $today->copy()->startOfDay();
+                    $dateTo = $today->copy()->endOfDay();
+                    break;
+                case 'this_year':
+                    $dateFrom = $today->copy()->startOfYear();
+                    $dateTo = $today->copy()->endOfYear();
+                    break;
+                case 'last_30_days':
+                    $dateFrom = $today->copy()->subDays(29)->startOfDay();
+                    $dateTo = $today->copy()->endOfDay();
+                    break;
+                case 'this_month':
+                default:
+                    $preset = 'this_month';
+                    $dateFrom = $today->copy()->startOfMonth();
+                    $dateTo = $today->copy()->endOfMonth();
+                    break;
+            }
+        }
+
+        if ($dateFrom->gt($dateTo)) {
+            [$dateFrom, $dateTo] = [$dateTo->copy()->startOfDay(), $dateFrom->copy()->endOfDay()];
+        }
+
+        $periodLabel = $dateFrom->isSameDay($dateTo)
+            ? $dateFrom->translatedFormat('d M Y')
+            : $dateFrom->translatedFormat('d M Y') . ' - ' . $dateTo->translatedFormat('d M Y');
+
+        return [$preset, $dateFrom, $dateTo, $periodLabel];
     }
 
     private function frontendNavItems(): array
@@ -309,6 +438,12 @@ class HomeController extends Controller
                 'href' => route('frontend.galeri'),
                 'active' => request()->routeIs('frontend.galeri'),
                 'icon' => 'bi-images',
+            ],
+            [
+                'label' => 'Laporan',
+                'href' => route('frontend.laporan'),
+                'active' => request()->routeIs('frontend.laporan'),
+                'icon' => 'bi-file-earmark-text',
             ],
         ];
     }

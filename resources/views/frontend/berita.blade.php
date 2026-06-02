@@ -11,7 +11,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @include('frontend._styles')
-    <!-- AOS (Animate On Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
@@ -20,65 +19,40 @@
         $navItems = [
             ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => request()->routeIs('frontend.home')],
             ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => request()->routeIs('frontend.profil')],
+            ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => request()->routeIs('frontend.kegiatan')],
             ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => request()->routeIs('frontend.berita')],
             ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => request()->routeIs('frontend.galeri')],
+            ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => request()->routeIs('frontend.laporan')],
         ];
 
-        // Prefer data passed from controller: $berita (collection of Berita models)
-        $beritaItems = collect($berita ?? [])->whenEmpty(function () {
-            return collect([
-                [
-                    'tanggal' => '2026-05-12',
-                    'judul' => 'Kajian Rutin Malam Jumat Kembali Digelar',
-                    'excerpt' => 'Pengurus mengundang jamaah untuk mengikuti kajian rutin malam Jumat yang disusun agar mudah diikuti oleh bapak-bapak dan keluarga.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80',
-                    'url' => '#',
-                ],
-                [
-                    'tanggal' => '2026-05-08',
-                    'judul' => 'Program Bersih-Bersih Masjid Bersama Jamaah',
-                    'excerpt' => 'Kegiatan gotong royong difokuskan pada kebersihan area utama, tempat wudhu, dan halaman agar jamaah lebih nyaman beribadah.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
-                    'url' => '#',
-                ],
-                [
-                    'tanggal' => '2026-05-01',
-                    'judul' => 'Laporan Santunan dan Penyaluran Infak Bulanan',
-                    'excerpt' => 'Pencatatan donasi dan penyaluran bantuan dilakukan lebih rapi agar jamaah dapat mengikuti perkembangan kegiatan sosial masjid.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1524726240783-939bfdd63372?auto=format&fit=crop&w=1200&q=80',
-                    'url' => '#',
-                ],
-            ]);
-        });
+        $beritaItems = collect($berita ?? []);
     @endphp
 
     <div class="frontend-page min-h-screen flex flex-col">
         @include('frontend.partials.navbar')
 
         <main class="flex-1">
-            <section class="page-hero min-h-[70vh] flex items-center" data-aos="fade-up" style="background-image: linear-gradient(rgba(6,78,59,0.88), rgba(6,78,59,0.92)), url('{{ asset('storage/icon/FOTO.jpeg') }}'); background-size: cover; background-position: center;">
-                <div class="page-shell py-16 sm:py-20">
-                    <div class="relative z-10 max-w-3xl">
-                        <p class="hero-badge">Berita & Artikel</p>
-                        <h1 class="mt-5 text-4xl font-black tracking-tight sm:text-5xl">
-                            Informasi kegiatan masjid yang tertata dan mudah diikuti
-                        </h1>
-                        <p class="mt-5 text-base leading-8 text-emerald-50/85 sm:text-lg">
-                            Setiap berita ditampilkan dalam kartu yang jelas agar jamaah dapat langsung melihat tanggal, judul, dan ringkasan isi berita.
-                        </p>
-                    </div>
-                </div>
-            </section>
+            <x-hero-banner
+                badge="Berita & Artikel"
+                title="Berita"
+                accent="Masjid Al-Musabaqoh"
+                subtitle="Informasi kegiatan masjid yang tertata, mudah dibaca, dan nyaman diikuti oleh seluruh jamaah."
+                :bg-image="asset('storage/icon/FOTO.jpeg')"
+                icon="bi-newspaper"
+                badge-icon="bi-journal-text"
+                cta-label="Lihat Berita Terbaru"
+                cta-href="#berita-list"
+            />
 
-            <section class="page-section" data-aos="fade-up" data-aos-delay="80">
+            <section class="page-section" id="berita-list" data-aos="fade-up" data-aos-delay="80">
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    @foreach ($beritaItems as $index => $item)
+                    @forelse ($beritaItems as $index => $item)
                         @php
                             $tanggal = \Illuminate\Support\Carbon::parse($item['tanggal'] ?? ($item->tanggal ?? now()))->translatedFormat('d M Y');
                             $thumb = $item['thumbnail'] ?? ($item->gambar ?? ($item->thumbnail ?? asset('storage/icon/foto.jpeg')));
                             $judul = $item['judul'] ?? ($item->judul ?? ($item->judul ?? ''));
                             $excerpt = $item['excerpt'] ?? ($item->sinopsis ?? ($item->isi_berita ?? ''));
-                            $url = $item['url'] ?? ($item->url ?? '#');
+                            $url = $item['url'] ?? ($item->url ?? route('frontend.berita.show', $item['id'] ?? $item->id ?? '#'));
                         @endphp
 
                         <article class="surface-card surface-card-soft overflow-hidden" data-aos="zoom-in" data-aos-delay="{{ 60 * ($index % 6) }}">
@@ -92,14 +66,19 @@
                             <div class="flex h-full flex-col p-6">
                                 <h2 class="text-xl md:text-2xl font-black leading-snug tracking-tight text-stone-900">{{ $judul }}</h2>
                                 <p class="mt-4 text-lg leading-7 text-stone-700">{{ \Illuminate\Support\Str::limit(strip_tags($excerpt), 180) }}</p>
-                                <div class="mt-6">
-                                    <a href="{{ $url }}" class="inline-flex items-center gap-2 rounded-full bg-emerald-900 px-5 py-3 text-sm md:text-base font-bold text-white transition hover:bg-emerald-800">
-                                        Baca Selengkapnya
-                                    </a>
-                                </div>
+                            <div class="mt-6">
+                                <a href="{{ $url }}" class="inline-flex items-center gap-2 rounded-full bg-emerald-900 px-5 py-3 text-sm md:text-base font-bold text-white transition hover:bg-emerald-800">
+                                    Baca Selengkapnya
+                                </a>
                             </div>
-                        </article>
-                    @endforeach
+                        </div>
+                    </article>
+                    @empty
+                        <div class="col-span-full rounded-3xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center">
+                            <p class="text-lg font-bold text-stone-700">Belum ada berita yang dipublikasikan.</p>
+                            <p class="mt-2 text-base text-stone-500">Silakan kembali lagi setelah admin menambahkan konten berita.</p>
+                        </div>
+                    @endforelse
                 </div>
 
                 <!-- Pagination -->

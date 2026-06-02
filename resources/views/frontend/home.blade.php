@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,8 +70,13 @@
         }
 
         @keyframes morphing {
-            0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-            100% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
+            0% {
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            }
+
+            100% {
+                border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+            }
         }
 
         .scroll-reveal {
@@ -85,25 +91,28 @@
         }
     </style>
 </head>
+
 <body class="bg-[#faf9f6] text-stone-900 font-sans antialiased overflow-x-hidden">
     @php
-        $navItems = [
-            ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => true],
-            ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => false],
-            ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => false],
-            ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => false],
-        ];
+    $navItems = [
+    ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => true],
+    ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => false],
+    ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => false],
+    ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => false],
+    ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => false],
+    ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => false],
+    ];
 
-        $quickLinks = [
-            'beranda' => '#beranda',
-            'home' => '#beranda',
-            'kegiatan' => '#kegiatan',
-            'agenda' => '#kegiatan',
-            'berita' => '#berita',
-            'laporan' => '#laporan',
-            'donasi' => '#donasi',
-            'zakat' => '#donasi',
-        ];
+    $quickLinks = [
+    'beranda' => '#beranda',
+    'home' => '#beranda',
+    'kegiatan' => '#kegiatan',
+    'agenda' => '#kegiatan',
+    'berita' => '#berita',
+    'laporan' => '#laporan',
+    'donasi' => '#donasi',
+    'zakat' => '#donasi',
+    ];
     @endphp
 
     <!-- Page Shell Wrap -->
@@ -152,8 +161,7 @@
                                 id="quickSearchInput"
                                 placeholder="Cari menu: berita, donasi, kegiatan..."
                                 autocomplete="off"
-                                class="w-full bg-transparent border-0 outline-none text-white placeholder-emerald-200/50 text-sm font-medium py-2.5"
-                            >
+                                class="w-full bg-transparent border-0 outline-none text-white placeholder-emerald-200/50 text-sm font-medium py-2.5">
                         </div>
                         <button type="submit" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 font-bold text-sm px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-1.5">
                             Cari <i class="bi bi-arrow-right-short text-lg"></i>
@@ -233,9 +241,9 @@
                                 <i class="bi bi-geo-alt-fill absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-600 text-sm"></i>
                                 <select id="citySelect" aria-label="Pilih kota jadwal sholat" class="w-full sm:w-64 pl-10 pr-10 py-2.5 text-xs font-bold text-stone-700 bg-stone-50 hover:bg-stone-100 border border-stone-200 rounded-xl outline-none cursor-pointer appearance-none transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
                                     @foreach ($cityOptions as $city)
-                                        <option value="{{ $city['id'] }}" {{ $city['id'] === $defaultCity['id'] ? 'selected' : '' }}>
-                                            {{ $city['name'] }}
-                                        </option>
+                                    <option value="{{ $city['id'] }}" {{ $city['id'] === $defaultCity['id'] ? 'selected' : '' }}>
+                                        {{ $city['name'] }}
+                                    </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -253,38 +261,38 @@
             <!-- Overview Statistics Section -->
             <section class="overview-strip scroll-reveal mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                 @php
-                    $statIcons = [
-                        'kegiatan' => 'bi-calendar-week-fill',
-                        'agenda' => 'bi-calendar-week-fill',
-                        'kas' => 'bi-wallet-fill',
-                        'keuangan' => 'bi-wallet-fill',
-                        'donasi' => 'bi-heart-fill',
-                        'zakat' => 'bi-box2-heart-fill',
-                    ];
+                $statIcons = [
+                'kegiatan' => 'bi-calendar-week-fill',
+                'agenda' => 'bi-calendar-week-fill',
+                'kas' => 'bi-wallet-fill',
+                'keuangan' => 'bi-wallet-fill',
+                'donasi' => 'bi-heart-fill',
+                'zakat' => 'bi-box2-heart-fill',
+                ];
                 @endphp
                 @foreach ($overviewStats as $item)
-                    @php
-                        $iconClass = 'bi-arrow-right-circle-fill';
-                        $lowerLabel = strtolower($item['label']);
-                        foreach ($statIcons as $key => $icon) {
-                            if (str_contains($lowerLabel, $key)) {
-                                $iconClass = $icon;
-                                break;
-                            }
-                        }
-                    @endphp
-                    <article class="bg-white border border-stone-150 rounded-2xl p-6 flex items-center justify-between shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group">
-                        <!-- Bottom Colored Accent Bar on hover -->
-                        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 to-amber-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                @php
+                $iconClass = 'bi-arrow-right-circle-fill';
+                $lowerLabel = strtolower($item['label']);
+                foreach ($statIcons as $key => $icon) {
+                if (str_contains($lowerLabel, $key)) {
+                $iconClass = $icon;
+                break;
+                }
+                }
+                @endphp
+                <article class="bg-white border border-stone-150 rounded-2xl p-6 flex items-center justify-between shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group">
+                    <!-- Bottom Colored Accent Bar on hover -->
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 to-amber-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
 
-                        <div class="space-y-1">
-                            <span class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['label'] }}</span>
-                            <strong class="block font-display text-2xl md:text-3xl font-black text-stone-850">{{ $item['value'] }}</strong>
-                        </div>
-                        <div class="w-14 h-14 rounded-xl bg-stone-50 group-hover:bg-primary-50 text-primary-600 group-hover:text-primary-700 flex items-center justify-center text-2xl transition-all duration-300">
-                            <i class="bi {{ $iconClass }}"></i>
-                        </div>
-                    </article>
+                    <div class="space-y-1">
+                        <span class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['label'] }}</span>
+                        <strong class="block font-display text-2xl md:text-3xl font-black text-stone-850">{{ $item['value'] }}</strong>
+                    </div>
+                    <div class="w-14 h-14 rounded-xl bg-stone-50 group-hover:bg-primary-50 text-primary-600 group-hover:text-primary-700 flex items-center justify-center text-2xl transition-all duration-300">
+                        <i class="bi {{ $iconClass }}"></i>
+                    </div>
+                </article>
                 @endforeach
             </section>
 
@@ -304,44 +312,43 @@
 
                 <div class="latest-news-grid grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                     @forelse ($beritaTerbaru as $item)
-                        <article class="bg-white border border-stone-200/60 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group">
+                    <article class="bg-white border border-stone-200/60 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group">
 
-                            <!-- Media cover -->
-                            <div class="relative aspect-video overflow-hidden bg-stone-100">
-                                <img
-                                    src="{{ $item->gambar ? asset('storage/' . $item->gambar) : $heroImage }}"
-                                    alt="{{ $item->judul }}"
-                                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                >
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                            </div>
-
-                            <!-- Card Body -->
-                            <div class="p-5 flex flex-col flex-1 space-y-3">
-                                <h3 class="font-display text-base font-extrabold text-stone-850 group-hover:text-primary-700 transition duration-300 line-clamp-2 leading-snug">
-                                    {{ $item->judul }}
-                                </h3>
-
-                                <!-- Metadata with Icons -->
-                                <div class="flex items-center gap-3 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
-                                    <span class="inline-flex items-center gap-1"><i class="bi bi-calendar3 text-primary-600"></i> {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d M Y') }}</span>
-                                    <span class="inline-flex items-center gap-1"><i class="bi bi-person-circle text-primary-600"></i> {{ $item->penulis }}</span>
-                                </div>
-
-                                <p class="text-stone-500 text-xs md:text-sm leading-relaxed line-clamp-3">
-                                    {{ $item->sinopsis ? \Illuminate\Support\Str::limit(strip_tags($item->sinopsis), 150) : \Illuminate\Support\Str::limit(strip_tags($item->isi_berita), 150) }}
-                                </p>
-
-                                <a href="#berita" class="inline-flex items-center gap-1 text-primary-700 group-hover:text-amber-600 font-display text-xs font-black uppercase tracking-wider pt-2 self-start border-b-2 border-transparent hover:border-amber-500 transition duration-300 mt-auto">
-                                    Selengkapnya <i class="bi bi-arrow-right-short text-base transition-transform duration-300 group-hover:translate-x-1"></i>
-                                </a>
-                            </div>
-                        </article>
-                    @empty
-                        <div class="col-span-3 bg-white border-2 border-dashed border-stone-250 rounded-2xl py-12 px-6 text-center text-stone-400">
-                            <i class="bi bi-inbox text-5xl text-stone-200 block mb-3"></i>
-                            <p class="font-semibold text-sm">Belum ada berita yang dipublikasikan saat ini.</p>
+                        <!-- Media cover -->
+                        <div class="relative aspect-video overflow-hidden bg-stone-100">
+                            <img
+                                src="{{ $item->gambar ? asset('storage/' . $item->gambar) : $heroImage }}"
+                                alt="{{ $item->judul }}"
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                         </div>
+
+                        <!-- Card Body -->
+                        <div class="p-5 flex flex-col flex-1 space-y-3">
+                            <h3 class="font-display text-base font-extrabold text-stone-850 group-hover:text-primary-700 transition duration-300 line-clamp-2 leading-snug">
+                                {{ $item->judul }}
+                            </h3>
+
+                            <!-- Metadata with Icons -->
+                            <div class="flex items-center gap-3 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                                <span class="inline-flex items-center gap-1"><i class="bi bi-calendar3 text-primary-600"></i> {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d M Y') }}</span>
+                                <span class="inline-flex items-center gap-1"><i class="bi bi-person-circle text-primary-600"></i> {{ $item->penulis }}</span>
+                            </div>
+
+                            <p class="text-stone-500 text-xs md:text-sm leading-relaxed line-clamp-3">
+                                {{ $item->sinopsis ? \Illuminate\Support\Str::limit(strip_tags($item->sinopsis), 150) : \Illuminate\Support\Str::limit(strip_tags($item->isi_berita), 150) }}
+                            </p>
+
+                            <a href="{{ route('frontend.berita.show', $item->id) }}" class="inline-flex items-center gap-1 text-primary-700 group-hover:text-amber-600 font-display text-xs font-black uppercase tracking-wider pt-2 self-start border-b-2 border-transparent hover:border-amber-500 transition duration-300 mt-auto">
+                                Selengkapnya <i class="bi bi-arrow-right-short text-base transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </article>
+                    @empty
+                    <div class="col-span-3 bg-white border-2 border-dashed border-stone-250 rounded-2xl py-12 px-6 text-center text-stone-400">
+                        <i class="bi bi-inbox text-5xl text-stone-200 block mb-3"></i>
+                        <p class="font-semibold text-sm">Belum ada berita yang dipublikasikan saat ini.</p>
+                    </div>
                     @endforelse
                 </div>
 
@@ -367,26 +374,34 @@
                             Jadwal kajian rutin mingguan, tabligh akbar, santunan sosial, serta rapat pengurus DKM yang diselenggarakan demi mempererat silaturahmi jamaah.
                         </p>
 
+                        <div class="mt-2 flex justify-start">
+                            <a href="{{ route('frontend.kegiatan') }}" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-700 hover:bg-primary-800 text-white text-sm font-extrabold shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+                                <i class="bi bi-calendar2-week"></i>
+                                Lihat Agenda Kegiatan Selengkapnya
+                                <i class="bi bi-arrow-right-short text-lg"></i>
+                            </a>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
                             @forelse ($kegiatanCards as $item)
-                                <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-                                    <div class="absolute top-4 right-4 w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center text-lg">
-                                        <i class="bi bi-calendar3"></i>
-                                    </div>
-                                    <div class="space-y-2 mt-2">
-                                        <span class="block text-[10px] font-bold text-primary-700 uppercase tracking-widest">{{ $item['title'] }}</span>
-                                        <b class="block font-display text-xl font-extrabold text-stone-850 group-hover:text-primary-700 transition duration-300">{{ $item['value'] }}</b>
-                                        <p class="text-stone-500 text-xs md:text-sm leading-relaxed pt-1">
-                                            {{ $item['content'] ?: 'Detail tanggal, waktu, atau penanggung jawab kegiatan belum dicantumkan.' }}
-                                        </p>
-                                    </div>
+                            <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+                                <div class="absolute top-4 right-4 w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center text-lg">
+                                    <i class="bi bi-calendar3"></i>
                                 </div>
+                                <div class="space-y-2 mt-2">
+                                    <span class="block text-[10px] font-bold text-primary-700 uppercase tracking-widest">{{ $item['title'] }}</span>
+                                    <b class="block font-display text-xl font-extrabold text-stone-850 group-hover:text-primary-700 transition duration-300">{{ $item['value'] }}</b>
+                                    <p class="text-stone-500 text-xs md:text-sm leading-relaxed pt-1">
+                                        {{ $item['content'] ?: 'Detail tanggal, waktu, atau penanggung jawab kegiatan belum dicantumkan.' }}
+                                    </p>
+                                </div>
+                            </div>
                             @empty
-                                <div class="col-span-3 bg-stone-50 border border-stone-150 rounded-2xl p-8 text-center text-stone-400">
-                                    <i class="bi bi-exclamation-circle text-4xl text-stone-300 block mb-2"></i>
-                                    <strong class="block font-display text-base font-bold text-stone-700">Belum Ada Agenda Terdekat</strong>
-                                    <span class="text-xs text-stone-500">Silakan kembali lagi nanti atau hubungi pengurus untuk informasi kegiatan.</span>
-                                </div>
+                            <div class="col-span-3 bg-stone-50 border border-stone-150 rounded-2xl p-8 text-center text-stone-400">
+                                <i class="bi bi-exclamation-circle text-4xl text-stone-300 block mb-2"></i>
+                                <strong class="block font-display text-base font-bold text-stone-700">Belum Ada Agenda Terdekat</strong>
+                                <span class="text-xs text-stone-500">Silakan kembali lagi nanti atau hubungi pengurus untuk informasi kegiatan.</span>
+                            </div>
                             @endforelse
                         </div>
                     </div>
@@ -410,29 +425,29 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
                             @foreach ($laporanCards as $item)
-                                @php
-                                    $isMasuk = str_contains(strtolower($item['title']), 'masuk');
-                                    $isKeluar = str_contains(strtolower($item['title']), 'keluar');
-                                    $accentColor = $isMasuk ? 'emerald' : ($isKeluar ? 'red' : 'blue');
-                                @endphp
-                                <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-                                    <div class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-lg {{ $accentColor === 'emerald' ? 'bg-emerald-50 text-emerald-600' : ($accentColor === 'red' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600') }}">
-                                        @if($accentColor === 'emerald')
-                                            <i class="bi bi-arrow-down-left-circle-fill"></i>
-                                        @elseif($accentColor === 'red')
-                                            <i class="bi bi-arrow-up-right-circle-fill"></i>
-                                        @else
-                                            <i class="bi bi-wallet2"></i>
-                                        @endif
-                                    </div>
-                                    <div class="space-y-2 mt-2">
-                                        <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['title'] }}</span>
-                                        <b class="block font-display text-xl md:text-2xl font-extrabold {{ $accentColor === 'emerald' ? 'text-emerald-700' : ($accentColor === 'red' ? 'text-red-700' : 'text-blue-750') }}">{{ $item['value'] }}</b>
-                                        <p class="text-stone-500 text-xs md:text-sm leading-relaxed">
-                                            {{ $item['content'] }}
-                                        </p>
-                                    </div>
+                            @php
+                            $isMasuk = str_contains(strtolower($item['title']), 'masuk');
+                            $isKeluar = str_contains(strtolower($item['title']), 'keluar');
+                            $accentColor = $isMasuk ? 'emerald' : ($isKeluar ? 'red' : 'blue');
+                            @endphp
+                            <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+                                <div class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-lg {{ $accentColor === 'emerald' ? 'bg-emerald-50 text-emerald-600' : ($accentColor === 'red' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600') }}">
+                                    @if($accentColor === 'emerald')
+                                    <i class="bi bi-arrow-down-left-circle-fill"></i>
+                                    @elseif($accentColor === 'red')
+                                    <i class="bi bi-arrow-up-right-circle-fill"></i>
+                                    @else
+                                    <i class="bi bi-wallet2"></i>
+                                    @endif
                                 </div>
+                                <div class="space-y-2 mt-2">
+                                    <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['title'] }}</span>
+                                    <b class="block font-display text-xl md:text-2xl font-extrabold {{ $accentColor === 'emerald' ? 'text-emerald-700' : ($accentColor === 'red' ? 'text-red-700' : 'text-blue-750') }}">{{ $item['value'] }}</b>
+                                    <p class="text-stone-500 text-xs md:text-sm leading-relaxed">
+                                        {{ $item['content'] }}
+                                    </p>
+                                </div>
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -452,18 +467,18 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
                             @foreach ($donasiCards as $item)
-                                <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-                                    <div class="absolute top-4 right-4 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-                                        <i class="bi bi-heart-fill"></i>
-                                    </div>
-                                    <div class="space-y-2 mt-2">
-                                        <span class="block text-[10px] font-bold text-amber-800 uppercase tracking-widest">{{ $item['title'] }}</span>
-                                        <b class="block font-display text-xl md:text-2xl font-extrabold text-stone-850">{{ $item['value'] }}</b>
-                                        <p class="text-stone-500 text-xs md:text-sm leading-relaxed">
-                                            {{ $item['content'] }}
-                                        </p>
-                                    </div>
+                            <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+                                <div class="absolute top-4 right-4 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                                    <i class="bi bi-heart-fill"></i>
                                 </div>
+                                <div class="space-y-2 mt-2">
+                                    <span class="block text-[10px] font-bold text-amber-800 uppercase tracking-widest">{{ $item['title'] }}</span>
+                                    <b class="block font-display text-xl md:text-2xl font-extrabold text-stone-850">{{ $item['value'] }}</b>
+                                    <p class="text-stone-500 text-xs md:text-sm leading-relaxed">
+                                        {{ $item['content'] }}
+                                    </p>
+                                </div>
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -491,12 +506,26 @@
             todaySchedule: null,
         };
 
-        const prayerLabels = [
-            { key: 'subuh', label: 'Subuh' },
-            { key: 'dzuhur', label: 'Dzuhur' },
-            { key: 'ashar', label: 'Ashar' },
-            { key: 'maghrib', label: 'Maghrib' },
-            { key: 'isya', label: 'Isya' },
+        const prayerLabels = [{
+                key: 'subuh',
+                label: 'Subuh'
+            },
+            {
+                key: 'dzuhur',
+                label: 'Dzuhur'
+            },
+            {
+                key: 'ashar',
+                label: 'Ashar'
+            },
+            {
+                key: 'maghrib',
+                label: 'Maghrib'
+            },
+            {
+                key: 'isya',
+                label: 'Isya'
+            },
         ];
 
         const quoteTitle = document.getElementById('quoteTitle');
@@ -712,13 +741,19 @@
 
             const rawKeyword = quickSearchInput.value.trim().toLowerCase();
             if (!rawKeyword) {
-                document.getElementById('beranda').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.getElementById('beranda').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
                 return;
             }
 
             const target = quickLinks[rawKeyword];
             if (target) {
-                document.querySelector(target).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.querySelector(target).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
                 return;
             }
 
@@ -765,4 +800,5 @@
         loadPrayerSchedule();
     </script>
 </body>
+
 </html>

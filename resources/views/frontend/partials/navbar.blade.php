@@ -2,8 +2,10 @@
     $navItems = $navItems ?? [
         ['label' => 'Beranda', 'href' => '#beranda', 'active' => true],
         ['label' => 'Profil Masjid', 'href' => '#profil', 'active' => false],
+        ['label' => 'Kegiatan', 'href' => '#kegiatan', 'active' => false],
         ['label' => 'Berita', 'href' => '#berita', 'active' => false],
         ['label' => 'Galeri', 'href' => '#galeri', 'active' => false],
+        ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => false],
     ];
 @endphp
 
@@ -27,10 +29,14 @@
                             <i class="bi bi-house-door text-sm"></i>
                         @elseif($item['label'] === 'Profil Masjid')
                             <i class="bi bi-building text-sm"></i>
+                        @elseif($item['label'] === 'Kegiatan')
+                            <i class="bi bi-calendar-check text-sm"></i>
                         @elseif($item['label'] === 'Berita')
                             <i class="bi bi-newspaper text-sm"></i>
                         @elseif($item['label'] === 'Galeri')
                             <i class="bi bi-images text-sm"></i>
+                        @elseif($item['label'] === 'Laporan')
+                            <i class="bi bi-file-earmark-text text-sm"></i>
                         @endif
                         {{ $item['label'] }}
                     </a>
@@ -59,10 +65,14 @@
                     <i class="bi bi-house-door text-base text-amber-500"></i>
                 @elseif($item['label'] === 'Profil Masjid')
                     <i class="bi bi-building text-base text-amber-500"></i>
+                @elseif($item['label'] === 'Kegiatan')
+                    <i class="bi bi-calendar-check text-base text-amber-500"></i>
                 @elseif($item['label'] === 'Berita')
                     <i class="bi bi-newspaper text-base text-amber-500"></i>
                 @elseif($item['label'] === 'Galeri')
                     <i class="bi bi-images text-base text-amber-500"></i>
+                @elseif($item['label'] === 'Laporan')
+                    <i class="bi bi-file-earmark-text text-base text-amber-500"></i>
                 @endif
                 {{ $item['label'] }}
             </a>

@@ -19,6 +19,7 @@
                 <li><a href="{{ route('frontend.profil') }}" class="hover:text-amber-400 transition-colors"><i class="bi bi-chevron-right text-[10px] text-amber-500"></i> Profil Masjid</a></li>
                 <li><a href="{{ route('frontend.berita') }}" class="hover:text-amber-400 transition-colors"><i class="bi bi-chevron-right text-[10px] text-amber-500"></i> Berita Masjid</a></li>
                 <li><a href="{{ route('frontend.galeri') }}" class="hover:text-amber-400 transition-colors"><i class="bi bi-chevron-right text-[10px] text-amber-500"></i> Galeri</a></li>
+                <li><a href="{{ route('frontend.laporan') }}" class="hover:text-amber-400 transition-colors"><i class="bi bi-chevron-right text-[10px] text-amber-500"></i> Laporan</a></li>
             </ul>
         </div>
 

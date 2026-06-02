@@ -20,80 +20,34 @@
         $navItems = [
             ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => request()->routeIs('frontend.home')],
             ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => request()->routeIs('frontend.profil')],
+            ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => request()->routeIs('frontend.kegiatan')],
             ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => request()->routeIs('frontend.berita')],
             ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => request()->routeIs('frontend.galeri')],
+            ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => request()->routeIs('frontend.laporan')],
         ];
 
-        // Prefer data passed from controller: $galeri (collection of Galeri models)
-        $galeriItems = collect($galeri ?? [])->whenEmpty(function () {
-            return collect([
-                [
-                    'tanggal' => '2026-05-14',
-                    'judul' => 'Pembersihan Area Utama Masjid',
-                    'deskripsi' => 'Gotong royong jamaah membersihkan ruang utama sebelum shalat Jumat.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1507863295159-0c5f9b5d4f2b?auto=format&fit=crop&w=1200&q=80',
-                ],
-                [
-                    'tanggal' => '2026-05-10',
-                    'judul' => 'Kajian Subuh Bersama Ustadz Tamu',
-                    'deskripsi' => 'Dokumentasi kegiatan kajian subuh yang dihadiri para bapak dan jamaah sekitar.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1519764622345-23439dd774f7?auto=format&fit=crop&w=1200&q=80',
-                ],
-                [
-                    'tanggal' => '2026-05-05',
-                    'judul' => 'Santunan Anak Yatim Bulanan',
-                    'deskripsi' => 'Penyaluran santunan dilakukan dengan tertib dan penuh kebersamaan.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?auto=format&fit=crop&w=1200&q=80',
-                ],
-                [
-                    'tanggal' => '2026-04-29',
-                    'judul' => 'Persiapan Ramadhan Bersama Remaja Masjid',
-                    'deskripsi' => 'Relawan menata perlengkapan dan area masjid menjelang bulan suci.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80',
-                ],
-                [
-                    'tanggal' => '2026-04-20',
-                    'judul' => 'Pelatihan Khatib dan Imam',
-                    'deskripsi' => 'Kegiatan pembinaan untuk meningkatkan kualitas dakwah dan ibadah berjamaah.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1470214304380-aadaedcfff3f?auto=format&fit=crop&w=1200&q=80',
-                ],
-                [
-                    'tanggal' => '2026-04-15',
-                    'judul' => 'Rapat Pengurus DKM Bulanan',
-                    'deskripsi' => 'Forum evaluasi program masjid agar pelayanan kepada jamaah semakin baik.',
-                    'thumbnail' => 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80',
-                ],
-            ]);
-        });
+        $galeriItems = collect($galeri ?? []);
     @endphp
 
     <div class="frontend-page min-h-screen flex flex-col">
         @include('frontend.partials.navbar')
 
         <main class="flex-1">
-            <section class="page-hero min-h-[70vh] flex items-center" data-aos="fade-up" style="background-image: linear-gradient(rgba(6,78,59,0.88), rgba(6,78,59,0.92)), url('{{ asset('storage/icon/FOTO.jpeg') }}'); background-size: cover; background-position: center;">
-                <div class="page-shell py-16 sm:py-20">
-                    <div class="relative z-10 max-w-3xl">
-                        <p class="hero-badge">Galeri Kegiatan</p>
-                        <h1 class="mt-5 text-4xl font-black tracking-tight sm:text-5xl">
-                            Dokumentasi kegiatan masjid dalam tampilan yang rapi
-                        </h1>
-                        <p class="mt-5 text-base leading-8 text-emerald-50/85 sm:text-lg">
-                            Foto-foto kegiatan ditampilkan dengan hover sederhana agar judul kegiatan tetap mudah dikenali saat dibuka di ponsel maupun desktop.
-                        </p>
-                    </div>
-                </div>
-            </section>
+            <x-hero-banner
+                badge="Galeri Kegiatan"
+                title="Galeri"
+                accent="Masjid Al-Musabaqoh"
+                subtitle="Foto-foto kegiatan ditampilkan dengan tampilan yang rapi agar mudah dibaca dan nyaman saat dibuka di ponsel maupun desktop."
+                :bg-image="asset('storage/icon/FOTO.jpeg')"
+                icon="bi-images"
+                badge-icon="bi-images"
+                cta-label="Lihat Galeri Lengkap"
+                cta-href="#galeri-list"
+            />
 
-            <section class="page-section" data-aos="fade-up" data-aos-delay="80">
-                <div class="mb-6 grid gap-4 md:grid-cols-3">
-                    <div class="page-grid-note">Grid standar yang nyaman untuk jamaah umum.</div>
-                    <div class="page-grid-note">Hover menampilkan judul kegiatan dengan jelas.</div>
-                    <div class="page-grid-note">Cocok untuk dokumentasi rapat, kajian, dan santunan.</div>
-                </div>
-
+            <section class="page-section" id="galeri-list" data-aos="fade-up" data-aos-delay="80">
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    @foreach ($galeriItems as $index => $item)
+                    @forelse ($galeriItems as $index => $item)
                         @php
                             $tanggal = \Illuminate\Support\Carbon::parse($item['tanggal'] ?? ($item->tanggal ?? now()))->translatedFormat('d M Y');
                             $thumb = $item['thumbnail'] ?? ($item->gambar ?? asset('storage/icon/foto.jpeg'));
@@ -115,8 +69,24 @@
                                 <p class="mt-2 text-lg leading-7 text-stone-700">{{ \Illuminate\Support\Str::limit(strip_tags($deskripsi), 200) }}</p>
                             </div>
                         </article>
-                    @endforeach
+                    @empty
+                        <div class="col-span-full rounded-3xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center">
+                            <p class="text-lg font-bold text-stone-700">Belum ada data galeri.</p>
+                            <p class="mt-2 text-base text-stone-500">Silakan unggah dokumentasi kegiatan terlebih dahulu dari panel admin.</p>
+                        </div>
+                    @endforelse
                 </div>
+
+                @if(isset($galeriPaginated) && method_exists($galeriPaginated, 'hasPages') && $galeriPaginated->hasPages())
+                    <div class="mt-10 flex flex-col items-center gap-4 border-t border-stone-200 pt-8" data-aos="fade-up" data-aos-delay="120">
+                        <p class="text-sm font-semibold text-stone-600">
+                            Menampilkan {{ $galeriPaginated->firstItem() }}-{{ $galeriPaginated->lastItem() }} dari {{ $galeriPaginated->total() }} galeri
+                        </p>
+                        <div class="pagination-wrapper">
+                            {{ $galeriPaginated->links() }}
+                        </div>
+                    </div>
+                @endif
             </section>
         </main>
 
