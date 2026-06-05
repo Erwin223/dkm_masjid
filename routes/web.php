@@ -35,6 +35,7 @@ Route::get('/berita/{berita}', [HomeController::class, 'showBerita'])->name('fro
 Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('frontend.kegiatan');
 Route::get('/galeri', [HomeController::class, 'galeri'])->name('frontend.galeri');
 Route::get('/laporan', [HomeController::class, 'laporan'])->name('frontend.laporan');
+Route::get('/donasi', [HomeController::class, 'donasi'])->name('frontend.donasi');
 
 Route::redirect('/berita-masjid', '/berita');
 Route::redirect('/galeri-masjid', '/galeri');

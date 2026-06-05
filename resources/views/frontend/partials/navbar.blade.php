@@ -1,11 +1,20 @@
 @php
     $navItems = $navItems ?? [
-        ['label' => 'Beranda', 'href' => '#beranda', 'active' => true],
-        ['label' => 'Profil Masjid', 'href' => '#profil', 'active' => false],
-        ['label' => 'Kegiatan', 'href' => '#kegiatan', 'active' => false],
-        ['label' => 'Berita', 'href' => '#berita', 'active' => false],
-        ['label' => 'Galeri', 'href' => '#galeri', 'active' => false],
-        ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => false],
+        ['label' => 'Beranda', 'href' => '#beranda', 'active' => true, 'icon' => 'bi-house-door'],
+        ['label' => 'Profil Masjid', 'href' => '#profil', 'active' => false, 'icon' => 'bi-building'],
+        ['label' => 'Berita', 'href' => '#berita', 'active' => false, 'icon' => 'bi-newspaper'],
+        [
+            'label' => 'Kegiatan & Galeri',
+            'href' => '#',
+            'active' => false,
+            'icon' => 'bi-collection',
+            'dropdown' => [
+                ['label' => 'Jadwal Kegiatan', 'href' => '#kegiatan', 'active' => false, 'icon' => 'bi-calendar-event'],
+                ['label' => 'Galeri Foto', 'href' => '#galeri', 'active' => false, 'icon' => 'bi-images'],
+            ]
+        ],
+        ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => false, 'icon' => 'bi-file-earmark-text'],
+        ['label' => 'Donasi', 'href' => route('frontend.donasi'), 'active' => false, 'icon' => 'bi-heart-fill'],
     ];
 @endphp
 
@@ -24,30 +33,30 @@
 
             <nav class="hidden md:flex items-center gap-1.5" aria-label="Navigasi Utama">
                 @foreach ($navItems as $item)
-                    <a href="{{ $item['href'] }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 {{ ($item['active'] ?? false) ? 'bg-emerald-900/40 text-amber-400 border border-emerald-800' : 'text-stone-200 hover:text-white hover:bg-emerald-900/60' }}">
-                        @if($item['label'] === 'Beranda')
-                            <i class="bi bi-house-door text-sm"></i>
-                        @elseif($item['label'] === 'Profil Masjid')
-                            <i class="bi bi-building text-sm"></i>
-                        @elseif($item['label'] === 'Kegiatan')
-                            <i class="bi bi-calendar-check text-sm"></i>
-                        @elseif($item['label'] === 'Berita')
-                            <i class="bi bi-newspaper text-sm"></i>
-                        @elseif($item['label'] === 'Galeri')
-                            <i class="bi bi-images text-sm"></i>
-                        @elseif($item['label'] === 'Laporan')
-                            <i class="bi bi-file-earmark-text text-sm"></i>
-                        @endif
-                        {{ $item['label'] }}
-                    </a>
+                    @if(isset($item['dropdown']))
+                        <div x-data="{ dropdownOpen: false }" class="relative" @mouseenter="dropdownOpen = true" @mouseleave="dropdownOpen = false">
+                            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 {{ ($item['active'] ?? false) ? 'bg-emerald-900/40 text-amber-400 border border-emerald-800' : 'text-stone-200 hover:text-white hover:bg-emerald-900/60' }}">
+                                <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-sm"></i>
+                                {{ $item['label'] }}
+                                <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="dropdownOpen ? 'rotate-180' : ''"></i>
+                            </button>
+                            <div x-show="dropdownOpen" x-transition.opacity.duration.200ms class="absolute left-0 mt-1 w-48 bg-white border border-stone-200 rounded-xl shadow-xl overflow-hidden z-50" x-cloak style="display: none;">
+                                @foreach($item['dropdown'] as $subItem)
+                                    <a href="{{ $subItem['href'] }}" class="block px-4 py-3 text-sm font-semibold text-stone-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors {{ ($subItem['active'] ?? false) ? 'bg-emerald-50 text-emerald-700' : '' }}">
+                                        <i class="bi {{ $subItem['icon'] ?? 'bi-circle' }} mr-2 text-emerald-600"></i> {{ $subItem['label'] }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ $item['href'] }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 {{ ($item['active'] ?? false) ? 'bg-emerald-900/40 text-amber-400 border border-emerald-800' : 'text-stone-200 hover:text-white hover:bg-emerald-900/60' }}">
+                            <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-sm"></i>
+                            {{ $item['label'] }}
+                        </a>
+                    @endif
                 @endforeach
             </nav>
 
-            <div class="hidden md:flex items-center">
-                <a href="{{ auth()->check() ? url('/admin/dashboard') : route('login') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-extrabold uppercase tracking-wider rounded-full border border-emerald-600 shadow-md hover:shadow-lg transition-all duration-300">
-                    <i class="bi bi-box-arrow-in-right text-sm"></i> Login Admin
-                </a>
-            </div>
 
             <div class="flex md:hidden">
                 <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="text-stone-200 hover:text-white focus:outline-none p-2 rounded-lg hover:bg-emerald-900/50" aria-controls="mobile-menu" :aria-expanded="mobileMenuOpen">
@@ -60,27 +69,30 @@
 
     <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4" class="md:hidden bg-emerald-950 border-t border-emerald-900/60 px-4 py-4 space-y-2 shadow-2xl" id="mobile-menu" x-cloak>
         @foreach ($navItems as $item)
-            <a href="{{ $item['href'] }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-stone-200 hover:text-white hover:bg-emerald-900/50 text-sm font-semibold transition-all {{ ($item['active'] ?? false) ? 'bg-emerald-900/50 text-amber-400 border border-emerald-800' : '' }}">
-                @if($item['label'] === 'Beranda')
-                    <i class="bi bi-house-door text-base text-amber-500"></i>
-                @elseif($item['label'] === 'Profil Masjid')
-                    <i class="bi bi-building text-base text-amber-500"></i>
-                @elseif($item['label'] === 'Kegiatan')
-                    <i class="bi bi-calendar-check text-base text-amber-500"></i>
-                @elseif($item['label'] === 'Berita')
-                    <i class="bi bi-newspaper text-base text-amber-500"></i>
-                @elseif($item['label'] === 'Galeri')
-                    <i class="bi bi-images text-base text-amber-500"></i>
-                @elseif($item['label'] === 'Laporan')
-                    <i class="bi bi-file-earmark-text text-base text-amber-500"></i>
-                @endif
-                {{ $item['label'] }}
-            </a>
+            @if(isset($item['dropdown']))
+                <div x-data="{ subMenuOpen: {{ ($item['active'] ?? false) ? 'true' : 'false' }} }" class="w-full">
+                    <button @click="subMenuOpen = !subMenuOpen" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-stone-200 hover:text-white hover:bg-emerald-900/50 text-sm font-semibold transition-all {{ ($item['active'] ?? false) ? 'bg-emerald-900/50 text-amber-400 border border-emerald-800' : '' }}">
+                        <div class="flex items-center gap-3">
+                            <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-base text-amber-500"></i>
+                            {{ $item['label'] }}
+                        </div>
+                        <i class="bi bi-chevron-down transition-transform duration-300" :class="subMenuOpen ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="subMenuOpen" x-collapse class="pl-11 pr-4 py-2 space-y-1" style="display: none;">
+                        @foreach($item['dropdown'] as $subItem)
+                            <a href="{{ $subItem['href'] }}" @click="mobileMenuOpen = false" class="block py-2 text-sm text-stone-300 hover:text-white transition-colors {{ ($subItem['active'] ?? false) ? 'text-white font-bold' : '' }}">
+                                <i class="bi {{ $subItem['icon'] ?? 'bi-circle' }} mr-2 text-amber-500/70"></i> {{ $subItem['label'] }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <a href="{{ $item['href'] }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-stone-200 hover:text-white hover:bg-emerald-900/50 text-sm font-semibold transition-all {{ ($item['active'] ?? false) ? 'bg-emerald-900/50 text-amber-400 border border-emerald-800' : '' }}">
+                    <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-base text-amber-500"></i>
+                    {{ $item['label'] }}
+                </a>
+            @endif
         @endforeach
-        <div class="pt-4 border-t border-emerald-900/60 flex flex-col gap-2">
-            <a href="{{ auth()->check() ? url('/admin/dashboard') : route('login') }}" @click="mobileMenuOpen = false" class="flex items-center justify-center gap-2 px-4 py-3 bg-emerald-700 text-white font-bold rounded-xl text-sm border border-emerald-600 transition">
-                <i class="bi bi-box-arrow-in-right"></i> Login Admin
-            </a>
-        </div>
+
     </div>
 </header>

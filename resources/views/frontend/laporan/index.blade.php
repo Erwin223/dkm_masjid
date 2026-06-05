@@ -16,14 +16,6 @@
 </head>
 <body class="frontend-shell bg-[#faf9f6] text-stone-900 antialiased">
     @php
-        $navItems = $navItems ?? [
-            ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => request()->routeIs('frontend.home')],
-            ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => request()->routeIs('frontend.profil')],
-            ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => request()->routeIs('frontend.kegiatan')],
-            ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => request()->routeIs('frontend.berita')],
-            ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => request()->routeIs('frontend.galeri')],
-        ];
-
         $daftarLaporan = collect($daftar_laporan ?? []);
         $totalPemasukan = $total_pemasukan ?? 0;
         $totalPengeluaran = $total_pengeluaran ?? 0;

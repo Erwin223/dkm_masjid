@@ -287,20 +287,9 @@
     </style>
 </head>
 <body class="frontend-shell">
-    @php
-        $navItems = [
-            ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => request()->routeIs('frontend.home')],
-            ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => request()->routeIs('frontend.profil')],
-            ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => request()->routeIs('frontend.kegiatan')],
-            ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => request()->routeIs('frontend.berita')],
-            ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => request()->routeIs('frontend.galeri')],
-            ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => request()->routeIs('frontend.laporan')],
-        ];
-    @endphp
-
     <div class="frontend-page min-h-screen flex flex-col">
         <!-- Navigation Bar -->
-        @include('frontend.partials.navbar', ['navItems' => $navItems])
+        @include('frontend.partials.navbar')
 
         <!-- Main Content -->
         <main class="flex-1 w-full bg-[#faf9f6]">

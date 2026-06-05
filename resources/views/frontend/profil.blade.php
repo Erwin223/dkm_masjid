@@ -12,21 +12,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @include('frontend._styles')
-    <!-- AOS (Animate On Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 
 <body class="frontend-shell">
     @php
-        $navItems = [
-            ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => request()->routeIs('frontend.home')],
-            ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => request()->routeIs('frontend.profil')],
-            ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => request()->routeIs('frontend.kegiatan')],
-            ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => request()->routeIs('frontend.berita')],
-            ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => request()->routeIs('frontend.galeri')],
-            ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => request()->routeIs('frontend.laporan')],
-        ];
 
         $sejarah = $profil?->sejarah ?? 'Masjid ini berdiri sebagai pusat ibadah dan pembinaan umat yang tumbuh bersama kebutuhan jamaah di lingkungan sekitar. Dalam perjalanannya, masjid terus berupaya menghadirkan suasana yang nyaman, tertib, dan bermanfaat untuk kegiatan ibadah, dakwah, dan sosial kemasyarakatan.';
         $visi = $profil?->visi ?? 'Menjadi masjid yang makmur, bersih, tertib, dan menjadi pusat pembinaan umat yang ramah bagi seluruh lapisan jamaah.';
@@ -75,12 +66,60 @@
                             </div>
                         </div>
 
-                        <!-- Image Content -->
+                        <!-- Image Content (Carousel) -->
                         <div data-aos="fade-left" data-aos-delay="100" class="relative">
-                            <div class="rounded-3xl overflow-hidden shadow-2xl border-8 border-amber-100">
-                                <img src="{{ $backgroundImage }}" 
-                                    alt="Masjid Al-Musabaqoh" 
-                                    class="w-full h-96 object-cover">
+                            @php
+                                $carouselImages = [
+                                    asset('storage/icon/foto.jpeg'),
+                                    asset('storage/icon/foto2.jpeg'),
+                                    asset('storage/icon/foto3.jpeg'),
+                                    asset('storage/icon/foto4.jpeg'),
+                                    asset('storage/icon/foto5.jpeg'),
+                                    asset('storage/icon/foto6.jpeg'),
+                                ];
+                            @endphp
+                            <div x-data="{ 
+                                    activeSlide: 0, 
+                                    slides: {{ json_encode($carouselImages) }},
+                                    timer: null,
+                                    startTimer() {
+                                        this.timer = setInterval(() => {
+                                            this.activeSlide = this.activeSlide === this.slides.length - 1 ? 0 : this.activeSlide + 1;
+                                        }, 4000);
+                                    },
+                                    stopTimer() {
+                                        clearInterval(this.timer);
+                                    }
+                                }" 
+                                x-init="startTimer()" 
+                                @mouseenter="stopTimer()" 
+                                @mouseleave="startTimer()"
+                                class="rounded-3xl overflow-hidden shadow-2xl border-8 border-amber-100 relative h-96 group">
+                                
+                                <template x-for="(slide, index) in slides" :key="index">
+                                    <img :src="slide" 
+                                        alt="Dokumentasi Masjid Al-Musabaqoh" 
+                                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+                                        :class="activeSlide === index ? 'opacity-100' : 'opacity-0'">
+                                </template>
+
+                                <!-- Navigation Arrows -->
+                                <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/50 transition-all opacity-0 group-hover:opacity-100 shadow-md">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/50 transition-all opacity-0 group-hover:opacity-100 shadow-md">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+
+                                <!-- Pagination Indicators -->
+                                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                                    <template x-for="(slide, index) in slides" :key="index">
+                                        <button @click="activeSlide = index" 
+                                            class="h-2 rounded-full transition-all duration-300 shadow-sm"
+                                            :class="activeSlide === index ? 'w-6 bg-amber-400' : 'w-2 bg-white/50 hover:bg-white/80'">
+                                        </button>
+                                    </template>
+                                </div>
                             </div>
                             <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-amber-100/30 rounded-full blur-2xl"></div>
                         </div>
@@ -210,37 +249,7 @@
                     @endif
                 </div>
             </section>
-
-            <!-- ===== CTA SECTION ===== -->
-            <section class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-emerald-900 to-emerald-800" data-aos="fade-up">
-                <div class="max-w-4xl mx-auto text-center">
-                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
-                        Ingin Bergabung atau Berkontribusi?
-                    </h2>
-                    <p class="mt-6 text-lg text-emerald-50/90 leading-relaxed max-w-2xl mx-auto">
-                        Masjid Al-Musabaqoh selalu terbuka untuk menerima jamaah dan kontribusi dari masyarakat dalam berbagai bentuk kegiatan ibadah dan sosial.
-                    </p>
-                    <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="{{ route('frontend.home') }}#donasi" 
-                            class="px-8 py-4 bg-amber-400 text-emerald-900 font-bold rounded-full hover:bg-amber-300 transition-all duration-300 text-lg inline-flex items-center gap-2">
-                            <i class="bi bi-heart-fill"></i> Donasi & Infak
-                        </a>
-                        <a href="{{ route('frontend.berita') }}" 
-                            class="px-8 py-4 border-2 border-amber-400 text-amber-400 font-bold rounded-full hover:bg-amber-400/10 transition-all duration-300 text-lg inline-flex items-center gap-2">
-                            <i class="bi bi-newspaper"></i> Lihat Berita Terbaru
-                        </a>
-                        <a href="{{ route('frontend.home') }}#kegiatan" 
-                            class="px-8 py-4 bg-emerald-600 text-white font-bold rounded-full hover:bg-emerald-700 transition-all duration-300 text-lg inline-flex items-center gap-2">
-                            <i class="bi bi-calendar-check"></i> Jadwal Kegiatan
-                        </a>
-                    </div>
-                </div>
-            </section>
-        </main>
-
         @include('frontend.partials.footer')
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (window.AOS) {
@@ -254,5 +263,4 @@
         });
     </script>
 </body>
-
 </html>

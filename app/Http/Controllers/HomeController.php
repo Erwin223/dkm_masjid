@@ -309,6 +309,13 @@ class HomeController extends Controller
         ]);
     }
 
+    public function donasi()
+    {
+        return view('frontend.donasi', [
+            'navItems' => $this->frontendNavItems(),
+        ]);
+    }
+
     public function laporan()
     {
         [$preset, $dateFrom, $dateTo, $periodLabel] = $this->resolveFrontendReportPeriod();
@@ -434,16 +441,36 @@ class HomeController extends Controller
                 'icon' => 'bi-newspaper',
             ],
             [
-                'label' => 'Galeri',
-                'href' => route('frontend.galeri'),
-                'active' => request()->routeIs('frontend.galeri'),
-                'icon' => 'bi-images',
+                'label' => 'Kegiatan & Galeri',
+                'href' => '#',
+                'active' => request()->routeIs('frontend.kegiatan') || request()->routeIs('frontend.galeri'),
+                'icon' => 'bi-collection',
+                'dropdown' => [
+                    [
+                        'label' => 'Jadwal Kegiatan',
+                        'href' => route('frontend.kegiatan'),
+                        'active' => request()->routeIs('frontend.kegiatan'),
+                        'icon' => 'bi-calendar-event',
+                    ],
+                    [
+                        'label' => 'Galeri Foto',
+                        'href' => route('frontend.galeri'),
+                        'active' => request()->routeIs('frontend.galeri'),
+                        'icon' => 'bi-images',
+                    ],
+                ]
             ],
             [
                 'label' => 'Laporan',
                 'href' => route('frontend.laporan'),
                 'active' => request()->routeIs('frontend.laporan'),
                 'icon' => 'bi-file-earmark-text',
+            ],
+            [
+                'label' => 'Donasi',
+                'href' => route('frontend.donasi'),
+                'active' => request()->routeIs('frontend.donasi'),
+                'icon' => 'bi-heart-fill',
             ],
         ];
     }

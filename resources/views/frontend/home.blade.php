@@ -8,11 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script>
@@ -57,7 +54,6 @@
     </script>
 
     <style>
-        /* Custom Fine-Tuning Styles for Perfect UI/UX */
         .islamic-pattern {
             background-color: #064e3b;
             background-image: radial-gradient(rgba(217, 119, 6, 0.15) 1px, transparent 0), radial-gradient(rgba(217, 119, 6, 0.15) 1px, transparent 0);
@@ -94,14 +90,6 @@
 
 <body class="bg-[#faf9f6] text-stone-900 font-sans antialiased overflow-x-hidden">
     @php
-    $navItems = [
-    ['label' => 'Beranda', 'href' => route('frontend.home'), 'active' => true],
-    ['label' => 'Profil Masjid', 'href' => route('frontend.profil'), 'active' => false],
-    ['label' => 'Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => false],
-    ['label' => 'Berita', 'href' => route('frontend.berita'), 'active' => false],
-    ['label' => 'Galeri', 'href' => route('frontend.galeri'), 'active' => false],
-    ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => false],
-    ];
 
     $quickLinks = [
     'beranda' => '#beranda',
@@ -258,7 +246,6 @@
                 </div>
             </div>
 
-            <!-- Overview Statistics Section -->
             <section class="overview-strip scroll-reveal mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                 @php
                 $statIcons = [
