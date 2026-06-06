@@ -317,7 +317,7 @@ class HomeController extends FrontendController
             })
             ->all();
 
-        return view('frontend.profil', [
+        return view('frontend.profil.index', [
             'profil' => $profil,
             'pengurus' => $pengurus,
             'navItems' => $this->frontendNavItems(),
@@ -380,7 +380,7 @@ class HomeController extends FrontendController
             'url' => route('frontend.berita.show', $item->id),
         ]);
 
-        return view('frontend.berita', [
+        return view('frontend.berita.index', [
             'berita' => $berita,
             'beritaPaginated' => $beritaPaginated,
             'navItems' => $this->frontendNavItems(),
@@ -423,7 +423,7 @@ class HomeController extends FrontendController
             'thumbnail' => $item->gambar ? asset('storage/' . ltrim($item->gambar, '/')) : asset('favicon.ico'),
         ]);
 
-        return view('frontend.galeri', [
+        return view('frontend.galeri.index', [
             'galeri' => $galeri,
             'galeriPaginated' => $galeriPaginated,
             'navItems' => $this->frontendNavItems(),
@@ -432,7 +432,7 @@ class HomeController extends FrontendController
 
     public function donasi()
     {
-        return view('frontend.donasi', [
+        return view('frontend.donasi.index', [
             'navItems' => $this->frontendNavItems(),
         ]);
     }

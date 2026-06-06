@@ -1,99 +1,8 @@
-<!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+@extends('layouts.frontend')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DKM Al-Musabaqoh Subang - Portal Resmi Pelayanan Jamaah</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+@section('title', 'DKM Al-Musabaqoh Subang - Portal Resmi Pelayanan Jamaah')
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            300: '#86efac',
-                            400: '#4ade80',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            800: '#065f46',
-                            900: '#064e3b',
-                            950: '#022c22',
-                        },
-                        accent: {
-                            50: '#fffbeb',
-                            100: '#fef3c7',
-                            200: '#fde68a',
-                            300: '#fcd34d',
-                            400: '#fbbf24',
-                            500: '#f59e0b',
-                            600: '#d97706',
-                            700: '#b45309',
-                            800: '#92400e',
-                            900: '#78350f',
-                            950: '#451a03',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'Segoe UI', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        .islamic-pattern {
-            background-color: #064e3b;
-            background-image: radial-gradient(rgba(217, 119, 6, 0.15) 1px, transparent 0), radial-gradient(rgba(217, 119, 6, 0.15) 1px, transparent 0);
-            background-size: 24px 24px;
-            background-position: 0 0, 12px 12px;
-        }
-
-        .blob-shape {
-            animation: morphing 8s ease-in-out infinite alternate;
-        }
-
-        @keyframes morphing {
-            0% {
-                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            }
-
-            100% {
-                border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
-            }
-        }
-
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .scroll-reveal.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
-</head>
-
-<body class="bg-[#faf9f6] text-stone-900 font-sans antialiased overflow-x-hidden">
-
-    <!-- Page Shell Wrap -->
-    <div class="w-full flex flex-col min-h-screen">
-        @include('frontend.partials.navbar', ['navItems' => $navItems])
+@section('content')
 
         <!-- Hero Section (Welcome & Search Banner) -->
         <section class="relative min-h-[85vh] flex flex-col justify-center islamic-pattern text-white pt-10 pb-28 md:pb-40 px-4" id="beranda" style="background-image: linear-gradient(rgba(6,78,59,0.88), rgba(6,78,59,0.92)), url('{{ asset('storage/icon/FOTO.jpeg') }}'); background-size: cover; background-position: center;">
@@ -558,13 +467,10 @@
 
             </div>
 
-        </main>
+@endsection
 
-        @include('frontend.partials.footer')
-
-    </div>
-
-    <!-- Script Bindings & Logic (100% Preserved) -->
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         const quotes = @json($quotes);
         const quickLinks = @json($quickLinks);
@@ -1117,6 +1023,4 @@
         initZakatCalculator();
         renderSparkline();
     </script>
-</body>
-
-</html>
+@endpush

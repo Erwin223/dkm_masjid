@@ -1,21 +1,8 @@
-<!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $berita->judul }} - DKM Al-Musabaqoh Subang</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    @include('frontend._styles')
-    
-    <!-- AOS (Animate On Scroll) -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+@extends('layouts.frontend')
 
+@section('title', $berita->judul . ' - DKM Al-Musabaqoh Subang')
+
+@push('styles')
     <style>
         /* Enhanced Typography untuk Keterbacaan Senior-Friendly */
         .article-content {
@@ -285,227 +272,202 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
     </style>
-</head>
-<body class="frontend-shell">
-    <div class="frontend-page min-h-screen flex flex-col">
-        <!-- Navigation Bar -->
-        @include('frontend.partials.navbar')
+@endpush
 
-        <!-- Main Content -->
-        <main class="flex-1 w-full bg-[#faf9f6]">
-            <!-- Top Navigation: Back Button & Breadcrumb -->
-            <section class="bg-white border-b border-stone-200 sticky top-0 z-40">
-                <div class="page-shell py-4">
-                    <div class="flex items-center justify-between" data-aos="fade-in" data-aos-duration="600">
-                        <!-- Back Button -->
-                        <a href="{{ route('frontend.berita') }}" class="back-button">
-                            <i class="bi bi-chevron-left text-xl"></i>
-                            <span>Kembali ke Halaman Berita</span>
-                        </a>
+@section('content')
+    <!-- Top Navigation: Back Button & Breadcrumb -->
+    <section class="bg-white border-b border-stone-200 sticky top-0 z-40">
+        <div class="page-shell py-4">
+            <div class="flex items-center justify-between" data-aos="fade-in" data-aos-duration="600">
+                <!-- Back Button -->
+                <a href="{{ route('frontend.berita') }}" class="back-button">
+                    <i class="bi bi-chevron-left text-xl"></i>
+                    <span>Kembali ke Halaman Berita</span>
+                </a>
 
-                        <!-- Breadcrumb -->
-                        <nav class="breadcrumb hidden md:flex">
-                            <a href="{{ route('frontend.home') }}">
-                                <i class="bi bi-house-fill"></i> Beranda
-                            </a>
-                            <span class="text-stone-400">/</span>
-                            <a href="{{ route('frontend.berita') }}">Berita</a>
-                            <span class="text-stone-400">/</span>
-                            <span class="text-stone-600">{{ \Illuminate\Support\Str::limit($berita->judul, 50) }}</span>
-                        </nav>
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb hidden md:flex">
+                    <a href="{{ route('frontend.home') }}">
+                        <i class="bi bi-house-fill"></i> Beranda
+                    </a>
+                    <span class="text-stone-400">/</span>
+                    <a href="{{ route('frontend.berita') }}">Berita</a>
+                    <span class="text-stone-400">/</span>
+                    <span class="text-stone-600">{{ \Illuminate\Support\Str::limit($berita->judul, 50) }}</span>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article Header Section -->
+    <article class="page-shell py-12 md:py-16">
+        <div class="max-w-4xl mx-auto">
+            <!-- Back to top fallback button (mobile) -->
+            <div class="md:hidden mb-6" data-aos="fade-up">
+                <a href="{{ route('frontend.berita') }}" class="back-button">
+                    <i class="bi bi-chevron-left"></i> Kembali
+                </a>
+            </div>
+
+            <!-- Article Header -->
+            <header class="article-header mb-12" data-aos="fade-up" data-aos-delay="50">
+                <!-- Article Title: Besar dan Bold -->
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight leading-snug text-stone-900" style="font-family: 'Outfit', sans-serif;">
+                    {{ $berita->judul }}
+                </h1>
+
+                <!-- Article Metadata: Tanggal, Penulis -->
+                <div class="article-meta">
+                    <div class="article-meta-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>
+                            <strong>{{ $berita->created_at->translatedFormat('d F Y') }}</strong>
+                        </span>
+                    </div>
+                    <div class="article-meta-item">
+                        <i class="bi bi-person-circle"></i>
+                        <span>
+                            <strong>{{ $berita->penulis ?? 'Admin' }}</strong>
+                        </span>
                     </div>
                 </div>
-            </section>
 
-            <!-- Article Header Section -->
-            <article class="page-shell py-12 md:py-16">
-                <div class="max-w-4xl mx-auto">
-                    <!-- Back to top fallback button (mobile) -->
-                    <div class="md:hidden mb-6" data-aos="fade-up">
-                        <a href="{{ route('frontend.berita') }}" class="back-button">
-                            <i class="bi bi-chevron-left"></i> Kembali
+                <!-- Optional: Article Synopsis/Summary -->
+                @if($berita->sinopsis)
+                    <p class="text-lg md:text-xl text-stone-700 leading-relaxed italic border-l-4 border-accent pl-6 py-2 bg-accent/5 rounded-r-lg">
+                        "{{ $berita->sinopsis }}"
+                    </p>
+                @endif
+            </header>
+
+            <!-- Article Hero Image -->
+            <div class="article-hero-image mb-12" data-aos="zoom-in" data-aos-delay="100">
+                @if($berita->gambar)
+                    <img 
+                        src="{{ asset('storage/' . $berita->gambar) }}" 
+                        alt="{{ $berita->judul }}"
+                        class="w-full h-auto object-cover"
+                        loading="lazy"
+                    >
+                @else
+                    <img 
+                        src="{{ asset('storage/icon/FOTO.jpeg') }}" 
+                        alt="Default"
+                        class="w-full h-auto object-cover"
+                    >
+                @endif
+            </div>
+
+            <!-- Section Divider -->
+            <div class="section-divider mb-8" data-aos="fade-right" data-aos-delay="150"></div>
+
+            <!-- Article Content Body -->
+            <div class="article-content bg-white p-8 md:p-10 rounded-xl border border-stone-100 shadow-md" data-aos="fade-up" data-aos-delay="200">
+                {!! $berita->isi_berita !!}
+            </div>
+
+            <!-- Share & Back CTA -->
+            <div class="mt-12 flex flex-col sm:flex-row gap-6 justify-between items-center" data-aos="fade-up" data-aos-delay="250">
+                <div class="flex items-center gap-4">
+                    <span class="text-stone-700 font-semibold">Bagikan artikel:</span>
+                    <div class="flex gap-3">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener noreferrer" 
+                           class="p-3 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300">
+                            <i class="bi bi-facebook text-lg"></i>
                         </a>
-                    </div>
-
-                    <!-- Article Header -->
-                    <header class="article-header mb-12" data-aos="fade-up" data-aos-delay="50">
-                        <!-- Article Title: Besar dan Bold -->
-                        <h1 class="text-4xl md:text-5xl font-black tracking-tight leading-snug text-stone-900" style="font-family: 'Outfit', sans-serif;">
-                            {{ $berita->judul }}
-                        </h1>
-
-                        <!-- Article Metadata: Tanggal, Penulis -->
-                        <div class="article-meta">
-                            <div class="article-meta-item">
-                                <i class="bi bi-calendar-event"></i>
-                                <span>
-                                    <strong>{{ $berita->created_at->translatedFormat('d F Y') }}</strong>
-                                </span>
-                            </div>
-                            <div class="article-meta-item">
-                                <i class="bi bi-person-circle"></i>
-                                <span>
-                                    <strong>{{ $berita->penulis ?? 'Admin' }}</strong>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Optional: Article Synopsis/Summary -->
-                        @if($berita->sinopsis)
-                            <p class="text-lg md:text-xl text-stone-700 leading-relaxed italic border-l-4 border-accent pl-6 py-2 bg-accent/5 rounded-r-lg">
-                                "{{ $berita->sinopsis }}"
-                            </p>
-                        @endif
-                    </header>
-
-                    <!-- Article Hero Image -->
-                    <div class="article-hero-image mb-12" data-aos="zoom-in" data-aos-delay="100">
-                        @if($berita->gambar)
-                            <img 
-                                src="{{ asset('storage/' . $berita->gambar) }}" 
-                                alt="{{ $berita->judul }}"
-                                class="w-full h-auto object-cover"
-                                loading="lazy"
-                            >
-                        @else
-                            <img 
-                                src="{{ asset('storage/icon/FOTO.jpeg') }}" 
-                                alt="Default"
-                                class="w-full h-auto object-cover"
-                            >
-                        @endif
-                    </div>
-
-                    <!-- Section Divider -->
-                    <div class="section-divider mb-8" data-aos="fade-right" data-aos-delay="150"></div>
-
-                    <!-- Article Content Body -->
-                    <div class="article-content bg-white p-8 md:p-10 rounded-xl border border-stone-100 shadow-md" data-aos="fade-up" data-aos-delay="200">
-                        {!! $berita->isi_berita !!}
-                    </div>
-
-                    <!-- Share & Back CTA -->
-                    <div class="mt-12 flex flex-col sm:flex-row gap-6 justify-between items-center" data-aos="fade-up" data-aos-delay="250">
-                        <div class="flex items-center gap-4">
-                            <span class="text-stone-700 font-semibold">Bagikan artikel:</span>
-                            <div class="flex gap-3">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener noreferrer" 
-                                   class="p-3 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300">
-                                    <i class="bi bi-facebook text-lg"></i>
-                                </a>
-                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($berita->judul) }}" target="_blank" rel="noopener noreferrer"
-                                   class="p-3 bg-sky-100 text-sky-600 rounded-full hover:bg-sky-600 hover:text-white transition-all duration-300">
-                                    <i class="bi bi-twitter text-lg"></i>
-                                </a>
-                                <a href="https://wa.me/?text={{ urlencode($berita->judul . ' - ' . request()->url()) }}" target="_blank" rel="noopener noreferrer"
-                                   class="p-3 bg-green-100 text-green-600 rounded-full hover:bg-green-600 hover:text-white transition-all duration-300">
-                                    <i class="bi bi-whatsapp text-lg"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <a href="{{ route('frontend.berita') }}" class="back-button">
-                            <i class="bi bi-arrow-left"></i>
-                            <span>Lihat Berita Lain</span>
+                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($berita->judul) }}" target="_blank" rel="noopener noreferrer"
+                           class="p-3 bg-sky-100 text-sky-600 rounded-full hover:bg-sky-600 hover:text-white transition-all duration-300">
+                            <i class="bi bi-twitter text-lg"></i>
+                        </a>
+                        <a href="https://wa.me/?text={{ urlencode($berita->judul . ' - ' . request()->url()) }}" target="_blank" rel="noopener noreferrer"
+                           class="p-3 bg-green-100 text-green-600 rounded-full hover:bg-green-600 hover:text-white transition-all duration-300">
+                            <i class="bi bi-whatsapp text-lg"></i>
                         </a>
                     </div>
                 </div>
-            </article>
 
-            <!-- Related Articles Section -->
-            @if(!empty($berita_lain) && count($berita_lain) > 0)
-                <section class="page-shell py-16 md:py-20 bg-white">
-                    <div class="max-w-6xl mx-auto">
-                        <!-- Section Header -->
-                        <div class="mb-12" data-aos="fade-up" data-aos-delay="100">
-                            <div class="section-divider"></div>
-                            <h2 class="text-3xl md:text-4xl font-black text-stone-900" style="font-family: 'Outfit', sans-serif;">
-                                Berita Lainnya
-                            </h2>
-                            <p class="text-lg text-stone-600 mt-3">
-                                Jangan lewatkan informasi penting lainnya dari masjid kami
-                            </p>
+                <a href="{{ route('frontend.berita') }}" class="back-button">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Lihat Berita Lain</span>
+                </a>
+            </div>
+        </div>
+    </article>
+
+    <!-- Related Articles Section -->
+    @if(!empty($berita_lain) && count($berita_lain) > 0)
+        <section class="page-shell py-16 md:py-20 bg-white">
+            <div class="max-w-6xl mx-auto">
+                <!-- Section Header -->
+                <div class="mb-12" data-aos="fade-up" data-aos-delay="100">
+                    <div class="section-divider"></div>
+                    <h2 class="text-3xl md:text-4xl font-black text-stone-900" style="font-family: 'Outfit', sans-serif;">
+                        Berita Lainnya
+                    </h2>
+                    <p class="text-lg text-stone-600 mt-3">
+                        Jangan lewatkan informasi penting lainnya dari masjid kami
+                    </p>
+                </div>
+
+                <!-- Related Articles Grid -->
+                <div class="related-articles-grid">
+                    @foreach($berita_lain as $index => $item)
+                        <div 
+                            class="related-article-card"
+                            data-aos="fade-up"
+                            data-aos-delay="{{ 100 + (($index + 1) * 100) }}"
+                        >
+                            <!-- Image Container -->
+                            <div class="related-article-image">
+                                @if($item->gambar)
+                                    <img 
+                                        src="{{ asset('storage/' . $item->gambar) }}" 
+                                        alt="{{ $item->judul }}"
+                                        loading="lazy"
+                                    >
+                                @else
+                                    <img 
+                                        src="{{ asset('storage/icon/FOTO.jpeg') }}" 
+                                        alt="Default"
+                                    >
+                                @endif
+                            </div>
+
+                            <!-- Content Container -->
+                            <div class="related-article-content">
+                                <span class="related-article-date">
+                                    {{ $item->created_at->translatedFormat('d M Y') }}
+                                </span>
+
+                                <h3 class="related-article-title">
+                                    {{ $item->judul }}
+                                </h3>
+
+                                <p class="related-article-excerpt">
+                                    {{ \Illuminate\Support\Str::limit(strip_tags($item->sinopsis ?? $item->isi_berita), 150) }}
+                                </p>
+
+                                <a href="{{ route('frontend.berita.show', $item->id) }}" class="related-article-link">
+                                    Baca Selengkapnya
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
                         </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
 
-                        <!-- Related Articles Grid -->
-                        <div class="related-articles-grid">
-                            @foreach($berita_lain as $index => $item)
-                                <div 
-                                    class="related-article-card"
-                                    data-aos="fade-up"
-                                    data-aos-delay="{{ 100 + (($index + 1) * 100) }}"
-                                >
-                                    <!-- Image Container -->
-                                    <div class="related-article-image">
-                                        @if($item->gambar)
-                                            <img 
-                                                src="{{ asset('storage/' . $item->gambar) }}" 
-                                                alt="{{ $item->judul }}"
-                                                loading="lazy"
-                                            >
-                                        @else
-                                            <img 
-                                                src="{{ asset('storage/icon/FOTO.jpeg') }}" 
-                                                alt="Default"
-                                            >
-                                        @endif
-                                    </div>
-
-                                    <!-- Content Container -->
-                                    <div class="related-article-content">
-                                        <span class="related-article-date">
-                                            {{ $item->created_at->translatedFormat('d M Y') }}
-                                        </span>
-
-                                        <h3 class="related-article-title">
-                                            {{ $item->judul }}
-                                        </h3>
-
-                                        <p class="related-article-excerpt">
-                                            {{ \Illuminate\Support\Str::limit(strip_tags($item->sinopsis ?? $item->isi_berita), 150) }}
-                                        </p>
-
-                                        <a href="{{ route('frontend.berita.show', $item->id) }}" class="related-article-link">
-                                            Baca Selengkapnya
-                                            <i class="bi bi-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </section>
-
-                <!-- CTA Section to Berita Index -->
-                <section class="page-shell py-12">
-                    <div class="cta-section" data-aos="zoom-in" data-aos-delay="400">
-                        <h3>Ingin Membaca Berita Lainnya?</h3>
-                        <p>Kunjungi halaman berita kami untuk mendapatkan informasi terbaru dari DKM Al-Musabaqoh Subang</p>
-                        <a href="{{ route('frontend.berita') }}" class="cta-button">
-                            <i class="bi bi-newspaper"></i>
-                            Lihat Semua Berita
-                        </a>
-                    </div>
-                </section>
-            @endif
-        </main>
-
-        <!-- Footer -->
-        @include('frontend.partials.footer')
-    </div>
-
-    <!-- Initialize AOS -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                easing: 'ease-in-out-cubic',
-                once: false,
-                mirror: true,
-                offset: 50,
-                disable: 'mobile'
-            });
-        });
-    </script>
-</body>
-</html>
+        <!-- CTA Section to Berita Index -->
+        <section class="page-shell py-12">
+            <div class="cta-section" data-aos="zoom-in" data-aos-delay="400">
+                <h3>Ingin Membaca Berita Lainnya?</h3>
+                <p>Kunjungi halaman berita kami untuk mendapatkan informasi terbaru dari DKM Al-Musabaqoh Subang</p>
+                <a href="{{ route('frontend.berita') }}" class="cta-button">
+                    <i class="bi bi-newspaper"></i>
+                    Lihat Semua Berita
+                </a>
+            </div>
+        </section>
+    @endif
+@endsection
