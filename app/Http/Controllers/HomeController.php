@@ -16,12 +16,80 @@ use App\Models\Pengurus;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
-class HomeController extends Controller
+class HomeController extends FrontendController
 {
     public function index()
     {
         $profil = ProfilMasjid::query()->latest('id')->first();
         $today = Carbon::today();
+
+        $nextEventObj = JadwalKegiatan::query()
+            ->approved()
+            ->where('tanggal', '>=', $today->toDateString())
+            ->orderBy('tanggal', 'asc')
+            ->first();
+
+        $nextEvent = $nextEventObj ? [
+            'title' => $nextEventObj->nama_kegiatan,
+            'date' => Carbon::parse($nextEventObj->tanggal)->translatedFormat('d F Y'),
+            'iso_date' => Carbon::parse($nextEventObj->tanggal)->toIso8601String(),
+            'waktu' => $nextEventObj->waktu,
+            'tempat' => $nextEventObj->tempat,
+        ] : null;
+
+        // Sparkline 6 months
+        $months = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $months[] = Carbon::today()->subMonths($i)->startOfMonth();
+        }
+
+        $chartStartDate = Carbon::today()->subMonths(5)->startOfMonth();
+        $chartEndDate = Carbon::today()->endOfMonth();
+
+        $kasMasukList = KasMasuk::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'jumlah']);
+
+        $donasiMasukList = DonasiMasuk::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'total']);
+
+        $zakatMasukList = PenerimaanZakat::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'nominal']);
+
+        $kasKeluarList = KasKeluar::query()
+            ->approved()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'nominal']);
+
+        $donasiKeluarList = DonasiKeluar::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'jumlah']);
+
+        $zakatKeluarList = DistribusiZakat::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'nominal']);
+
+        $sparklineData = [];
+        foreach ($months as $month) {
+            $mStart = $month->copy()->startOfMonth();
+            $mEnd = $month->copy()->endOfMonth();
+
+            $inflow = $kasMasukList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('jumlah')
+                + $donasiMasukList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('total')
+                + $zakatMasukList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('nominal');
+
+            $outflow = $kasKeluarList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('nominal')
+                + $donasiKeluarList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('jumlah')
+                + $zakatKeluarList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('nominal');
+
+            $sparklineData[] = [
+                'label' => $month->locale('id')->translatedFormat('M'),
+                'pemasukan' => (float)$inflow,
+                'pengeluaran' => (float)$outflow,
+            ];
+        }
 
         $kegiatanTerbaru = JadwalKegiatan::query()
             ->approved()
@@ -129,6 +197,7 @@ class HomeController extends Controller
 
         return view('frontend.home', [
             'heroImage' => asset('storage/icon/foto.jpeg'),
+            'quickLinks' => $this->homeQuickLinks(),
             'defaultCity' => [
                 'id' => '1215',
                 'name' => 'Kab. Subang',
@@ -190,6 +259,8 @@ class HomeController extends Controller
             'laporanCards' => $laporanCards,
             'donasiCards' => $donasiCards,
             'overviewStats' => $overviewStats,
+            'nextEvent' => $nextEvent,
+            'sparkline_data' => $sparklineData,
         ]);
     }
 
@@ -214,14 +285,25 @@ class HomeController extends Controller
     {
         $profil = ProfilMasjid::query()->latest('id')->first();
 
-        $order = ['Ketua DKM', 'Sekretaris', 'Bendahara', 'Bidang Ibadah'];
+        $order = ['Ketua DKM', 'Ketua', 'Sekretaris', 'Sekertaris', 'Bendahara'];
 
         $pengurus = Pengurus::query()
             ->orderBy('id')
             ->get()
+            ->filter(function ($p) {
+                $jabatan = strtolower(trim($p->jabatan));
+                return str_contains($jabatan, 'ketua') ||
+                       str_contains($jabatan, 'sekretaris') ||
+                       str_contains($jabatan, 'sekertaris') ||
+                       str_contains($jabatan, 'bendahara');
+            })
             ->sortBy(function ($p) use ($order) {
-                $i = array_search($p->jabatan, $order);
-                return $i === false ? 999 : $i;
+                foreach ($order as $index => $role) {
+                    if (str_contains(strtolower($p->jabatan), strtolower($role))) {
+                        return $index;
+                    }
+                }
+                return 99;
             })
             ->values()
             ->map(function ($p) {
@@ -239,6 +321,45 @@ class HomeController extends Controller
             'profil' => $profil,
             'pengurus' => $pengurus,
             'navItems' => $this->frontendNavItems(),
+        ]);
+    }
+
+    public function pengurusLengkap()
+    {
+        $allPengurus = Pengurus::query()->orderBy('id')->get();
+
+        $order = ['Ketua DKM', 'Ketua', 'Sekretaris', 'Sekertaris', 'Bendahara'];
+
+        $pengurusInti = $allPengurus->filter(function ($p) {
+            $jabatan = strtolower(trim($p->jabatan));
+            return str_contains($jabatan, 'ketua') ||
+                   str_contains($jabatan, 'sekretaris') ||
+                   str_contains($jabatan, 'sekertaris') ||
+                   str_contains($jabatan, 'bendahara');
+        })->sortBy(function ($p) use ($order) {
+            foreach ($order as $index => $role) {
+                if (str_contains(strtolower($p->jabatan), strtolower($role))) {
+                    return $index;
+                }
+            }
+            return 99;
+        })->values();
+
+        $anggotaDivisi = $allPengurus->reject(function ($p) use ($pengurusInti) {
+            return $pengurusInti->contains('id', $p->id);
+        });
+
+        $anggotaAgregasi = $anggotaDivisi->groupBy('jabatan')->map(function ($items, $key) {
+            return [
+                'jabatan' => $key,
+                'total' => $items->count(),
+            ];
+        })->values();
+
+        return view('frontend.profil.pengurus', [
+            'navItems' => $this->frontendNavItems(),
+            'pengurusInti' => $pengurusInti,
+            'anggotaAgregasi' => $anggotaAgregasi,
         ]);
     }
 
@@ -359,6 +480,61 @@ class HomeController extends Controller
                 ];
             });
 
+        // Generate monthly data for chart (last 12 months ending at $dateTo)
+        $months = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $months[] = $dateTo->copy()->subMonths($i)->startOfMonth();
+        }
+
+        $chartStartDate = $dateTo->copy()->subMonths(11)->startOfMonth();
+        $chartEndDate = $dateTo->copy()->endOfMonth();
+
+        $kasMasukList = KasMasuk::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'jumlah']);
+
+        $donasiMasukList = DonasiMasuk::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'total']);
+
+        $zakatMasukList = PenerimaanZakat::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'nominal']);
+
+        $kasKeluarList = KasKeluar::query()
+            ->approved()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'nominal']);
+
+        $donasiKeluarList = DonasiKeluar::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'jumlah']);
+
+        $zakatKeluarList = DistribusiZakat::query()
+            ->whereBetween('tanggal', [$chartStartDate->toDateString(), $chartEndDate->toDateString()])
+            ->get(['tanggal', 'nominal']);
+
+        $chartData = [];
+        foreach ($months as $month) {
+            $mStart = $month->copy()->startOfMonth();
+            $mEnd = $month->copy()->endOfMonth();
+
+            $inflow = $kasMasukList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('jumlah')
+                + $donasiMasukList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('total')
+                + $zakatMasukList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('nominal');
+
+            $outflow = $kasKeluarList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('nominal')
+                + $donasiKeluarList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('jumlah')
+                + $zakatKeluarList->filter(fn($item) => Carbon::parse($item->tanggal)->between($mStart, $mEnd))->sum('nominal');
+
+            $chartData[] = [
+                'label' => $month->locale('id')->translatedFormat('M'),
+                'label_full' => $month->locale('id')->translatedFormat('F Y'),
+                'pemasukan' => (float)$inflow,
+                'pengeluaran' => (float)$outflow,
+            ];
+        }
+
         return view('frontend.laporan.index', [
             'navItems' => $this->frontendNavItems(),
             'daftar_laporan' => $daftarLaporan,
@@ -369,6 +545,7 @@ class HomeController extends Controller
             'filter_preset' => $preset,
             'filter_date_from' => $dateFrom->format('Y-m-d'),
             'filter_date_to' => $dateTo->format('Y-m-d'),
+            'chart_data' => $chartData,
         ]);
     }
 
@@ -419,59 +596,4 @@ class HomeController extends Controller
         return [$preset, $dateFrom, $dateTo, $periodLabel];
     }
 
-    private function frontendNavItems(): array
-    {
-        return [
-            [
-                'label' => 'Beranda',
-                'href' => route('frontend.home'),
-                'active' => request()->routeIs('frontend.home'),
-                'icon' => 'bi-house-door',
-            ],
-            [
-                'label' => 'Profil Masjid',
-                'href' => route('frontend.profil'),
-                'active' => request()->routeIs('frontend.profil'),
-                'icon' => 'bi-building',
-            ],
-            [
-                'label' => 'Berita',
-                'href' => route('frontend.berita'),
-                'active' => request()->routeIs('frontend.berita'),
-                'icon' => 'bi-newspaper',
-            ],
-            [
-                'label' => 'Kegiatan & Galeri',
-                'href' => '#',
-                'active' => request()->routeIs('frontend.kegiatan') || request()->routeIs('frontend.galeri'),
-                'icon' => 'bi-collection',
-                'dropdown' => [
-                    [
-                        'label' => 'Jadwal Kegiatan',
-                        'href' => route('frontend.kegiatan'),
-                        'active' => request()->routeIs('frontend.kegiatan'),
-                        'icon' => 'bi-calendar-event',
-                    ],
-                    [
-                        'label' => 'Galeri Foto',
-                        'href' => route('frontend.galeri'),
-                        'active' => request()->routeIs('frontend.galeri'),
-                        'icon' => 'bi-images',
-                    ],
-                ]
-            ],
-            [
-                'label' => 'Laporan',
-                'href' => route('frontend.laporan'),
-                'active' => request()->routeIs('frontend.laporan'),
-                'icon' => 'bi-file-earmark-text',
-            ],
-            [
-                'label' => 'Donasi',
-                'href' => route('frontend.donasi'),
-                'active' => request()->routeIs('frontend.donasi'),
-                'icon' => 'bi-heart-fill',
-            ],
-        ];
-    }
 }

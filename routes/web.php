@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\PersetujuanKetuaController;
 
 Route::get('/', [HomeController::class, 'index'])->name('frontend.home');
 Route::get('/profil', [HomeController::class, 'profil'])->name('frontend.profil');
+Route::get('/profil/pengurus', [HomeController::class, 'pengurusLengkap'])->name('frontend.profil.pengurus');
 Route::get('/berita', [HomeController::class, 'berita'])->name('frontend.berita');
 Route::get('/berita/{berita}', [HomeController::class, 'showBerita'])->name('frontend.berita.show')->whereNumber('berita');
 Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('frontend.kegiatan');

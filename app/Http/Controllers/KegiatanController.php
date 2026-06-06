@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JadwalKegiatan;
 use Carbon\Carbon;
 
-class KegiatanController extends Controller
+class KegiatanController extends FrontendController
 {
     /**
      * Menampilkan halaman jadwal kegiatan frontend
@@ -21,21 +21,22 @@ class KegiatanController extends Controller
             ->get()
             ->map(function (JadwalKegiatan $kegiatan) {
                 return [
-                    'id' => $kegiatan->id,
-                    'nama_kegiatan' => $kegiatan->nama_kegiatan,
-                    'tanggal' => $kegiatan->tanggal,
-                    'waktu' => $kegiatan->waktu,
-                    'tempat' => $kegiatan->tempat,
+                    'id'               => $kegiatan->id,
+                    'nama_kegiatan'    => $kegiatan->nama_kegiatan,
+                    'tanggal'          => $kegiatan->tanggal,
+                    'waktu'            => $kegiatan->waktu,
+                    'tempat'           => $kegiatan->tempat,
                     'penanggung_jawab' => $kegiatan->penanggung_jawab,
-                    'keterangan' => $kegiatan->keterangan,
-                    'status' => $kegiatan->status,
-                    'approved_at' => $kegiatan->approved_at,
+                    'keterangan'       => $kegiatan->keterangan,
+                    'status'           => $kegiatan->status,
+                    'approved_at'      => $kegiatan->approved_at,
                 ];
             })
             ->toArray();
 
         return view('frontend.kegiatan.index', [
             'jadwal_kegiatan' => $jadwal_kegiatan,
+            'navItems'        => $this->frontendNavItems(),
         ]);
     }
 }

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script>
         tailwind.config = {
@@ -89,19 +90,6 @@
 </head>
 
 <body class="bg-[#faf9f6] text-stone-900 font-sans antialiased overflow-x-hidden">
-    @php
-
-    $quickLinks = [
-    'beranda' => '#beranda',
-    'home' => '#beranda',
-    'kegiatan' => '#kegiatan',
-    'agenda' => '#kegiatan',
-    'berita' => '#berita',
-    'laporan' => '#laporan',
-    'donasi' => '#donasi',
-    'zakat' => '#donasi',
-    ];
-    @endphp
 
     <!-- Page Shell Wrap -->
     <div class="w-full flex flex-col min-h-screen">
@@ -141,27 +129,42 @@
                     </p>
 
                     <!-- Interactive Quick Search Bar -->
-                    <form class="flex flex-col sm:flex-row gap-3 w-full max-w-xl bg-white/5 border border-white/15 p-2 rounded-2xl backdrop-blur-xl shadow-xl focus-within:border-amber-400/50 transition-all duration-300" id="quickSearchForm">
-                        <div class="flex items-center gap-3 px-3 flex-1">
-                            <i class="bi bi-search text-amber-500 text-lg"></i>
-                            <input
-                                type="text"
-                                id="quickSearchInput"
-                                placeholder="Cari menu: berita, donasi, kegiatan..."
-                                autocomplete="off"
-                                class="w-full bg-transparent border-0 outline-none text-white placeholder-emerald-200/50 text-sm font-medium py-2.5">
+                    <div class="relative w-full max-w-xl" id="searchContainer">
+                        <form class="flex flex-col sm:flex-row gap-3 w-full bg-white/5 border border-white/15 p-2 rounded-2xl backdrop-blur-xl shadow-xl focus-within:border-amber-400/50 transition-all duration-300" id="quickSearchForm">
+                            <div class="flex items-center gap-3 px-3 flex-1">
+                                <i class="bi bi-search text-amber-500 text-lg"></i>
+                                <input
+                                    type="text"
+                                    id="quickSearchInput"
+                                    placeholder="Cari menu: berita, donasi, kegiatan..."
+                                    autocomplete="off"
+                                    class="w-full bg-transparent border-0 outline-none text-white placeholder-emerald-200/50 text-sm font-medium py-2.5">
+                            </div>
+                            <button type="submit" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 font-bold text-sm px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-1.5">
+                                Cari <i class="bi bi-arrow-right-short text-lg"></i>
+                            </button>
+                        </form>
+
+                        <!-- Search Dropdown Results -->
+                        <div
+                            id="searchDropdown"
+                            class="absolute top-full left-0 right-0 mt-2 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-50 hidden"
+                            role="listbox"
+                            aria-label="Hasil pencarian cepat">
+                            <ul id="searchDropdownList" class="divide-y divide-white/10"></ul>
+                            <div id="searchDropdownEmpty" class="hidden px-5 py-4 text-sm text-emerald-200/70 font-medium text-center">
+                                <i class="bi bi-search text-amber-400 mr-1"></i>
+                                Tidak ada hasil untuk kata kunci tersebut.
+                            </div>
                         </div>
-                        <button type="submit" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 font-bold text-sm px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-1.5">
-                            Cari <i class="bi bi-arrow-right-short text-lg"></i>
-                        </button>
-                    </form>
+                    </div>
 
                     <!-- Quick Navigation Actions -->
                     <div class="flex flex-wrap items-center gap-3">
                         <a href="#kegiatan" class="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-amber-100 text-emerald-950 text-sm font-extrabold rounded-xl shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-0.5">
                             <i class="bi bi-calendar-check-fill text-amber-600"></i> Jadwal Kegiatan
                         </a>
-                        <a href="#berita-terkini" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-900/50 hover:bg-emerald-900/80 border border-emerald-800 text-white text-sm font-extrabold rounded-xl shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-0.5">
+                        <a href="#berita" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-900/50 hover:bg-emerald-900/80 border border-emerald-800 text-white text-sm font-extrabold rounded-xl shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-0.5">
                             <i class="bi bi-newspaper"></i> Kabar Masjid
                         </a>
                     </div>
@@ -361,6 +364,38 @@
                             Jadwal kajian rutin mingguan, tabligh akbar, santunan sosial, serta rapat pengurus DKM yang diselenggarakan demi mempererat silaturahmi jamaah.
                         </p>
 
+                        @if($nextEvent)
+                            <div class="bg-gradient-to-r from-emerald-950 to-emerald-900 text-white rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-800 shadow-md mt-4" data-aos="fade-up">
+                                <div class="space-y-2">
+                                    <span class="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider">
+                                        <i class="bi bi-clock-fill"></i> Kegiatan Mendatang
+                                    </span>
+                                    <h3 class="text-xl font-extrabold font-display text-white leading-snug">{{ $nextEvent['title'] }}</h3>
+                                    <p class="text-sm text-emerald-100/80 flex flex-wrap gap-x-4 gap-y-1 pt-1 font-semibold">
+                                        <span class="flex items-center gap-1.5"><i class="bi bi-calendar3 text-amber-400"></i> {{ $nextEvent['date'] }}</span>
+                                        <span class="flex items-center gap-1.5"><i class="bi bi-clock text-amber-400"></i> {{ $nextEvent['waktu'] }}</span>
+                                        <span class="flex items-center gap-1.5"><i class="bi bi-geo-alt text-amber-400"></i> {{ $nextEvent['tempat'] }}</span>
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-4 rounded-xl backdrop-blur-sm shrink-0" id="eventCountdown" data-date="{{ $nextEvent['iso_date'] }} {{ $nextEvent['waktu'] }}">
+                                    <div class="text-center min-w-[50px]">
+                                        <span class="days block text-2xl font-black text-amber-400 leading-none">00</span>
+                                        <span class="text-[9px] text-emerald-100/60 uppercase font-bold tracking-widest block mt-1">Hari</span>
+                                    </div>
+                                    <span class="text-white/30 text-xl font-bold">:</span>
+                                    <div class="text-center min-w-[50px]">
+                                        <span class="hours block text-2xl font-black text-amber-400 leading-none">00</span>
+                                        <span class="text-[9px] text-emerald-100/60 uppercase font-bold tracking-widest block mt-1">Jam</span>
+                                    </div>
+                                    <span class="text-white/30 text-xl font-bold">:</span>
+                                    <div class="text-center min-w-[50px]">
+                                        <span class="minutes block text-2xl font-black text-amber-400 leading-none">00</span>
+                                        <span class="text-[9px] text-emerald-100/60 uppercase font-bold tracking-widest block mt-1">Menit</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="mt-2 flex justify-start">
                             <a href="{{ route('frontend.kegiatan') }}" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-700 hover:bg-primary-800 text-white text-sm font-extrabold shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
                                 <i class="bi bi-calendar2-week"></i>
@@ -410,32 +445,49 @@
                             Laporan pertanggungjawaban dana umat secara berkala yang mencakup kas masuk bulanan, pengeluaran operasional, serta saldo akhir.
                         </p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
-                            @foreach ($laporanCards as $item)
-                            @php
-                            $isMasuk = str_contains(strtolower($item['title']), 'masuk');
-                            $isKeluar = str_contains(strtolower($item['title']), 'keluar');
-                            $accentColor = $isMasuk ? 'emerald' : ($isKeluar ? 'red' : 'blue');
-                            @endphp
-                            <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-                                <div class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-lg {{ $accentColor === 'emerald' ? 'bg-emerald-50 text-emerald-600' : ($accentColor === 'red' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600') }}">
-                                    @if($accentColor === 'emerald')
-                                    <i class="bi bi-arrow-down-left-circle-fill"></i>
-                                    @elseif($accentColor === 'red')
-                                    <i class="bi bi-arrow-up-right-circle-fill"></i>
-                                    @else
-                                    <i class="bi bi-wallet2"></i>
-                                    @endif
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                            <!-- Cards -->
+                            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                @foreach ($laporanCards as $item)
+                                @php
+                                $isMasuk = str_contains(strtolower($item['title']), 'masuk');
+                                $isKeluar = str_contains(strtolower($item['title']), 'keluar');
+                                $accentColor = $isMasuk ? 'emerald' : ($isKeluar ? 'red' : 'blue');
+                                @endphp
+                                <div class="bg-stone-50 hover:bg-white border border-stone-150 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+                                    <div class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-lg {{ $accentColor === 'emerald' ? 'bg-emerald-50 text-emerald-600' : ($accentColor === 'red' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600') }}">
+                                        @if($accentColor === 'emerald')
+                                        <i class="bi bi-arrow-down-left-circle-fill"></i>
+                                        @elseif($accentColor === 'red')
+                                        <i class="bi bi-arrow-up-right-circle-fill"></i>
+                                        @else
+                                        <i class="bi bi-wallet2"></i>
+                                        @endif
+                                    </div>
+                                    <div class="space-y-2 mt-2">
+                                        <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['title'] }}</span>
+                                        <b class="block font-display text-xl md:text-2xl font-extrabold {{ $accentColor === 'emerald' ? 'text-emerald-700' : ($accentColor === 'red' ? 'text-red-700' : 'text-blue-750') }}">{{ $item['value'] }}</b>
+                                        <p class="text-stone-500 text-xs md:text-sm leading-relaxed">
+                                            {{ $item['content'] }}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="space-y-2 mt-2">
-                                    <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['title'] }}</span>
-                                    <b class="block font-display text-xl md:text-2xl font-extrabold {{ $accentColor === 'emerald' ? 'text-emerald-700' : ($accentColor === 'red' ? 'text-red-700' : 'text-blue-750') }}">{{ $item['value'] }}</b>
-                                    <p class="text-stone-500 text-xs md:text-sm leading-relaxed">
-                                        {{ $item['content'] }}
-                                    </p>
+                                @endforeach
+                            </div>
+
+                            <!-- Sparkline Chart -->
+                            <div class="bg-stone-50 rounded-2xl border border-stone-150 p-5 flex flex-col justify-between">
+                                <div>
+                                    <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Tren Kas 6 Bulan Terakhir</span>
+                                    <div id="chart-sparkline" class="w-full"></div>
+                                </div>
+                                <div class="pt-3 border-t border-stone-200/50 flex justify-between items-center">
+                                    <span class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Tren Bulanan</span>
+                                    <a href="{{ route('frontend.laporan') }}" class="text-xs font-bold text-primary-700 hover:text-primary-800 flex items-center gap-1 transition-colors">
+                                        Detail Laporan <i class="bi bi-arrow-right"></i>
+                                    </a>
                                 </div>
                             </div>
-                            @endforeach
                         </div>
                     </div>
                 </section>
@@ -468,6 +520,39 @@
                             </div>
                             @endforeach
                         </div>
+
+                        <!-- Zakat Calculator Card -->
+                        <article class="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/60 rounded-3xl p-6 md:p-8 mt-8 shadow-sm">
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                                <div class="lg:col-span-6 space-y-3">
+                                    <span class="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-800 border border-amber-500/25 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                                        <i class="bi bi-calculator-fill text-amber-600"></i> Layanan Transparansi Zakat
+                                    </span>
+                                    <h3 class="font-display text-2xl font-black text-stone-850">Kalkulator Zakat Penghasilan</h3>
+                                    <p class="text-stone-600 text-sm leading-relaxed">
+                                        Hitung kewajiban Zakat Profesi / Penghasilan bulanan Anda dengan mudah berdasarkan ketentuan Nisab (setara 85 gram emas per tahun).
+                                    </p>
+                                </div>
+                                <div class="lg:col-span-6 bg-white rounded-2xl p-6 shadow-md border border-stone-100 space-y-4">
+                                    <div>
+                                        <label for="zakatInput" class="block text-xs font-bold uppercase text-stone-500 tracking-wider mb-2 font-bold">Pendapatan Bulanan (Rupiah)</label>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold text-sm">Rp</span>
+                                            <input type="number" id="zakatInput" placeholder="Masukkan nominal, misal: 10000000" class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-stone-800 font-extrabold outline-none focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/10 transition">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-stone-100 pt-4">
+                                        <div>
+                                            <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Wajib Zakat (2.5%)</span>
+                                            <strong id="zakatResult" class="block font-display text-2xl font-black text-amber-700">Rp 0</strong>
+                                        </div>
+                                        <a href="{{ route('frontend.donasi') }}" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 font-bold text-sm px-5 py-3 rounded-xl shadow-sm hover:shadow transition-all">
+                                            Salurkan Zakat
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
                     </div>
                 </section>
 
@@ -618,6 +703,27 @@
             }).join('');
         }
 
+        function getHijriDate(date = new Date()) {
+            // Tabular Islamic Calendar conversion
+            let jd = Math.floor(date.getTime() / 86400000) + 2440588 - 0.5;
+            if (date.getTimezoneOffset() < 0) jd += 1;
+            let l = Math.floor(jd) - 1948440 + 10632;
+            let n = Math.floor((l - 1) / 10631);
+            l = l - 10631 * n + 354;
+            let j = Math.floor((10985 - l) / 5316) * Math.floor((50 - l) / 2320) + Math.floor(l / 30) * Math.floor((80 - l) / 2447);
+            l = l - Math.floor((10985 - j) / 5316) * Math.floor((50 - j) / 2320) - Math.floor(j / 30) * Math.floor((80 - j) / 2447) + 129;
+            let m = Math.floor((43 * l) / 15238);
+            let d = l - Math.floor((30 * m) / 43) - 109;
+            let y = 30 * n + j - 30;
+            
+            const hijriMonths = [
+                "Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir",
+                "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban",
+                "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"
+            ];
+            return `${d} ${hijriMonths[m - 1]} ${y} H`;
+        }
+
         function renderCountdown(schedule, locationName, sourceDateLabel) {
             const now = new Date();
             const nowMinutes = (now.getHours() * 60) + now.getMinutes();
@@ -637,7 +743,12 @@
             const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
             const seconds = String(totalSeconds % 60).padStart(2, '0');
 
+            const hijriDate = getHijriDate(now);
+
             countdownBox.querySelector('.countdown-main').innerHTML = `
+                <div class="inline-flex items-center gap-1.5 bg-amber-500 text-stone-950 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 animate-pulse">
+                    <i class="bi bi-bell-fill"></i> Menuju Adzan ${nextPrayer.label}
+                </div>
                 <div class="flex gap-2.5 justify-start mb-4">
                     <div class="bg-white/10 border border-white/10 rounded-xl p-2.5 min-w-[65px] text-center backdrop-blur-md">
                         <strong class="text-2xl md:text-3xl font-black font-display text-amber-400 block leading-none">${hours}</strong>
@@ -653,9 +764,10 @@
                     </div>
                 </div>
                 <div class="text-xs md:text-sm text-emerald-100/80 space-y-1.5 font-semibold">
-                    <div class="flex items-center gap-2"><i class="bi bi-clock-history text-amber-400 text-sm"></i> Menuju waktu <strong class="text-white font-extrabold font-display ml-1">${nextPrayer.label}</strong></div>
+                    <div class="flex items-center gap-2"><i class="bi bi-clock-history text-amber-400 text-sm"></i> Waktu Sholat : <strong class="text-white font-extrabold font-display ml-1">${nextPrayer.label} (${nextPrayer.time})</strong></div>
                     <div class="flex items-center gap-2"><i class="bi bi-geo-alt-fill text-amber-400 text-sm"></i> Lokasi : <strong class="text-white font-bold ml-1">${locationName}</strong></div>
-                    <div class="flex items-center gap-2"><i class="bi bi-calendar-check-fill text-amber-400 text-sm"></i> Tanggal : <strong class="text-white font-bold ml-1">${sourceDateLabel}</strong></div>
+                    <div class="flex items-center gap-2"><i class="bi bi-calendar-check-fill text-amber-400 text-sm"></i> Masehi : <strong class="text-white font-bold ml-1">${sourceDateLabel}</strong></div>
+                    <div class="flex items-center gap-2"><i class="bi bi-moon-stars-fill text-amber-400 text-sm"></i> Hijriah : <strong class="text-white font-bold ml-1">${hijriDate}</strong></div>
                 </div>
             `;
         }
@@ -723,25 +835,121 @@
             }
         }
 
+        // ─── Search Dropdown ──────────────────────────────────────────────────────
+        const searchContainer  = document.getElementById('searchContainer');
+        const searchDropdown   = document.getElementById('searchDropdown');
+        const searchDropdownList  = document.getElementById('searchDropdownList');
+        const searchDropdownEmpty = document.getElementById('searchDropdownEmpty');
+
+        /**
+         * Extended menu catalogue for the live-suggestion dropdown.
+         * Each entry maps display info to a section anchor.
+         */
+        const searchCatalogue = [
+            { label: 'Beranda',            icon: 'bi-house-door-fill',         hint: 'Halaman utama portal',                        anchor: '#beranda'  },
+            { label: 'Jadwal Kegiatan',    icon: 'bi-calendar-check-fill',     hint: 'Agenda & jadwal kemakmuran masjid',           anchor: '#kegiatan' },
+            { label: 'Berita / Kabar',     icon: 'bi-newspaper',               hint: 'Berita dan kabar terkini masjid',             anchor: '#berita'   },
+            { label: 'Laporan Keuangan',   icon: 'bi-shield-check',            hint: 'Transparansi kas & laporan keuangan',         anchor: '#laporan'  },
+            { label: 'Donasi & Zakat',     icon: 'bi-heart-fill',              hint: 'Salurkan infak, sedekah, dan zakat',          anchor: '#donasi'   },
+        ];
+
+        /** Aliases that map user keywords to catalogue entries */
+        const searchAliases = {
+            'beranda': 0, 'home': 0, 'utama': 0,
+            'kegiatan': 1, 'agenda': 1, 'jadwal': 1, 'acara': 1,
+            'berita': 2, 'kabar': 2, 'news': 2, 'artikel': 2,
+            'laporan': 3, 'keuangan': 3, 'kas': 3, 'transparansi': 3,
+            'donasi': 4, 'zakat': 4, 'infak': 4, 'sedekah': 4, 'sumbangan': 4,
+        };
+
+        function getSearchMatches(keyword) {
+            if (!keyword) return [];
+            const q = keyword.toLowerCase().trim();
+            const matched = new Set();
+            const results = [];
+
+            // Exact / alias match first
+            if (searchAliases[q] !== undefined) matched.add(searchAliases[q]);
+
+            // Partial match on aliases
+            Object.entries(searchAliases).forEach(([alias, idx]) => {
+                if (alias.includes(q) || q.includes(alias)) matched.add(idx);
+            });
+
+            // Partial match on catalogue labels / hints
+            searchCatalogue.forEach((item, idx) => {
+                if (item.label.toLowerCase().includes(q) || item.hint.toLowerCase().includes(q)) matched.add(idx);
+            });
+
+            matched.forEach(idx => results.push(searchCatalogue[idx]));
+            return results;
+        }
+
+        function renderSearchDropdown(keyword) {
+            const matches = getSearchMatches(keyword);
+            searchDropdownList.innerHTML = '';
+
+            if (matches.length === 0) {
+                searchDropdownList.classList.add('hidden');
+                searchDropdownEmpty.classList.remove('hidden');
+            } else {
+                searchDropdownEmpty.classList.add('hidden');
+                searchDropdownList.classList.remove('hidden');
+                matches.forEach(item => {
+                    const li = document.createElement('li');
+                    li.setAttribute('role', 'option');
+                    li.className = 'flex items-center gap-3 px-5 py-3.5 cursor-pointer hover:bg-white/10 transition-colors duration-150 group';
+                    li.innerHTML = `
+                        <span class="w-9 h-9 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-base shrink-0 group-hover:bg-amber-500/25 transition-colors">
+                            <i class="bi ${item.icon}"></i>
+                        </span>
+                        <span class="flex flex-col min-w-0">
+                            <strong class="text-sm font-bold text-white leading-snug">${item.label}</strong>
+                            <span class="text-xs text-emerald-200/60 truncate">${item.hint}</span>
+                        </span>
+                        <i class="bi bi-arrow-right-short text-amber-400/60 text-xl ml-auto group-hover:text-amber-400 transition-colors"></i>
+                    `;
+                    li.addEventListener('click', () => {
+                        quickSearchInput.value = '';
+                        closeSearchDropdown();
+                        const target = document.querySelector(item.anchor);
+                        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                    searchDropdownList.appendChild(li);
+                });
+            }
+
+            searchDropdown.classList.remove('hidden');
+        }
+
+        function closeSearchDropdown() {
+            searchDropdown.classList.add('hidden');
+            searchDropdownList.innerHTML = '';
+            searchDropdownEmpty.classList.add('hidden');
+        }
+
         function handleQuickSearch(event) {
             event.preventDefault();
+            closeSearchDropdown();
 
             const rawKeyword = quickSearchInput.value.trim().toLowerCase();
             if (!rawKeyword) {
-                document.getElementById('beranda').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                document.getElementById('beranda').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 return;
             }
 
+            // First try exact/alias match from quickLinks
             const target = quickLinks[rawKeyword];
             if (target) {
-                document.querySelector(target).scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                return;
+                const el = document.querySelector(target);
+                if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+            }
+
+            // Fall back to catalogue
+            const matches = getSearchMatches(rawKeyword);
+            if (matches.length > 0) {
+                const el = document.querySelector(matches[0].anchor);
+                if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
             }
 
             quickSearchInput.setCustomValidity('Kata kunci menu tidak ditemukan. Coba: beranda, kegiatan, berita, laporan, donasi.');
@@ -757,7 +965,31 @@
 
         refreshPrayerButton.addEventListener('click', loadPrayerSchedule);
         quickSearchForm.addEventListener('submit', handleQuickSearch);
-        quickSearchInput.addEventListener('input', () => quickSearchInput.setCustomValidity(''));
+
+        // Live input listener → show/hide dropdown
+        quickSearchInput.addEventListener('input', () => {
+            quickSearchInput.setCustomValidity('');
+            const val = quickSearchInput.value.trim();
+            if (val.length === 0) { closeSearchDropdown(); return; }
+            renderSearchDropdown(val);
+        });
+
+        quickSearchInput.addEventListener('focus', () => {
+            const val = quickSearchInput.value.trim();
+            if (val.length > 0) renderSearchDropdown(val);
+        });
+
+        // Close dropdown when clicking outside the search container
+        document.addEventListener('click', (e) => {
+            if (searchContainer && !searchContainer.contains(e.target)) {
+                closeSearchDropdown();
+            }
+        });
+
+        // Close on Escape key
+        quickSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { closeSearchDropdown(); quickSearchInput.blur(); }
+        });
 
         // Scroll Reveal Animation (IntersectionObserver API)
         const scrollRevealItems = document.querySelectorAll('.scroll-reveal');
@@ -783,8 +1015,107 @@
             scrollRevealItems.forEach((item) => item.classList.add('is-visible'));
         }
 
+        function startEventCountdown() {
+            const el = document.getElementById('eventCountdown');
+            if (!el) return;
+
+            const targetDateStr = el.getAttribute('data-date');
+            const datePart = targetDateStr.split(' ')[0];
+            const timePart = targetDateStr.split(' ')[1] || '00:00';
+            const timeOnly = timePart.split(' - ')[0] || '00:00';
+            
+            const targetDate = new Date(`${datePart.substring(0, 10)}T${timeOnly}:00`);
+
+            const update = () => {
+                const now = new Date();
+                const diff = targetDate.getTime() - now.getTime();
+
+                if (diff <= 0) {
+                    el.innerHTML = `<div class="text-xs font-bold uppercase text-amber-400 tracking-wider">Kegiatan Sedang Berlangsung</div>`;
+                    clearInterval(handle);
+                    return;
+                }
+
+                const totalSec = Math.floor(diff / 1000);
+                const d = Math.floor(totalSec / 86400);
+                const h = Math.floor((totalSec % 86400) / 3600);
+                const m = Math.floor((totalSec % 3600) / 60);
+
+                el.querySelector('.days').textContent = String(d).padStart(2, '0');
+                el.querySelector('.hours').textContent = String(h).padStart(2, '0');
+                el.querySelector('.minutes').textContent = String(m).padStart(2, '0');
+            };
+
+            update();
+            const handle = setInterval(update, 60000);
+        }
+
+        function initZakatCalculator() {
+            const input = document.getElementById('zakatInput');
+            const result = document.getElementById('zakatResult');
+            if (!input || !result) return;
+
+            input.addEventListener('input', function () {
+                const val = parseFloat(input.value) || 0;
+                const zakat = val * 0.025;
+                result.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(zakat);
+            });
+        }
+
+        function renderSparkline() {
+            const sparklineData = @json($sparkline_data ?? []);
+            if (sparklineData.length === 0) return;
+
+            const labels = sparklineData.map(item => item.label);
+            const pemasukan = sparklineData.map(item => item.pemasukan);
+            const pengeluaran = sparklineData.map(item => item.pengeluaran);
+
+            const options = {
+                series: [
+                    { name: 'Pemasukan', data: pemasukan },
+                    { name: 'Pengeluaran', data: pengeluaran }
+                ],
+                chart: {
+                    type: 'area',
+                    height: 140,
+                    sparkline: { enabled: true },
+                    fontFamily: 'Plus Jakarta Sans, sans-serif'
+                },
+                colors: ['#10b981', '#f97316'], // emerald and orange
+                stroke: { curve: 'smooth', width: 2 },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.3,
+                        opacityTo: 0.01,
+                        stops: [0, 90, 100]
+                    }
+                },
+                tooltip: {
+                    x: {
+                        show: true,
+                        formatter: function (val, { dataPointIndex }) {
+                            return sparklineData[dataPointIndex].label;
+                        }
+                    },
+                    y: {
+                        formatter: function (val) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
+                        }
+                    }
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#chart-sparkline"), options);
+            chart.render();
+        }
+
         rotateQuotes();
         loadPrayerSchedule();
+        startEventCountdown();
+        initZakatCalculator();
+        renderSparkline();
     </script>
 </body>
 

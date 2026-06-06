@@ -118,6 +118,61 @@
                     </article>
                 </section>
 
+                <!-- Section Grafik & Ringkasan -->
+                <section class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+                    <!-- Card Chart -->
+                    <div class="lg:col-span-2 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm" data-aos="fade-up" data-aos-delay="0">
+                        <h3 class="text-lg font-black tracking-tight text-emerald-950 mb-4">Grafik Pemasukan & Pengeluaran</h3>
+                        <div id="chart-laporan" class="w-full" style="min-height: 350px;"></div>
+                    </div>
+
+                    <!-- Card Ringkasan -->
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm" data-aos="fade-up" data-aos-delay="80">
+                        <h3 class="text-lg font-black tracking-tight text-emerald-950 mb-6">Ringkasan Bulan Ini</h3>
+                        
+                        <div class="space-y-6">
+                            <!-- Total Pemasukan -->
+                            <div class="flex items-center gap-4">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                                    <i class="bi bi-wallet2 text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-stone-500 uppercase tracking-wider">Total Pemasukan</p>
+                                    <p class="text-lg font-black text-emerald-700">
+                                        Rp {{ number_format((float) $totalPemasukan, 0, ',', '.') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Total Pengeluaran -->
+                            <div class="flex items-center gap-4 border-t border-stone-100 pt-6">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-700">
+                                    <i class="bi bi-cash-stack text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-stone-500 uppercase tracking-wider">Total Pengeluaran</p>
+                                    <p class="text-lg font-black text-orange-700">
+                                        Rp {{ number_format((float) $totalPengeluaran, 0, ',', '.') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Saldo Akhir -->
+                            <div class="flex items-center gap-4 border-t border-stone-100 pt-6">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                                    <i class="bi bi-piggy-bank text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-stone-500 uppercase tracking-wider">Saldo Akhir</p>
+                                    <p class="text-lg font-black text-blue-700">
+                                        Rp {{ number_format((float) $saldoAkhir, 0, ',', '.') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="mt-14" data-aos="fade-up" data-aos-delay="120">
                     <div class="mb-6">
                         <h3 class="text-xl font-black tracking-tight text-emerald-950 sm:text-2xl">Arsip Laporan</h3>
@@ -188,6 +243,144 @@
 
         @include('frontend.partials.footer')
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartData = @json($chart_data ?? []);
+            
+            const labels = chartData.map(item => item.label);
+            const labelsFull = chartData.map(item => item.label_full);
+            const pemasukan = chartData.map(item => item.pemasukan);
+            const pengeluaran = chartData.map(item => item.pengeluaran);
+
+            const options = {
+                series: [
+                    {
+                        name: 'Pemasukan',
+                        data: pemasukan
+                    },
+                    {
+                        name: 'Pengeluaran',
+                        data: pengeluaran
+                    }
+                ],
+                chart: {
+                    type: 'area',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    },
+                    fontFamily: 'Plus Jakarta Sans, sans-serif'
+                },
+                colors: ['#8b5cf6', '#ef4444'], // purple and red from mockup
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.35,
+                        opacityTo: 0.02,
+                        stops: [0, 90, 100]
+                    }
+                },
+                markers: {
+                    size: 4,
+                    colors: ['#8b5cf6', '#ef4444'],
+                    strokeColors: '#fff',
+                    strokeWidth: 2,
+                    hover: {
+                        size: 6
+                    }
+                },
+                xaxis: {
+                    categories: labels,
+                    labels: {
+                        style: {
+                            colors: '#78716c',
+                            fontSize: '12px',
+                            fontWeight: 600
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            if (val >= 1000000000) {
+                                return 'Rp ' + (val / 1000000000).toFixed(1) + ' M';
+                            }
+                            if (val >= 1000000) {
+                                return 'Rp ' + (val / 1000000).toFixed(0) + ' Jt';
+                            }
+                            if (val >= 1000) {
+                                return 'Rp ' + (val / 1000).toFixed(0) + ' Rb';
+                            }
+                            return 'Rp ' + val;
+                        },
+                        style: {
+                            colors: '#78716c',
+                            fontSize: '12px',
+                            fontWeight: 600
+                        }
+                    }
+                },
+                tooltip: {
+                    x: {
+                        formatter: function (val, { dataPointIndex }) {
+                            return labelsFull[dataPointIndex] || '';
+                        }
+                    },
+                    y: {
+                        formatter: function (val) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
+                        }
+                    }
+                },
+                grid: {
+                    borderColor: '#f1f0ee',
+                    strokeDashArray: 4,
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    labels: {
+                        colors: '#44403c'
+                    },
+                    markers: {
+                        radius: 12
+                    }
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#chart-laporan"), options);
+            chart.render();
+        });
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

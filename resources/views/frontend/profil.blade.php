@@ -247,6 +247,13 @@
                             </p>
                         </div>
                     @endif
+
+                    <div class="mt-12 text-center" data-aos="fade-up" data-aos-delay="200">
+                        <a href="{{ route('frontend.profil.pengurus') }}" class="inline-flex items-center gap-2 rounded-full bg-emerald-900 px-8 py-4 text-base font-bold text-white transition hover:bg-emerald-800 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 duration-200">
+                            Lihat Susunan Pengurus Lengkap
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </section>
         @include('frontend.partials.footer')

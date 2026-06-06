@@ -1,20 +1,20 @@
 @php
     $navItems = $navItems ?? [
-        ['label' => 'Beranda', 'href' => '#beranda', 'active' => true, 'icon' => 'bi-house-door'],
-        ['label' => 'Profil Masjid', 'href' => '#profil', 'active' => false, 'icon' => 'bi-building'],
-        ['label' => 'Berita', 'href' => '#berita', 'active' => false, 'icon' => 'bi-newspaper'],
+        ['label' => 'Beranda',       'href' => route('frontend.home'),    'active' => request()->routeIs('frontend.home'),    'icon' => 'bi-house-door'],
+        ['label' => 'Profil Masjid', 'href' => route('frontend.profil'),  'active' => request()->routeIs('frontend.profil', 'frontend.profil.pengurus'), 'icon' => 'bi-building'],
+        ['label' => 'Berita',        'href' => route('frontend.berita'),  'active' => request()->routeIs('frontend.berita', 'frontend.berita.show'), 'icon' => 'bi-newspaper'],
         [
-            'label' => 'Kegiatan & Galeri',
-            'href' => '#',
-            'active' => false,
-            'icon' => 'bi-collection',
+            'label'    => 'Kegiatan & Galeri',
+            'href'     => '#',
+            'active'   => request()->routeIs('frontend.kegiatan', 'frontend.galeri'),
+            'icon'     => 'bi-collection',
             'dropdown' => [
-                ['label' => 'Jadwal Kegiatan', 'href' => '#kegiatan', 'active' => false, 'icon' => 'bi-calendar-event'],
-                ['label' => 'Galeri Foto', 'href' => '#galeri', 'active' => false, 'icon' => 'bi-images'],
-            ]
+                ['label' => 'Jadwal Kegiatan', 'href' => route('frontend.kegiatan'), 'active' => request()->routeIs('frontend.kegiatan'), 'icon' => 'bi-calendar-event'],
+                ['label' => 'Galeri Foto',     'href' => route('frontend.galeri'),   'active' => request()->routeIs('frontend.galeri'),   'icon' => 'bi-images'],
+            ],
         ],
-        ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => false, 'icon' => 'bi-file-earmark-text'],
-        ['label' => 'Donasi', 'href' => route('frontend.donasi'), 'active' => false, 'icon' => 'bi-heart-fill'],
+        ['label' => 'Laporan', 'href' => route('frontend.laporan'), 'active' => request()->routeIs('frontend.laporan'), 'icon' => 'bi-file-earmark-text'],
+        ['label' => 'Donasi',  'href' => route('frontend.donasi'),  'active' => request()->routeIs('frontend.donasi'),  'icon' => 'bi-heart-fill'],
     ];
 @endphp
 
