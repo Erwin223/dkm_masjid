@@ -9,6 +9,34 @@
         $misi = $profil?->misi ?? '1. Menyelenggarakan ibadah berjamaah dengan tertib dan khusyuk. 2. Menghidupkan kajian, dakwah, dan pembinaan generasi muda. 3. Mengelola masjid secara amanah, transparan, dan profesional. 4. Menjadi pusat layanan sosial yang mudah diakses jamaah.';
         $backgroundImage = asset('storage/icon/FOTO.jpeg');
         $pengurus = $pengurus ?? [];
+
+        $misiItems = [];
+        if (!empty($misi)) {
+            $rawMisi = trim($misi);
+            if (strpos($rawMisi, "\n") === false && preg_match('/\d+[\.\)]\s+/', $rawMisi)) {
+                $parts = preg_split('/\s*\d+[\.\)]\s+/', $rawMisi);
+            } else {
+                $parts = preg_split('/[\r\n]+/', $rawMisi);
+            }
+            foreach ($parts as $part) {
+                $cleaned = trim($part);
+                // First strip standard numbering (e.g. 1. or 1))
+                $cleaned = preg_replace('/^\d+[\.\)]\s*/u', '', $cleaned);
+                // Strip any leading special bullet symbols, unicode characters (like replacement diamonds or non-word symbols)
+                $cleaned = preg_replace('/^[^\p{L}\p{N}\(\"\']+/u', '', $cleaned);
+                if (!empty($cleaned)) {
+                    $misiItems[] = $cleaned;
+                }
+            }
+        }
+        if (empty($misiItems)) {
+            $misiItems = [
+                'Menyelenggarakan ibadah berjamaah dengan tertib dan khusyuk.',
+                'Menghidupkan kajian, dakwah, dan pembinaan generasi muda.',
+                'Mengelola masjid secara amanah, transparan, dan profesional.',
+                'Menjadi pusat layanan sosial yang mudah diakses jamaah.'
+            ];
+        }
     @endphp
 
     <x-hero-banner
@@ -25,30 +53,19 @@
 
     <!-- ===== SEJARAH MASJID SECTION ===== -->
     <section id="sejarah" class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white" data-aos="fade-up">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid gap-12 lg:gap-16 lg:grid-cols-2 items-center">
-                <!-- Text Content -->
-                <div data-aos="fade-right" data-aos-delay="100">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col gap-10 sm:gap-12">
+                <!-- Section Header (Title First) -->
+                <div class="text-center" data-aos="fade-up">
                     <p class="text-amber-600 font-bold text-sm tracking-widest uppercase">Sejarah Masjid</p>
-                    <h2 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-900 leading-tight">
+                    <h2 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-900 leading-tight font-display">
                         Perjalanan Tumbuh Bersama Jamaah
                     </h2>
-                    <p class="mt-6 text-lg leading-relaxed text-stone-700">
-                        {{ $sejarah }}
-                    </p>
-                    <div class="mt-8 flex gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-1 h-12 bg-gradient-to-b from-amber-400 to-transparent"></div>
-                            <div>
-                                <p class="text-2xl font-bold text-emerald-900">{{ count($pengurus) }}</p>
-                                <p class="text-sm text-stone-600">Pengurus Aktif</p>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="mt-4 w-24 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mx-auto rounded-full"></div>
                 </div>
 
-                <!-- Image Content (Carousel) -->
-                <div data-aos="fade-left" data-aos-delay="100" class="relative">
+                <!-- Image Content (Carousel) Second -->
+                <div data-aos="fade-up" data-aos-delay="100" class="relative w-full">
                     @php
                         $carouselImages = [
                             asset('storage/icon/foto.jpeg'),
@@ -75,7 +92,7 @@
                         x-init="startTimer()" 
                         @mouseenter="stopTimer()" 
                         @mouseleave="startTimer()"
-                        class="rounded-3xl overflow-hidden shadow-2xl border-8 border-amber-100 relative h-96 group">
+                        class="rounded-3xl overflow-hidden shadow-2xl border-8 border-amber-100/50 relative h-64 sm:h-96 lg:h-[500px] w-full group">
                         
                         <template x-for="(slide, index) in slides" :key="index">
                             <img :src="slide" 
@@ -85,11 +102,11 @@
                         </template>
 
                         <!-- Navigation Arrows -->
-                        <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/50 transition-all opacity-0 group-hover:opacity-100 shadow-md">
-                            <i class="bi bi-chevron-left"></i>
+                        <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/40 backdrop-blur-sm text-stone-900 flex items-center justify-center hover:bg-white/70 transition-all opacity-0 group-hover:opacity-100 shadow-md">
+                            <i class="bi bi-chevron-left text-lg"></i>
                         </button>
-                        <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/50 transition-all opacity-0 group-hover:opacity-100 shadow-md">
-                            <i class="bi bi-chevron-right"></i>
+                        <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/40 backdrop-blur-sm text-stone-900 flex items-center justify-center hover:bg-white/70 transition-all opacity-0 group-hover:opacity-100 shadow-md">
+                            <i class="bi bi-chevron-right text-lg"></i>
                         </button>
 
                         <!-- Pagination Indicators -->
@@ -97,12 +114,21 @@
                             <template x-for="(slide, index) in slides" :key="index">
                                 <button @click="activeSlide = index" 
                                     class="h-2 rounded-full transition-all duration-300 shadow-sm"
-                                    :class="activeSlide === index ? 'w-6 bg-amber-400' : 'w-2 bg-white/50 hover:bg-white/80'">
+                                    :class="activeSlide === index ? 'w-6 bg-amber-500' : 'w-2 bg-white/60 hover:bg-white/90'">
                                 </button>
                             </template>
                         </div>
                     </div>
                     <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-amber-100/30 rounded-full blur-2xl"></div>
+                </div>
+
+                <!-- Text Content Third -->
+                <div data-aos="fade-up" data-aos-delay="200" class="w-full">
+                    <div class="sejarah-copy max-w-4xl mx-auto text-left">
+                        <p class="text-lg sm:text-xl leading-relaxed text-stone-800 text-justify whitespace-pre-line font-medium">
+                            {{ $sejarah }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -120,36 +146,40 @@
 
             <div class="grid gap-8 lg:gap-12 lg:grid-cols-2">
                 <!-- Visi Card -->
-                <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border-l-8 border-amber-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border border-stone-200/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden"
                     data-aos="zoom-in" data-aos-delay="100">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-400 to-amber-500"></div>
                     <div class="flex items-center gap-4 mb-6">
-                        <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center">
-                            <i class="bi bi-eye text-white text-xl"></i>
+                        <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl flex items-center justify-center shadow-md">
+                            <i class="bi bi-eye text-white text-2xl"></i>
                         </div>
-                        <h3 class="text-2xl font-black text-emerald-900">Visi</h3>
+                        <h3 class="text-2xl font-black text-emerald-950 font-display">Visi</h3>
                     </div>
-                    <p class="text-lg leading-relaxed text-stone-700">
-                        {{ $visi }}
-                    </p>
+                    <div class="bg-stone-50 p-6 sm:p-8 rounded-2xl border border-stone-200/40 min-h-[150px] flex items-center">
+                        <p class="text-xl sm:text-2xl leading-relaxed text-stone-800 font-bold italic text-center w-full">
+                            "{{ $visi }}"
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Misi Card -->
-                <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border-l-8 border-emerald-600 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border border-stone-200/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden"
                     data-aos="zoom-in" data-aos-delay="200">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-600 to-emerald-700"></div>
                     <div class="flex items-center gap-4 mb-6">
-                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center">
-                            <i class="bi bi-target text-white text-xl"></i>
+                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl flex items-center justify-center shadow-md">
+                            <i class="bi bi-target text-white text-2xl"></i>
                         </div>
-                        <h3 class="text-2xl font-black text-emerald-900">Misi</h3>
+                        <h3 class="text-2xl font-black text-emerald-950 font-display">Misi</h3>
                     </div>
-                    <div class="space-y-3 text-stone-700 leading-relaxed">
-                        @foreach(preg_split('/\d+\.\s+/', trim($misi)) as $item)
-                            @if(!empty(trim($item)))
-                                <div class="flex gap-3">
-                                    <i class="bi bi-check-circle-fill text-amber-400 mt-1 flex-shrink-0"></i>
-                                    <p class="text-base">{{ trim($item) }}</p>
+                    <div class="space-y-4">
+                        @foreach($misiItems as $item)
+                            <div class="flex items-start gap-4 bg-stone-50 hover:bg-stone-100/70 p-4 sm:p-5 rounded-2xl border border-stone-200/40 transition-colors duration-200">
+                                <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-1 shadow-sm">
+                                    <i class="bi bi-check2 text-sm font-bold"></i>
                                 </div>
-                            @endif
+                                <p class="text-stone-850 font-semibold text-base sm:text-lg leading-relaxed text-justify">{{ $item }}</p>
+                            </div>
                         @endforeach
                     </div>
                 </div>

@@ -4,16 +4,7 @@
 
 @section('content')
     @php
-        // Pisahkan kegiatan ke upcoming dan past
         $today = \Carbon\Carbon::today();
-        $upcomingKegiatan = collect($jadwal_kegiatan ?? [])->filter(function($k) use ($today) {
-            $tanggal = \Carbon\Carbon::parse($k['tanggal'] ?? $k->tanggal);
-            return $tanggal->isSameDay($today) || $tanggal->isFuture();
-        })->sortBy(function($k) {
-            return \Carbon\Carbon::parse($k['tanggal'] ?? $k->tanggal);
-        });
-        
-        $nextKegiatan = $upcomingKegiatan->first();
     @endphp
 
     <x-hero-banner
@@ -126,6 +117,7 @@
                     $kegiatanNama = $kegiatan['nama_kegiatan'] ?? $kegiatan->nama_kegiatan ?? 'Kegiatan';
                     $kegiatanPemateri = $kegiatan['penanggung_jawab'] ?? $kegiatan->penanggung_jawab ?? 'Tim Pengurus';
                     $kegiatanKeterangan = $kegiatan['keterangan'] ?? $kegiatan->keterangan ?? '';
+                    $kegiatanHijri = $kegiatan->tanggal_hijri ?? '';
                     
                     // Determine category/icon
                     $categoryIcon = 'bi-book-fill';
@@ -146,7 +138,7 @@
                 @endphp
 
                 <div class="relative mb-8 pb-8 last:pb-0 last:mb-0" 
-                    data-aos="fade-up" data-aos-delay="{{ 50 * ($index % 6) }}">
+                    data-aos="fade-up" data-aos-delay="{{ 50 * ($index % 5) }}">
                     
                     <!-- Timeline Connector -->
                     <div class="absolute left-11 sm:left-14 top-24 bottom-0 w-1 bg-gradient-to-b from-emerald-400 to-emerald-200 last:hidden"></div>
@@ -163,61 +155,94 @@
 
                         <!-- Event Card -->
                         <div class="flex-1 bg-white border border-stone-200 rounded-2xl p-5 sm:p-6 hover:shadow-lg hover:border-emerald-300 transition-all duration-300">
-                            <!-- Category Badge -->
-                            <div class="inline-flex items-center gap-2 mb-3 px-3 py-1.5 rounded-full" 
-                                :class="{
-                                    'bg-emerald-50 text-emerald-700': '{{ $categoryColor }}' === 'emerald',
-                                    'bg-blue-50 text-blue-700': '{{ $categoryColor }}' === 'blue',
-                                    'bg-red-50 text-red-700': '{{ $categoryColor }}' === 'red',
-                                    'bg-yellow-50 text-yellow-700': '{{ $categoryColor }}' === 'yellow',
-                                    'bg-purple-50 text-purple-700': '{{ $categoryColor }}' === 'purple',
-                                }">
-                                <i class="bi {{ $categoryIcon }} text-sm"></i>
-                                <span class="text-xs font-bold uppercase tracking-wider">
-                                    @if(str_contains(strtolower($kegiatanNama), 'bersih'))
-                                        Kebersihan
-                                    @elseif(str_contains(strtolower($kegiatanNama), 'santunan') || str_contains(strtolower($kegiatanNama), 'sosial'))
-                                        Sosial
-                                    @elseif(str_contains(strtolower($kegiatanNama), 'rapat'))
-                                        Koordinasi
-                                    @elseif(str_contains(strtolower($kegiatanNama), 'mengaji'))
-                                        Kajian Pendidikan
-                                    @else
-                                        Kegiatan
-                                    @endif
-                                </span>
+                            <!-- Badges (Category & Status) -->
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <!-- Category Badge -->
+                                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-wider
+                                    @if($categoryColor === 'emerald') bg-emerald-50 text-emerald-700 border-emerald-100
+                                    @elseif($categoryColor === 'blue') bg-blue-50 text-blue-700 border-blue-100
+                                    @elseif($categoryColor === 'red') bg-red-50 text-red-700 border-red-100
+                                    @elseif($categoryColor === 'yellow') bg-yellow-50 text-yellow-700 border-yellow-100
+                                    @elseif($categoryColor === 'purple') bg-purple-50 text-purple-700 border-purple-100
+                                    @else bg-stone-50 text-stone-700 border-stone-200 @endif">
+                                    <i class="bi {{ $categoryIcon }} text-sm"></i>
+                                    <span>
+                                        @if(str_contains(strtolower($kegiatanNama), 'bersih'))
+                                            Kebersihan
+                                        @elseif(str_contains(strtolower($kegiatanNama), 'santunan') || str_contains(strtolower($kegiatanNama), 'sosial'))
+                                            Sosial
+                                        @elseif(str_contains(strtolower($kegiatanNama), 'rapat'))
+                                            Koordinasi
+                                        @elseif(str_contains(strtolower($kegiatanNama), 'mengaji'))
+                                            Kajian Pendidikan
+                                        @else
+                                            Kegiatan
+                                        @endif
+                                    </span>
+                                </div>
+
+                                <!-- Status Badge -->
+                                @if($kegiatanTanggal->isToday() || $kegiatanTanggal->isFuture())
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/50 text-xs font-bold uppercase tracking-wider">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                                        <span>Kegiatan yang akan datang</span>
+                                    </div>
+                                @else
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 text-stone-500 border border-stone-200/60 text-xs font-bold uppercase tracking-wider">
+                                        <i class="bi bi-check2 text-xs font-black"></i>
+                                        <span>Kegiatan telah dilaksanakan</span>
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Title -->
-                            <h3 class="text-lg sm:text-xl font-black text-emerald-900 leading-snug mb-2">
+                            <h3 class="text-lg sm:text-xl font-black text-emerald-900 leading-snug mb-2 font-display">
                                 {{ $kegiatanNama }}
                             </h3>
 
                             <!-- Subtitle: Pemateri/Penanggung Jawab -->
                             @if($kegiatanPemateri)
-                                <p class="text-sm sm:text-base font-semibold text-stone-600 mb-3">
+                                <p class="text-sm sm:text-base font-semibold text-stone-600 mb-4">
                                     <i class="bi bi-person-circle text-emerald-600 mr-2"></i>
                                     {{ $kegiatanPemateri }}
                                 </p>
                             @endif
 
-                            <!-- Details Grid -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                            <!-- Details Grid (Gregorian Date, Time, Location, Hijri Date) -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4 bg-stone-50 p-4 rounded-2xl border border-stone-150/50">
+                                <!-- Gregorian Date -->
+                                <div class="flex items-center gap-2 text-stone-700">
+                                    <i class="bi bi-calendar3 text-emerald-600 text-lg flex-shrink-0"></i>
+                                    <div>
+                                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Masehi</p>
+                                        <p class="text-sm font-bold">{{ $kegiatanBulan }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Hijri Date -->
+                                <div class="flex items-center gap-2 text-stone-700">
+                                    <i class="bi bi-moon-stars-fill text-amber-600 text-lg flex-shrink-0"></i>
+                                    <div>
+                                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Hijriah</p>
+                                        <p class="text-sm font-bold">{{ $kegiatanHijri }}</p>
+                                    </div>
+                                </div>
+
                                 <!-- Time -->
                                 <div class="flex items-center gap-2 text-stone-700">
                                     <i class="bi bi-clock-fill text-amber-500 text-lg flex-shrink-0"></i>
                                     <div>
-                                        <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Waktu</p>
-                                        <p class="text-sm sm:text-base font-bold">{{ $kegiatanWaktu }}</p>
+                                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Waktu</p>
+                                        <p class="text-sm font-bold">{{ $kegiatanWaktu }}</p>
                                     </div>
                                 </div>
 
                                 <!-- Location -->
                                 <div class="flex items-center gap-2 text-stone-700">
-                                    <i class="bi bi-geo-alt-fill text-emerald-600 text-lg flex-shrink-0"></i>
+                                    <i class="bi bi-geo-alt-fill text-red-500 text-lg flex-shrink-0"></i>
                                     <div>
-                                        <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Lokasi</p>
-                                        <p class="text-sm sm:text-base font-bold">{{ $kegiatanTempat }}</p>
+                                        <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Lokasi</p>
+                                        <p class="text-sm font-bold leading-tight">{{ $kegiatanTempat }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -248,6 +273,38 @@
                     </div>
                 </div>
             @endforelse
+
+            <!-- Pagination Controls -->
+            @if($jadwal_kegiatan instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $jadwal_kegiatan->hasPages())
+                <div class="mt-12 flex items-center justify-between border-t border-stone-200 pt-6">
+                    <!-- Prev Page Link -->
+                    @if($jadwal_kegiatan->onFirstPage())
+                        <span class="inline-flex items-center gap-1 px-4 py-2 text-stone-300 text-sm font-extrabold cursor-not-allowed">
+                            <i class="bi bi-arrow-left"></i> Sebelumnya
+                        </span>
+                    @else
+                        <a href="{{ $jadwal_kegiatan->previousPageUrl() }}" class="inline-flex items-center gap-1 px-4 py-2 text-emerald-700 hover:text-emerald-800 text-sm font-extrabold transition">
+                            <i class="bi bi-arrow-left"></i> Sebelumnya
+                        </a>
+                    @endif
+
+                    <!-- Page Numbers Info -->
+                    <span class="text-xs text-stone-500 font-bold uppercase tracking-widest">
+                        Halaman {{ $jadwal_kegiatan->currentPage() }} dari {{ $jadwal_kegiatan->lastPage() }}
+                    </span>
+
+                    <!-- Next Page Link -->
+                    @if($jadwal_kegiatan->hasMorePages())
+                        <a href="{{ $jadwal_kegiatan->nextPageUrl() }}" class="inline-flex items-center gap-1 px-4 py-2 text-emerald-700 hover:text-emerald-800 text-sm font-extrabold transition">
+                            Selanjutnya <i class="bi bi-arrow-right"></i>
+                        </a>
+                    @else
+                        <span class="inline-flex items-center gap-1 px-4 py-2 text-stone-300 text-sm font-extrabold cursor-not-allowed">
+                            Selanjutnya <i class="bi bi-arrow-right"></i>
+                        </span>
+                    @endif
+                </div>
+            @endif
         </div>
     </section>
 
