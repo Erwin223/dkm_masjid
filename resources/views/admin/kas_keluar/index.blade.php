@@ -34,7 +34,7 @@
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-hourglass-half" style="color:#6f42c1;"></i> Menunggu Approval</div>
         <div class="s-value" style="color:#6f42c1;">Rp.{{ number_format($pendingKeluar, 0, ',', '.') }}</div>
-        <div style="font-size:11px;color:#aaa;margin-top:4px;">{{ $data->where('status', \App\Models\KasKeluar::STATUS_PENDING)->count() }} transaksi pending</div>
+        <div style="font-size:11px;color:#aaa;margin-top:4px;">{{ \App\Models\KasKeluar::pending()->count() }} transaksi pending</div>
     </div>
 </div>
 
@@ -42,7 +42,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-arrow-up" style="color:#fd7e14;"></i> Daftar Kas Keluar</h3>
-            <span style="font-size:12px;color:#633806;background:#faeeda;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->count() }} data</span>
+            <span style="font-size:12px;color:#633806;background:#faeeda;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->total() }} data</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari jenis / keterangan..." onkeyup="cariData()">
@@ -71,7 +71,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $kas)
                 <tr>
-                    <td>{{ $i+1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>{{ \Carbon\Carbon::parse($kas->tanggal)->translatedFormat('d M Y') }}</td>
                     <td><span class="jenis-pill">{{ $kas->jenis_pengeluaran }}</span></td>
                     <td style="font-weight:600;color:#fd7e14;">Rp.{{ number_format($kas->nominal, 0, ',', '.') }}</td>
@@ -181,7 +181,9 @@
         </table>
     </div>
 
-    @if($data->count())
+    <x-pagination :paginator="$data" item="transaksi" />
+
+    @if($data->total())
     <div style="margin-top:15px;display:flex;justify-content:flex-end;font-size:13px;">
         <strong>Total: Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</strong>
     </div>

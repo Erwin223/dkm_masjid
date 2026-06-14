@@ -25,7 +25,7 @@ class KegiatanController extends Controller
         $kegiatan = JadwalKegiatan::with(['kasKeluar', 'approver'])
             ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
             ->orderBy('tanggal', 'asc')
-            ->get();
+            ->paginate(10);
 
         return view('admin.kegiatan.jadwal_kegiatan', compact('kegiatan'));
     }
@@ -141,7 +141,7 @@ class KegiatanController extends Controller
 
     public function imamData()
     {
-        $imam = DataImam::orderBy('nama', 'asc')->get();
+        $imam = DataImam::orderBy('nama', 'asc')->paginate(10);
         return view('admin.kegiatan.data_imam_index', compact('imam'));
     }
 
@@ -192,7 +192,7 @@ class KegiatanController extends Controller
 
     public function imam()
     {
-        $imam     = JadwalImam::with('imam')->orderBy('tanggal', 'asc')->get();
+        $imam     = JadwalImam::with('imam')->orderBy('tanggal', 'asc')->paginate(10);
         $dataImam = DataImam::orderBy('nama', 'asc')->get();
         return view('admin.kegiatan.jadwal_imam', compact('imam', 'dataImam'));
     }

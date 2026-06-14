@@ -40,7 +40,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-arrow-down" style="color:#0f8b6d;"></i> Daftar Kas Masuk</h3>
-            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->count() }} data</span>
+            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->total() }} data</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari sumber / keterangan..." onkeyup="cariData()">
@@ -66,7 +66,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $kas)
                 <tr>
-                    <td>{{ $i+1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>{{ \Carbon\Carbon::parse($kas->tanggal)->translatedFormat('d M Y') }}</td>
                     <td><span class="sumber-pill">{{ $kas->sumber }}</span></td>
                     <td style="font-weight:600;color:#0f8b6d;">Rp.{{ number_format($kas->jumlah, 0, ',', '.') }}</td>
@@ -122,7 +122,9 @@
         </table>
     </div>
 
-    @if($data->count())
+    <x-pagination :paginator="$data" item="transaksi" />
+
+    @if($data->total())
     <div style="margin-top:15px;display:flex;justify-content:flex-end;font-size:13px;">
         <strong>Total: Rp.{{ number_format($totalMasuk, 0, ',', '.') }}</strong>
     </div>

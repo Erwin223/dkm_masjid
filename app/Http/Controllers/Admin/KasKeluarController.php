@@ -22,7 +22,7 @@ class KasKeluarController extends Controller
         $data = KasKeluar::with('approver')
             ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
             ->orderBy('tanggal', 'desc')
-            ->get();
+            ->paginate(10);
         $totalKeluar = KasKeluar::approved()->sum('nominal');
         $pendingKeluar = KasKeluar::pending()->sum('nominal');
         $keluarBulanIni = KasKeluar::approved()

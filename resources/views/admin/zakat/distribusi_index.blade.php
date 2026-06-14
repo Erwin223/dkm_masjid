@@ -40,7 +40,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-arrow-up" style="color:#0f8b6d;"></i> Distribusi Zakat</h3>
-            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->count() }} distribusi</span>
+            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->total() }} distribusi</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari mustahik / jenis..." onkeyup="cariData()">
@@ -70,7 +70,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $item)
                 <tr>
-                    <td>{{ $i + 1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>
                         <strong>{{ $item->mustahik->nama ?? '-' }}</strong><br>
                         <span style="font-size:11px; color:#7a7a7a;">{{ $item->mustahik->kategori_mustahik ?? '-' }}</span>
@@ -197,6 +197,7 @@
             </tbody>
         </table>
     </div>
+    <x-pagination :paginator="$data" item="distribusi" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

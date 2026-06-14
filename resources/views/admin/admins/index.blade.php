@@ -30,7 +30,7 @@
             <tbody>
                 @foreach($admins as $admin)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ ($admins->currentPage() - 1) * $admins->perPage() + $loop->iteration }}</td>
                     <td>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div class="pgr-avatar-sm">
@@ -68,10 +68,10 @@
                         </a>
                     </td>
                 </tr>
-                @endforeach
             </tbody>
         </table>
     </div>
+    <x-pagination :paginator="$admins" item="admin" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

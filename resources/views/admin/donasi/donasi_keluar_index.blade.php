@@ -28,7 +28,7 @@
     </div>
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-bullseye" style="color:#6f42c1;"></i> Tujuan Unik</div>
-        <div class="s-value" style="color:#6f42c1;">{{ $data->pluck('tujuan')->unique()->count() }}</div>
+        <div class="s-value" style="color:#6f42c1;">{{ \App\Models\DonasiKeluar::pluck('tujuan')->unique()->count() }}</div>
         <div style="font-size:11px;color:#aaa;margin-top:4px;">tujuan penyaluran</div>
     </div>
     <div class="summary-card">
@@ -42,7 +42,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-arrow-up" style="color:#fd7e14;"></i> Daftar Donasi Keluar</h3>
-            <span style="font-size:12px;color:#633806;background:#faeeda;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->count() }} data</span>
+            <span style="font-size:12px;color:#633806;background:#faeeda;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->total() }} data</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari jenis / tujuan..." onkeyup="cariData()">
@@ -73,7 +73,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $d)
                 <tr>
-                    <td>{{ $i+1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>{{ \Carbon\Carbon::parse($d->tanggal)->translatedFormat('d M Y') }}</td>
                     <td><span class="badge-jenis">{{ $d->jenis_donasi }}</span></td>
                     <td style="font-weight:500;color:#111;">{{ $d->tujuan }}</td>
@@ -185,7 +185,9 @@
         </table>
     </div>
 
-    @if($data->count())
+    <x-pagination :paginator="$data" item="transaksi" />
+
+    @if($data->total())
     <div style="margin-top:15px;display:flex;justify-content:flex-end;font-size:13px;">
         <strong>Total Keseluruhan: Rp.{{ number_format($totalKeluar, 0, ',', '.') }}</strong>
     </div>

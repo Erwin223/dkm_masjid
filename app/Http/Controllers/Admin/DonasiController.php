@@ -18,7 +18,7 @@ class DonasiController extends Controller
 
     public function masuk()
     {
-        $data       = DonasiMasuk::with('donatur')->orderBy('tanggal', 'desc')->get();
+        $data       = DonasiMasuk::with('donatur')->orderBy('tanggal', 'desc')->paginate(10);
         $totalMasuk = DonasiMasuk::sum('total');
         return view('admin.donasi.donasi_masuk_index', compact('data', 'totalMasuk'));
     }
@@ -171,7 +171,7 @@ class DonasiController extends Controller
         $data = DonasiKeluar::with('approver')
             ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
             ->orderBy('tanggal', 'desc')
-            ->get();
+            ->paginate(10);
         $totalKeluar = DonasiKeluar::approved()->get()->sum('nilai_dana');
         $pendingKeluar = DonasiKeluar::pending()->get()->sum('nilai_dana');
         return view('admin.donasi.donasi_keluar_index', compact('data', 'totalKeluar', 'pendingKeluar'));

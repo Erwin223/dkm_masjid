@@ -10,7 +10,7 @@ class DonaturController extends Controller
 {
     public function index()
     {
-        $data = Donatur::orderBy('nama', 'asc')->get();
+        $data = Donatur::orderBy('nama', 'asc')->paginate(10);
         return view('admin.donatur.index', compact('data'));
     }
 

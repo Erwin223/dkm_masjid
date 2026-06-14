@@ -30,7 +30,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-calendar-days" style="color:#0f8b6d;"></i> Daftar Jadwal Imam</h3>
-            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ count($imam) }} jadwal</span>
+            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $imam->total() }} jadwal</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari nama imam..." onkeyup="cariData()">
@@ -51,7 +51,7 @@
             <tbody id="tabelBody">
                 @forelse($imam as $i => $im)
                 <tr>
-                    <td>{{ $i+1 }}</td>
+                    <td>{{ ($imam->currentPage() - 1) * $imam->perPage() + $loop->iteration }}</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:10px;">
                             <div class="avatar-initials">{{ strtoupper(substr($im->imam->nama ?? '??', 0, 2)) }}</div>
@@ -95,6 +95,7 @@
             </tbody>
         </table>
     </div>
+    <x-pagination :paginator="$imam" item="jadwal" />
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

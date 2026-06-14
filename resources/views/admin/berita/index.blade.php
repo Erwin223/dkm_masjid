@@ -25,7 +25,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-newspaper" style="color:#0f8b6d;"></i> Daftar Berita</h3>
-            <span class="badge" id="jmlBadge">{{ $data->count() }} berita</span>
+            <span class="badge" id="jmlBadge">{{ $data->total() }} berita</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari judul / penulis..." onkeyup="cariData()">
@@ -53,7 +53,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $b)
                 <tr>
-                    <td>{{ $i + 1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>{{ \Carbon\Carbon::parse($b->tanggal)->translatedFormat('d M Y') }}</td>
                     <td>{{ $b->penulis }}</td>
                     <td>
@@ -94,6 +94,7 @@
             </tbody>
         </table>
     </div>
+    <x-pagination :paginator="$data" item="berita" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

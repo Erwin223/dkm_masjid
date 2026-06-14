@@ -18,7 +18,7 @@ class ArsipController extends Controller
     // =======================
     public function index()
     {
-        $data = Arsip::orderBy('tanggal_arsip', 'desc')->get();
+        $data = Arsip::orderBy('tanggal_arsip', 'desc')->paginate(10);
         return view('admin.arsip.index', compact('data'));
     }
 

@@ -14,7 +14,7 @@ class PengurusController extends Controller
     // =======================
     public function index()
     {
-      $data = Pengurus::select('id','nama','jabatan','no_hp','foto')->get();
+      $data = Pengurus::select('id','nama','jabatan','no_hp','foto')->paginate(10);
         return view('admin.pengurus.index', compact('data'));
     }
 

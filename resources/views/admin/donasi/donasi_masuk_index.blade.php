@@ -24,16 +24,16 @@
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-arrow-down" style="color:#0f8b6d;"></i> Total Donasi Masuk</div>
         <div class="s-value">Rp.{{ number_format($totalMasuk, 0, ',', '.') }}</div>
-        <div style="font-size:11px;color:#aaa;margin-top:4px;">{{ $data->count() }} transaksi</div>
+        <div style="font-size:11px;color:#aaa;margin-top:4px;">{{ $data->total() }} transaksi</div>
     </div>
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-hand-holding-heart" style="color:#6f42c1;"></i> Donatur Unik</div>
-        <div class="s-value" style="color:#6f42c1;">{{ $data->pluck('donatur_nama')->unique()->count() }}</div>
+        <div class="s-value" style="color:#6f42c1;">{{ \App\Models\DonasiMasuk::pluck('donatur_nama')->unique()->count() }}</div>
         <div style="font-size:11px;color:#aaa;margin-top:4px;">donatur terdaftar</div>
     </div>
     <div class="summary-card">
         <div class="s-label"><i class="fa fa-calendar" style="color:#17a2b8;"></i> Transaksi Bulan Ini</div>
-        <div class="s-value" style="color:#17a2b8;">{{ $data->filter(fn($d) => \Carbon\Carbon::parse($d->tanggal)->isCurrentMonth())->count() }}</div>
+        <div class="s-value" style="color:#17a2b8;">{{ \App\Models\DonasiMasuk::whereMonth('tanggal', \Carbon\Carbon::now()->month)->whereYear('tanggal', \Carbon\Carbon::now()->year)->count() }}</div>
         <div style="font-size:11px;color:#aaa;margin-top:4px;">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</div>
     </div>
 </div>
@@ -42,7 +42,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-arrow-down" style="color:#0f8b6d;"></i> Daftar Donasi Masuk</h3>
-            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->count() }} data</span>
+            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->total() }} data</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari donatur / jenis..." onkeyup="cariData()">
@@ -71,7 +71,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $d)
                 <tr>
-                    <td>{{ $i+1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>{{ \Carbon\Carbon::parse($d->tanggal)->translatedFormat('d M Y') }}</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:8px;">
@@ -141,7 +141,9 @@
         </table>
     </div>
 
-    @if($data->count())
+    <x-pagination :paginator="$data" item="donasi" />
+
+    @if($data->total())
     <div style="margin-top:15px;display:flex;justify-content:flex-end;font-size:13px;">
         <strong>Total Keseluruhan: Rp.{{ number_format($totalMasuk, 0, ',', '.') }}</strong>
     </div>

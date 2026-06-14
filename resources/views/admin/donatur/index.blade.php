@@ -18,7 +18,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:15px;"><i class="fa fa-users" style="color:#0f8b6d;"></i> Data Donatur</h3>
-            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->count() }} donatur</span>
+            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->total() }} donatur</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari nama / email..." onkeyup="cariData()">
@@ -46,7 +46,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $d)
                 <tr>
-                    <td>{{ $i+1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:10px;">
                             <div class="avatar-init">{{ strtoupper(substr($d->nama, 0, 2)) }}</div>
@@ -98,6 +98,7 @@
             </tbody>
         </table>
     </div>
+    <x-pagination :paginator="$data" item="donatur" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

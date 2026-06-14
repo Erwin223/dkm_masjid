@@ -26,7 +26,7 @@
     <div class="top-row">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <h3 style="margin:0;font-size:16px;"><i class="fa fa-images" style="color:#0f8b6d;"></i> Data Galeri</h3>
-            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->count() }} galeri</span>
+            <span style="font-size:12px;color:#0f6e56;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="jmlBadge">{{ $data->total() }} galeri</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input class="search-input" type="text" id="cariInput" placeholder="Cari judul..." onkeyup="cariData()">
@@ -52,7 +52,7 @@
             <tbody id="tabelBody">
                 @forelse($data as $i => $item)
                 <tr>
-                    <td>{{ $i+1 }}</td>
+                    <td>{{ $data->firstItem() + $i }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d M Y') }}</td>
                     <td>
                         <img src="{{ asset('storage/'.$item->gambar) }}" class="galeri-img">
@@ -84,6 +84,7 @@
             </tbody>
         </table>
     </div>
+    <x-pagination :paginator="$data" item="galeri" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

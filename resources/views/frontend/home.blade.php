@@ -4,22 +4,18 @@
 
 @section('content')
 
-<!-- Hero Section (Welcome & Search Banner) -->
 <section class="relative min-h-[85vh] flex flex-col justify-center islamic-pattern text-white pt-10 pb-28 md:pb-40 px-4" id="beranda" style="background-image: linear-gradient(rgba(6,78,59,0.88), rgba(6,78,59,0.92)), url('{{ asset('storage/icon/FOTO.jpeg') }}'); background-size: cover; background-position: center;">
 
-    <!-- Floating Decorative Crescent Moon BG -->
     <div class="absolute top-10 right-10 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
 
-        <!-- Left Decorative Graphic (Visible on Desktop) -->
         <div class="hidden lg:flex lg:col-span-4 justify-center reveal reveal-left delay-1">
             <div class="w-80 h-80 rounded-full bg-white p-6 flex items-center justify-center shadow-2xl relative">
                 <img src="{{ asset('favicon.ico') }}" alt="Logo DKM Al-Musabaqoh" class="w-full h-full object-contain rounded-full">
             </div>
         </div>
 
-        <!-- Right Welcome Content -->
         <div class="lg:col-span-8 space-y-6 text-left reveal reveal-right delay-2">
 
             <div class="inline-flex items-center gap-2.5 bg-amber-500/10 border border-amber-500/25 px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-widest text-amber-400 backdrop-blur-md">
@@ -35,7 +31,6 @@
                 Selamat datang di portal informasi resmi Masjid Agung Al-Musabaqoh Subang. Kami hadir sebagai sarana penyiaran jadwal sholat presisi, pengumuman kegiatan dakwah, transparansi keuangan kas, serta wadah infak sedekah digital terpercaya untuk kemakmuran masjid dan jamaah.
             </p>
 
-            <!-- Interactive Quick Search Bar -->
             <div class="relative w-full max-w-xl" id="searchContainer">
                 <form class="flex flex-col sm:flex-row gap-3 w-full bg-white/5 border border-white/15 p-2 rounded-2xl backdrop-blur-xl shadow-xl focus-within:border-amber-400/50 transition-all duration-300" id="quickSearchForm">
                     <div class="flex items-center gap-3 px-3 flex-1">
@@ -65,17 +60,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Quick Navigation Actions -->
-            <div class="flex flex-wrap items-center gap-3">
-                <a href="#kegiatan" class="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-amber-100 text-emerald-950 text-sm font-extrabold rounded-xl shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-0.5">
-                    <i class="bi bi-calendar-check-fill text-amber-600"></i> Jadwal Kegiatan
-                </a>
-                <a href="#berita" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-900/50 hover:bg-emerald-900/80 border border-emerald-800 text-white text-sm font-extrabold rounded-xl shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-0.5">
-                    <i class="bi bi-newspaper"></i> Kabar Masjid
-                </a>
-            </div>
-
         </div>
     </div>
 </section>

@@ -10,33 +10,18 @@
         $backgroundImage = asset('storage/icon/FOTO.jpeg');
         $pengurus = $pengurus ?? [];
 
-        $misiItems = [];
-        if (!empty($misi)) {
-            $rawMisi = trim($misi);
-            if (strpos($rawMisi, "\n") === false && preg_match('/\d+[\.\)]\s+/', $rawMisi)) {
-                $parts = preg_split('/\s*\d+[\.\)]\s+/', $rawMisi);
-            } else {
-                $parts = preg_split('/[\r\n]+/', $rawMisi);
-            }
-            foreach ($parts as $part) {
-                $cleaned = trim($part);
-                // First strip standard numbering (e.g. 1. or 1))
-                $cleaned = preg_replace('/^\d+[\.\)]\s*/u', '', $cleaned);
-                // Strip any leading special bullet symbols, unicode characters (like replacement diamonds or non-word symbols)
-                $cleaned = preg_replace('/^[^\p{L}\p{N}\(\"\']+/u', '', $cleaned);
-                if (!empty($cleaned)) {
-                    $misiItems[] = $cleaned;
-                }
-            }
-        }
-        if (empty($misiItems)) {
-            $misiItems = [
+        // Parse missions to list
+        $misiItems = collect(str_contains($misi, "\n") ? preg_split('/[\r\n]+/', $misi) : preg_split('/\s*\d+[\.\)]\s+/', $misi))
+            ->map(fn($item) => preg_replace('/^[^\p{L}\p{N}\(\"\']+/u', '', preg_replace('/^\d+[\.\)]\s*/u', '', trim($item))))
+            ->map('trim')
+            ->filter()
+            ->values()
+            ->all() ?: [
                 'Menyelenggarakan ibadah berjamaah dengan tertib dan khusyuk.',
                 'Menghidupkan kajian, dakwah, dan pembinaan generasi muda.',
                 'Mengelola masjid secara amanah, transparan, dan profesional.',
                 'Menjadi pusat layanan sosial yang mudah diakses jamaah.'
             ];
-        }
     @endphp
 
     <x-hero-banner

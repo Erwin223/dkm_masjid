@@ -12,7 +12,7 @@ class KasMasukController extends Controller
 {
     public function index()
     {
-        $data          = KasMasuk::orderBy('tanggal', 'desc')->get();
+        $data          = KasMasuk::orderBy('tanggal', 'desc')->paginate(10);
         $totalMasuk    = KasMasuk::sum('jumlah');
         $masukBulanIni = KasMasuk::whereMonth('tanggal', Carbon::now()->month)
                             ->whereYear('tanggal', Carbon::now()->year)

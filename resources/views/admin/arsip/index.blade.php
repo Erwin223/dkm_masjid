@@ -12,11 +12,11 @@
     {{-- ② SUMMARY CARDS ─────────────────────────── --}}
     <div class="arsip-summary-row">
         @php
-            $total_surat = $data->where('kategori', 'Surat')->count();
-            $total_surat_masuk = $data->where('kategori', 'Surat')->where('jenis_surat', 'masuk')->count();
-            $total_surat_keluar = $data->where('kategori', 'Surat')->where('jenis_surat', 'keluar')->count();
-            $total_dokumen = $data->where('kategori', 'Dokumen')->count();
-            $total_laporan = $data->where('kategori', 'Laporan')->count();
+            $total_surat = \App\Models\Arsip::where('kategori', 'Surat')->count();
+            $total_surat_masuk = \App\Models\Arsip::where('kategori', 'Surat')->where('jenis_surat', 'masuk')->count();
+            $total_surat_keluar = \App\Models\Arsip::where('kategori', 'Surat')->where('jenis_surat', 'keluar')->count();
+            $total_dokumen = \App\Models\Arsip::where('kategori', 'Dokumen')->count();
+            $total_laporan = \App\Models\Arsip::where('kategori', 'Laporan')->count();
         @endphp
         <div class="arsip-stat-card">
             <div class="arsip-stat-icon" style="background:#d1fae5;color:#065f46;"><i class="fa fa-arrow-left"></i></div>
@@ -49,7 +49,7 @@
         <div class="arsip-table-top">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h3 style="margin:0;font-size:16px;"><i class="fa fa-folder-open" style="color:#0f8b6d;margin-right:8px;"></i>Daftar Arsip</h3>
-                <span style="font-size:12px;color:#085041;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="arsipBadge">{{ count($data) }} data</span>
+                <span style="font-size:12px;color:#085041;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="arsipBadge">{{ $data->total() }} data</span>
             </div>
             
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -102,7 +102,7 @@
                 <tbody id="arsipTableBody">
                     @forelse($data as $i => $arsip)
                     <tr data-jenis="{{ $arsip->jenis_surat ?? '' }}" data-kategori="{{ $arsip->kategori }}">
-                        <td style="font-weight:600;color:#6b7280;width:40px;">{{ $i + 1 }}</td>
+                        <td style="font-weight:600;color:#6b7280;width:40px;">{{ $data->firstItem() + $i }}</td>
                         <td>
                             <div class="arsip-judul">{{ $arsip->judul }}</div>
                             <div class="arsip-deskripsi">{{ Str::limit($arsip->deskripsi, 50) }}</div>
@@ -192,9 +192,11 @@
             </table>
         </div>
 
-        @if(count($data))
+        <x-pagination :paginator="$data" item="arsip" />
+
+        @if($data->total())
         <div style="margin-top:16px;display:flex;justify-content:flex-end;font-size:12px;color:#6b7280;">
-            <strong>Total: {{ count($data) }} data arsip</strong>
+            <strong>Total: {{ $data->total() }} data arsip</strong>
         </div>
         @endif
     </div>

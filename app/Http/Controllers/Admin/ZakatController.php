@@ -20,7 +20,7 @@ class ZakatController extends Controller
 
     public function muzakki()
     {
-        $data = Muzakki::withCount('penerimaanZakat')->orderBy('nama', 'asc')->get();
+        $data = Muzakki::withCount('penerimaanZakat')->orderBy('nama', 'asc')->paginate(10);
         return view('admin.zakat.muzakki_index', compact('data'));
     }
 
@@ -84,7 +84,7 @@ class ZakatController extends Controller
 
     public function penerimaan()
     {
-        $data = PenerimaanZakat::with('muzakki')->orderBy('tanggal', 'desc')->get();
+        $data = PenerimaanZakat::with('muzakki')->orderBy('tanggal', 'desc')->paginate(10);
         return view('admin.zakat.penerimaan_index', compact('data'));
     }
 
@@ -189,7 +189,7 @@ class ZakatController extends Controller
 
     public function mustahik()
     {
-        $data = Mustahik::withCount('distribusiZakat')->orderBy('nama', 'asc')->get();
+        $data = Mustahik::withCount('distribusiZakat')->orderBy('nama', 'asc')->paginate(10);
         return view('admin.zakat.mustahik_index', compact('data'));
     }
 
@@ -256,7 +256,7 @@ class ZakatController extends Controller
         $data = DistribusiZakat::with(['mustahik', 'approver'])
             ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END")
             ->orderBy('tanggal', 'desc')
-            ->get();
+            ->paginate(10);
         return view('admin.zakat.distribusi_index', compact('data'));
     }
 

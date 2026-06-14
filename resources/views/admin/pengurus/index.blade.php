@@ -15,7 +15,7 @@
             <div class="pgr-stat-icon" style="background:#d1fae5;color:#065f46;"><i class="fa fa-users"></i></div>
             <div class="pgr-stat-body">
                 <div class="pgr-stat-label">Total Anggota</div>
-                <div class="pgr-stat-value">{{ count($data) }} orang</div>
+                <div class="pgr-stat-value">{{ $data->total() }} orang</div>
                 <div class="pgr-stat-sub">Seluruh pengurus aktif</div>
             </div>
         </div>
@@ -23,7 +23,7 @@
             <div class="pgr-stat-icon" style="background:#dbeafe;color:#1e40af;"><i class="fa fa-user-tie"></i></div>
             <div class="pgr-stat-body">
                 <div class="pgr-stat-label">Pengurus Inti</div>
-                <div class="pgr-stat-value">{{ $data->whereIn('jabatan', ['Ketua', 'Sekretaris'])->count() }} orang</div>
+                <div class="pgr-stat-value">{{ \App\Models\Pengurus::whereIn('jabatan', ['Ketua', 'Sekretaris'])->count() }} orang</div>
                 <div class="pgr-stat-sub">Pimpinan struktural</div>
             </div>
         </div>
@@ -31,7 +31,7 @@
             <div class="pgr-stat-icon" style="background:#fef3c7;color:#92400e;"><i class="fa fa-users-gear"></i></div>
             <div class="pgr-stat-body">
                 <div class="pgr-stat-label">Anggota Lainnya</div>
-                <div class="pgr-stat-value">{{ $data->whereNotIn('jabatan', ['Ketua', 'Sekretaris'])->count() }} orang</div>
+                <div class="pgr-stat-value">{{ \App\Models\Pengurus::whereNotIn('jabatan', ['Ketua', 'Sekretaris'])->count() }} orang</div>
                 <div class="pgr-stat-sub">Anggota biasa</div>
             </div>
         </div>
@@ -42,7 +42,7 @@
         <div class="pgr-table-top">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h3 style="margin:0;font-size:16px;"><i class="fa fa-address-card" style="color:#0f8b6d;margin-right:8px;"></i>Daftar Pengurus</h3>
-                <span style="font-size:12px;color:#085041;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="pgrBadge">{{ count($data) }} data</span>
+                <span style="font-size:12px;color:#085041;background:#e1f5ee;padding:4px 12px;border-radius:20px;font-weight:500;" id="pgrBadge">{{ $data->total() }} data</span>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <input class="pgr-search-input" type="text" id="pgrSearch" placeholder="Cari nama / jabatan..." onkeyup="pgrFilter()">
@@ -67,7 +67,7 @@
                 <tbody id="pgrTableBody">
                     @forelse($data as $i => $p)
                     <tr>
-                        <td style="font-weight:600;color:#6b7280;width:40px;">{{ $i + 1 }}</td>
+                        <td style="font-weight:600;color:#6b7280;width:40px;">{{ $data->firstItem() + $i }}</td>
                         <td>
                             @if($p->foto)
                                 <img src="{{ asset('storage/'.$p->foto) }}" class="pgr-avatar">
@@ -115,9 +115,11 @@
             </table>
         </div>
 
-        @if(count($data))
+        <x-pagination :paginator="$data" item="pengurus" />
+
+        @if($data->total())
         <div style="margin-top:16px;display:flex;justify-content:flex-end;font-size:12px;color:#6b7280;">
-            <strong>Total: {{ count($data) }} data pengurus</strong>
+            <strong>Total: {{ $data->total() }} data pengurus</strong>
         </div>
         @endif
     </div>
