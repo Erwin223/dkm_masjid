@@ -26,7 +26,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Tanggal <span style="color:red;">*</span></label>
-                <input type="date" name="tanggal" value="{{ old('tanggal', $data->tanggal) }}" required>
+                <input type="date" name="tanggal" value="{{ old('tanggal', \Carbon\Carbon::parse($data->tanggal)->format('Y-m-d')) }}" required>
             </div>
             
             <div class="form-group">

@@ -22,7 +22,7 @@
                 <i class="bi bi-patch-check-fill"></i> Portal Layanan & Transparansi Pengurus
             </div>
 
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight font-display">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight font-display text-white">
                 Selamat Datang Di <br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-300">DKM Al-Musabaqoh Subang</span>
             </h1>

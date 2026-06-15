@@ -27,7 +27,8 @@ class UpdateJadwalKegiatanRequest extends FormRequest
         return [
             'nama_kegiatan' => 'required|string|max:255',
             'tanggal' => 'required|date',
-            'waktu' => 'nullable',
+            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal',
+            'waktu' => 'nullable|string|max:50',
             'tempat' => 'nullable|string|max:255',
             'penanggung_jawab' => 'nullable|string|max:255',
             'estimasi_anggaran' => 'nullable|numeric|min:0',

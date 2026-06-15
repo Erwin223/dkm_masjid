@@ -32,13 +32,22 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Tanggal <span style="color:red;">*</span></label>
+                <label>Tanggal Mulai <span style="color:red;">*</span></label>
                 <input type="date" name="tanggal" value="{{ old('tanggal', \Carbon\Carbon::parse($kegiatan->tanggal)->format('Y-m-d')) }}" required>
                 @error('tanggal') <span class="invalid-feedback">{{ $message }}</span> @enderror
             </div>
             <div class="form-group">
-                <label>Waktu</label>
-                <input type="time" name="waktu" value="{{ old('waktu', $kegiatan->waktu) }}">
+                <label>Tanggal Berakhir <span style="font-size:11px;color:#999;font-weight:400;">(opsional)</span></label>
+                <input type="date" name="tanggal_selesai" value="{{ old('tanggal_selesai', $kegiatan->tanggal_selesai ? \Carbon\Carbon::parse($kegiatan->tanggal_selesai)->format('Y-m-d') : '') }}">
+                @error('tanggal_selesai') <span class="invalid-feedback">{{ $message }}</span> @enderror
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" style="flex:1;">
+                <label>Waktu <span style="font-size:11px;color:#999;font-weight:400;">Contoh: 19:00 – 20:00 WIB</span></label>
+                <input type="text" name="waktu" value="{{ old('waktu', $kegiatan->waktu) }}" placeholder="Contoh: 19:00 – 20:00 WIB">
+                @error('waktu') <span class="invalid-feedback">{{ $message }}</span> @enderror
             </div>
         </div>
 
