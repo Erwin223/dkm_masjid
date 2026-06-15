@@ -14,7 +14,7 @@
         --accent-light: #fff7ed;
         --accent-dark: #d97706;
         --accent-glow: rgba(245, 158, 11, 0.12);
-        --bg-main: #f9f8f6;
+        --bg-main: #ffffff;
         --bg-card: #ffffff;
         --text-main: #1c1917;
         --text-muted: #57534e;
@@ -47,12 +47,12 @@
 
     html {
         scroll-behavior: smooth;
-        background-color: var(--bg-main);
+        background-color: #ffffff;
     }
 
     body {
         font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
-        background: var(--bg-main);
+        background: #ffffff;
         color: var(--text-main);
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
@@ -88,44 +88,15 @@
         overflow: hidden;
     }
 
-    /* Hero Section */
+    /* Hero Section - sekarang pakai layout 2 kolom, CSS hero lama dinonaktifkan */
     .hero {
         position: relative;
         overflow: hidden;
-        min-height: 96vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        background:
-            linear-gradient(180deg, rgba(6, 78, 59, 0.88) 0%, rgba(17, 24, 39, 0.95) 100%),
-            url('{{ $heroImage }}') center center / cover no-repeat;
-        box-shadow: var(--shadow-xl);
+        background: #ffffff;
+        box-shadow: none;
     }
 
-    /* Floating Lanterns Decorative Effects */
-    .hero::after {
-        content: "";
-        position: absolute;
-        bottom: -50px;
-        right: -50px;
-        width: 450px;
-        height: 450px;
-        background: radial-gradient(circle, rgba(217, 119, 6, 0.15) 0%, rgba(217, 119, 6, 0) 70%);
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .hero::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 150px;
-        background: linear-gradient(180deg, rgba(249, 248, 230, 0) 0%, var(--bg-main) 100%);
-        pointer-events: none;
-        z-index: 2;
-    }
+    /* Decorative pseudo-elements dihapus (tidak ada gradient overlay di hero baru) */
 
     /* Topbar Navigation */
     .topbar {
@@ -249,20 +220,18 @@
         justify-content: center;
     }
 
-    /* Beautiful Islamic Geometric Shape inside Hero */
+    /* Islamic Geometric Shape — solid flat, no gradient */
     .hero-mosaic {
         position: relative;
         width: 220px;
         height: 220px;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+        background: #064e3b;
         border-radius: 35% 65% 60% 40% / 50% 40% 60% 50%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 20px 40px rgba(217, 119, 6, 0.3), inset 0 4px 15px rgba(255, 255, 255, 0.4);
         color: #ffffff;
-        animation: blobMorph 8s ease-in-out infinite alternate;
     }
 
     @keyframes blobMorph {
@@ -292,17 +261,16 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: rgba(4, 120, 87, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: #d1fae5;
+        border: 1px solid #6ee7b7;
         padding: 8px 16px;
-        border-radius: var(--radius-full);
         font-size: 0.78rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         margin-bottom: 20px;
-        color: var(--accent-light);
-        backdrop-filter: blur(10px);
+        color: #064e3b;
+        /* backdrop-filter dihapus */
     }
 
     .hero-right h1 {
@@ -334,22 +302,19 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 10px 10px 10px 20px;
-        border-radius: var(--radius-lg);
-        backdrop-filter: blur(15px);
+        background: #ffffff;
+        border: 2px solid #1c1917;
+        padding: 0;
         width: 100%;
         max-width: 580px;
         margin-bottom: 28px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
         transition: var(--transition-smooth);
+        /* backdrop-filter dihapus */
     }
 
     .search-bar:focus-within {
-        border-color: var(--primary-light);
-        background: rgba(255, 255, 255, 0.13);
-        box-shadow: 0 20px 45px rgba(16, 185, 129, 0.15);
+        border-color: #064e3b;
+        background: #ffffff;
     }
 
     .search-bar .search-icon {
@@ -428,18 +393,18 @@
         box-shadow: var(--shadow-lg);
     }
 
+    /* hero-link-secondary — solid flat, NO backdrop-filter */
     .hero-link-secondary {
-        border: 2px solid rgba(255, 255, 255, 0.25);
+        border: 2px solid #ffffff;
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(5px);
+        background: transparent;
     }
 
     .hero-link-secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: #ffffff;
+        background: #b45309;
+        border-color: #b45309;
+        color: #ffffff;
         transform: translateY(-3px);
-        box-shadow: var(--shadow-lg);
     }
 
     /* Prayer Panel */
@@ -466,37 +431,21 @@
         align-items: stretch;
     }
 
-    /* Countdown Box */
+    /* Countdown Box — solid flat, NO gradient */
     .countdown-box {
         position: relative;
-        background: linear-gradient(135deg, var(--primary-dark) 0%, #033226 100%);
+        background: #064e3b;
         border-radius: var(--radius-lg);
         color: #ffffff;
         padding: 30px;
         overflow: hidden;
         display: flex;
         align-items: center;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), var(--shadow-lg);
     }
 
-    .countdown-box::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 50%);
-        pointer-events: none;
-    }
+    /* countdown-box::before dihapus (radial-gradient decorative) */
 
-    .moon-shape {
-        position: absolute;
-        top: -40px;
-        right: -40px;
-        width: 140px;
-        height: 140px;
-        background: radial-gradient(circle, rgba(253, 230, 138, 0.08) 0%, rgba(253, 230, 138, 0) 70%);
-        border-radius: var(--radius-full);
-        pointer-events: none;
-    }
+    /* moon-shape dihapus (radial-gradient decorative) */
 
     .countdown-main {
         width: 100%;
@@ -511,14 +460,13 @@
         margin-bottom: 20px;
     }
 
+    /* Timer segment — solid flat, NO backdrop-filter */
     .timer-segment {
-        background: rgba(255, 255, 255, 0.07);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #065f46;
+        border: 1px solid #047857;
         padding: 8px 12px;
-        border-radius: var(--radius-md);
         min-width: 65px;
         text-align: center;
-        backdrop-filter: blur(5px);
     }
 
     .timer-segment strong {
@@ -559,8 +507,9 @@
     }
 
     /* Quote Box */
+    /* Quote Box — solid flat, NO gradient */
     .quote-box {
-        background: linear-gradient(180deg, var(--bg-main) 0%, #f3f1ec 100%);
+        background: #f5f4f1;
         border-radius: var(--radius-lg);
         padding: 30px;
         display: flex;
@@ -633,11 +582,11 @@
         overflow: hidden;
     }
 
+    /* Prayer time active — solid flat, NO gradient */
     .prayer-time.active {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        background: #047857;
         color: #ffffff;
-        border-color: var(--primary);
-        box-shadow: var(--shadow-lg), var(--shadow-glow);
+        border-color: #047857;
         transform: translateY(-2px);
     }
 

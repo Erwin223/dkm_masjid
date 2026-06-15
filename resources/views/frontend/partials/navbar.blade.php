@@ -18,7 +18,7 @@
     ];
 @endphp
 
-<header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-50 bg-emerald-950/90 backdrop-blur-md border-b border-emerald-900/40 shadow-lg">
+<header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-50 bg-emerald-950 border-b border-emerald-800 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <a href="{{ $navItems[0]['href'] ?? '#beranda' }}" class="flex items-center gap-3.5">
@@ -35,22 +35,20 @@
                 @foreach ($navItems as $item)
                     @if(isset($item['dropdown']))
                         <div x-data="{ dropdownOpen: false }" class="relative" @mouseenter="dropdownOpen = true" @mouseleave="dropdownOpen = false">
-                            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 {{ ($item['active'] ?? false) ? 'bg-emerald-900/40 text-amber-400 border border-emerald-800' : 'text-stone-200 hover:text-white hover:bg-emerald-900/60' }}">
-                                <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-sm"></i>
+                            <button class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 {{ ($item['active'] ?? false) ? 'bg-emerald-900 text-amber-400 border border-emerald-700' : 'text-stone-200 hover:text-white hover:bg-emerald-900' }}">
                                 {{ $item['label'] }}
                                 <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="dropdownOpen ? 'rotate-180' : ''"></i>
                             </button>
                             <div x-show="dropdownOpen" x-transition.opacity.duration.200ms class="absolute left-0 mt-1 w-48 bg-white border border-stone-200 rounded-xl shadow-xl overflow-hidden z-50" x-cloak style="display: none;">
                                 @foreach($item['dropdown'] as $subItem)
-                                    <a href="{{ $subItem['href'] }}" class="block px-4 py-3 text-sm font-semibold text-stone-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors {{ ($subItem['active'] ?? false) ? 'bg-emerald-50 text-emerald-700' : '' }}">
-                                        <i class="bi {{ $subItem['icon'] ?? 'bi-circle' }} mr-2 text-emerald-600"></i> {{ $subItem['label'] }}
+                                <a href="{{ $subItem['href'] }}" class="block px-4 py-3 text-sm font-semibold text-stone-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors {{ ($subItem['active'] ?? false) ? 'bg-emerald-50 text-emerald-700' : '' }}">
+                                        {{ $subItem['label'] }}
                                     </a>
                                 @endforeach
                             </div>
                         </div>
                     @else
-                        <a href="{{ $item['href'] }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 {{ ($item['active'] ?? false) ? 'bg-emerald-900/40 text-amber-400 border border-emerald-800' : 'text-stone-200 hover:text-white hover:bg-emerald-900/60' }}">
-                            <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-sm"></i>
+                        <a href="{{ $item['href'] }}" class="inline-flex items-center px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 {{ ($item['active'] ?? false) ? 'bg-emerald-900 text-amber-400 border border-emerald-700' : 'text-stone-200 hover:text-white hover:bg-emerald-900' }}">
                             {{ $item['label'] }}
                         </a>
                     @endif
@@ -67,28 +65,24 @@
         </div>
     </div>
 
-    <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4" class="md:hidden bg-emerald-950 border-t border-emerald-900/60 px-4 py-4 space-y-2 shadow-2xl" id="mobile-menu" x-cloak>
+    <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4" class="md:hidden bg-emerald-950 border-t border-emerald-800 px-4 py-4 space-y-2 shadow-2xl" id="mobile-menu" x-cloak>
         @foreach ($navItems as $item)
             @if(isset($item['dropdown']))
                 <div x-data="{ subMenuOpen: {{ ($item['active'] ?? false) ? 'true' : 'false' }} }" class="w-full">
-                    <button @click="subMenuOpen = !subMenuOpen" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-stone-200 hover:text-white hover:bg-emerald-900/50 text-sm font-semibold transition-all {{ ($item['active'] ?? false) ? 'bg-emerald-900/50 text-amber-400 border border-emerald-800' : '' }}">
-                        <div class="flex items-center gap-3">
-                            <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-base text-amber-500"></i>
-                            {{ $item['label'] }}
-                        </div>
+                    <button @click="subMenuOpen = !subMenuOpen" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-stone-200 hover:text-white hover:bg-emerald-900 text-sm font-semibold transition-all {{ ($item['active'] ?? false) ? 'bg-emerald-900 text-amber-400 border border-emerald-700' : '' }}">
+                        <span>{{ $item['label'] }}</span>
                         <i class="bi bi-chevron-down transition-transform duration-300" :class="subMenuOpen ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="subMenuOpen" x-collapse class="pl-11 pr-4 py-2 space-y-1" style="display: none;">
                         @foreach($item['dropdown'] as $subItem)
                             <a href="{{ $subItem['href'] }}" @click="mobileMenuOpen = false" class="block py-2 text-sm text-stone-300 hover:text-white transition-colors {{ ($subItem['active'] ?? false) ? 'text-white font-bold' : '' }}">
-                                <i class="bi {{ $subItem['icon'] ?? 'bi-circle' }} mr-2 text-amber-500/70"></i> {{ $subItem['label'] }}
+                                {{ $subItem['label'] }}
                             </a>
                         @endforeach
                     </div>
                 </div>
             @else
-                <a href="{{ $item['href'] }}" @click="mobileMenuOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-stone-200 hover:text-white hover:bg-emerald-900/50 text-sm font-semibold transition-all {{ ($item['active'] ?? false) ? 'bg-emerald-900/50 text-amber-400 border border-emerald-800' : '' }}">
-                    <i class="bi {{ $item['icon'] ?? 'bi-circle' }} text-base text-amber-500"></i>
+                <a href="{{ $item['href'] }}" @click="mobileMenuOpen = false" class="flex items-center px-4 py-3 rounded-xl text-stone-200 hover:text-white hover:bg-emerald-900 text-sm font-semibold transition-all {{ ($item['active'] ?? false) ? 'bg-emerald-900 text-amber-400 border border-emerald-700' : '' }}">
                     {{ $item['label'] }}
                 </a>
             @endif

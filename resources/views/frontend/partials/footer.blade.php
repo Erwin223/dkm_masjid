@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-emerald-900/60 text-center text-xs text-stone-400 font-semibold flex flex-col sm:flex-row justify-between items-center gap-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-emerald-800 text-center text-xs text-stone-400 font-semibold flex flex-col sm:flex-row justify-between items-center gap-3">
         <p>&copy; 2026 DKM Masjid Agung Al-Musabaqoh Subang. Hak Cipta Dilindungi Undang-Undang.</p>
         <div class="flex items-center gap-4">
             <a href="{{ route('frontend.home') }}" class="hover:text-white transition">Kembali ke Atas <i class="bi bi-arrow-up-short text-base align-middle"></i></a>

@@ -8,28 +8,13 @@
 
 @layer base {
     body.frontend-shell {
-        @apply bg-stone-50 text-stone-800 antialiased;
-        background-image:
-            radial-gradient(circle at top left, rgba(16, 185, 129, 0.12), transparent 32%),
-            radial-gradient(circle at top right, rgba(217, 119, 6, 0.10), transparent 28%),
-            linear-gradient(180deg, #fffefc 0%, #faf9f6 34%, #f5f5f4 100%);
+        @apply bg-white text-stone-900 antialiased;
     }
 }
 
 @layer components {
     .frontend-page {
         @apply relative isolate overflow-hidden;
-    }
-
-    .frontend-page::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background-image:
-            radial-gradient(circle at 1px 1px, rgba(120, 113, 108, 0.08) 1px, transparent 0);
-        background-size: 24px 24px;
-        opacity: 0.5;
     }
 
     .page-hero {

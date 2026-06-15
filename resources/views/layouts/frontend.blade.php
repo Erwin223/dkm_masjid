@@ -65,11 +65,11 @@
 
     @stack('styles')
 </head>
-<body class="bg-[#faf9f6] text-stone-900 font-sans antialiased overflow-x-hidden">
+<body class="bg-white text-stone-900 font-sans antialiased overflow-x-hidden">
     <div class="w-full flex flex-col min-h-screen">
         @include('frontend.partials.navbar')
         
-        <main class="flex-1">
+        <main class="flex-1 bg-white">
             @yield('content')
         </main>
         
