@@ -209,34 +209,9 @@ class HomeController extends FrontendController
             ->limit(15)
             ->get();
 
-        if ($jadwalImamObj->isEmpty()) {
-            $mockImams = [
-                ['nama' => 'K.H. Abdul Manaf', 'status' => 'Tetap'],
-                ['nama' => 'Ust. H. Rahmat Hidayat', 'status' => 'Tetap'],
-                ['nama' => 'Ust. Dr. Syarifuddin', 'status' => 'Tamu'],
-            ];
-            $waktuSholats = ['Subuh', 'Dzuhur', 'Ashar', 'Maghrib', 'Isya'];
-            
-            $tempList = collect();
-            for ($d = 0; $d < 3; $d++) {
-                $targetDate = $today->copy()->addDays($d);
-                foreach (array_slice($waktuSholats, 0, 3) as $idx => $sholat) {
-                    $mockImam = (object)$mockImams[($d + $idx) % count($mockImams)];
-                    $tempList->push((object)[
-                        'tanggal' => $targetDate->toDateString(),
-                        'waktu_sholat' => $sholat,
-                        'imam' => $mockImam,
-                    ]);
-                }
-            }
-            $jadwalImam = $tempList->groupBy(function($item) {
-                return Carbon::parse($item->tanggal)->locale('id')->translatedFormat('l, d M Y');
-            });
-        } else {
-            $jadwalImam = $jadwalImamObj->groupBy(function($item) {
-                return Carbon::parse($item->tanggal)->locale('id')->translatedFormat('l, d M Y');
-            });
-        }
+        $jadwalImam = $jadwalImamObj->groupBy(function ($item) {
+            return Carbon::parse($item->tanggal)->locale('id')->translatedFormat('l, d M Y');
+        });
 
         return view('frontend.home', [
             'heroImage' => asset('storage/icon/foto.jpeg'),

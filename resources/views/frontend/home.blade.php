@@ -137,7 +137,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
     <!-- ===== JADWAL IMAM SHOLAT SECTION ===== -->
-    @if(isset($jadwalImam) && count($jadwalImam) > 0)
     <section class="mt-0 mb-16" id="jadwal-imam">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-stone-200">
             <div class="space-y-1">
@@ -151,6 +150,7 @@
             </p>
         </div>
 
+        @if(isset($jadwalImam) && count($jadwalImam) > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             @foreach($jadwalImam as $dateString => $schedules)
             <div class="bg-white border border-stone-200 p-6 relative overflow-hidden group">
@@ -181,8 +181,20 @@
             </div>
             @endforeach
         </div>
+        @else
+        {{-- Empty State --}}
+        <div class="mt-8 flex flex-col items-center justify-center py-16 px-6 border border-dashed border-stone-300 bg-stone-50/50 text-center">
+            <div class="w-16 h-16 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center mb-5">
+                <i class="bi bi-calendar2-x text-amber-600 text-2xl"></i>
+            </div>
+            <h3 class="font-display text-lg font-bold text-stone-700 mb-2">Jadwal Imam Belum Tersedia</h3>
+            <p class="text-stone-400 text-sm max-w-sm leading-relaxed">
+                Jadwal imam sholat untuk saat ini belum dimasukkan oleh pengurus.
+                Silakan pantau kembali secara berkala.
+            </p>
+        </div>
+        @endif
     </section>
-    @endif
 
     <section class="overview-strip scroll-reveal mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
         @php
