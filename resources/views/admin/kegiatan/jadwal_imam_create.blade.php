@@ -34,7 +34,7 @@
                 <label>Waktu Sholat <span style="color:red;">*</span></label>
                 <select name="waktu_sholat" required>
                     <option value="">-- Pilih Waktu --</option>
-                    @foreach(['Subuh','Dzuhur','Ashar','Maghrib','Isya'] as $w)
+                    @foreach(['Subuh','Dzuhur','Ashar','Maghrib','Isya','Seluruh Waktu'] as $w)
                         <option value="{{ $w }}" {{ old('waktu_sholat') == $w ? 'selected' : '' }}>{{ $w }}</option>
                     @endforeach
                 </select>

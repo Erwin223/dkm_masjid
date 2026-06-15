@@ -44,10 +44,13 @@
         <table>
             <thead>
                 <tr>
-                    <th>No</th><th>Nama Kegiatan</th><th>Tanggal</th>
+                    <th>No</th><th>Nama Kegiatan</th><th>Tanggal Mulai</th><th>Tanggal Berakhir</th>
                     <th>Waktu</th><th>Tempat</th><th>Penanggung Jawab</th>
                     <th>Estimasi</th><th>Realisasi</th><th>Keterangan</th><th>Status Agenda</th>
-                    <th>Status Approval</th><th>Catatan Approval</th><th style="text-align:center;">Aksi Ketua</th>
+                    <th>Status Approval</th><th>Catatan Approval</th>
+                    @if(auth()->user()->role == 'ketua')
+                    <th style="text-align:center;">Aksi Ketua</th>
+                    @endif
                     <th style="text-align:center;">Hapus</th><th style="text-align:center;">Edit</th>
                 </tr>
             </thead>
@@ -57,6 +60,7 @@
                     <td>{{ ($kegiatan->currentPage() - 1) * $kegiatan->perPage() + $loop->iteration }}</td>
                     <td><b>{{ $k->nama_kegiatan }}</b></td>
                     <td>{{ \Carbon\Carbon::parse($k->tanggal)->translatedFormat('d M Y') }}</td>
+                    <td>{{ $k->tanggal_selesai ? \Carbon\Carbon::parse($k->tanggal_selesai)->translatedFormat('d M Y') : '-' }}</td>
                     <td>{{ $k->waktu ?? '-' }}</td>
                     <td>{{ $k->tempat ?? '-' }}</td>
                     <td>{{ $k->penanggung_jawab ?? '-' }}</td>
@@ -83,10 +87,14 @@
                     </td>
                     <td>{{ $k->keterangan ?? '-' }}</td>
                     <td>
-                        @php $tgl = \Carbon\Carbon::parse($k->tanggal); @endphp
-                        @if($tgl->isToday())
-                            <span class="badge-status badge-berjalan">Hari Ini</span>
-                        @elseif($tgl->isFuture())
+                        @php
+                            $tglMulai   = \Carbon\Carbon::parse($k->tanggal)->startOfDay();
+                            $tglSelesai = $k->tanggal_selesai ? \Carbon\Carbon::parse($k->tanggal_selesai)->endOfDay() : $tglMulai->copy()->endOfDay();
+                            $now        = now();
+                        @endphp
+                        @if($now->between($tglMulai, $tglSelesai))
+                            <span class="badge-status badge-berjalan">Sedang Berlangsung</span>
+                        @elseif($now->lt($tglMulai))
                             <span class="badge-status badge-akan">Akan Datang</span>
                         @else
                             <span class="badge-status badge-selesai">Selesai</span>
@@ -123,6 +131,7 @@
                             Belum tampil di website
                         @endif
                     </td>
+                    @if(auth()->user()->role == 'ketua')
                     <td style="text-align:center;">
                         @can('approve', $k)
                             <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
@@ -144,6 +153,7 @@
                             <span style="font-size:12px;color:#94a3b8;">-</span>
                         @endcan
                     </td>
+                    @endif
                     @if($k->deletionRequest)
                         @if(auth()->user()->role == 'ketua')
                             <td colspan="2" style="text-align:center;">
@@ -192,7 +202,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="15" style="text-align:center;padding:2.5rem;color:#999;">
+                    <td colspan="20" style="text-align:center;padding:2.5rem;color:#999;">
                         <i class="fa fa-inbox" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>
                         Belum ada jadwal kegiatan
                     </td>

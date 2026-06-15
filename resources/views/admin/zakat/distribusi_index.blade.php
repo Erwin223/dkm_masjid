@@ -62,7 +62,9 @@
                     <th>Keterangan</th>
                     <th>Status Approval</th>
                     <th>Catatan Approval</th>
+                    @if(auth()->user()->role == 'ketua')
                     <th style="text-align:center;">Aksi Ketua</th>
+                    @endif
                     <th style="text-align:center;">Hapus</th>
                     <th style="text-align:center;">Edit</th>
                 </tr>
@@ -123,8 +125,9 @@
                             Menunggu persetujuan Ketua
                         @endif
                     </td>
+                    @if(auth()->user()->role == 'ketua')
                     <td style="text-align:center;">
-                        @if(auth()->user()->role == 'ketua' && $item->status === \App\Models\DistribusiZakat::STATUS_PENDING)
+                        @if($item->status === \App\Models\DistribusiZakat::STATUS_PENDING)
                             <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
                                 <form action="{{ route('zakat.distribusi.approve', $item->id) }}" method="POST">
                                     @csrf
@@ -144,6 +147,7 @@
                             <span style="font-size:12px;color:#94a3b8;">-</span>
                         @endif
                     </td>
+                    @endif
 
                     @if($item->deletionRequest)
                         @if(auth()->user()->role == 'ketua')
@@ -192,7 +196,7 @@
                     @endif
                 </tr>
                 @empty
-                <tr><td colspan="13" style="text-align:center;padding:2.5rem;color:#999;"><i class="fa fa-arrow-up" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>Belum ada distribusi zakat</td></tr>
+                <tr><td colspan="20" style="text-align:center;padding:2.5rem;color:#999;"><i class="fa fa-arrow-up" style="font-size:26px;display:block;margin-bottom:8px;color:#ccc;"></i>Belum ada distribusi zakat</td></tr>
                 @endforelse
             </tbody>
         </table>

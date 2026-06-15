@@ -20,6 +20,7 @@ class JadwalKegiatan extends Model
     protected $fillable = [
         'nama_kegiatan',
         'tanggal',
+        'tanggal_selesai',
         'waktu',
         'tempat',
         'penanggung_jawab',
@@ -30,6 +31,7 @@ class JadwalKegiatan extends Model
 
     protected $casts = [
         'tanggal' => 'date',
+        'tanggal_selesai' => 'date',
         'estimasi_anggaran' => 'decimal:2',
         'approved_at' => 'datetime',
     ];

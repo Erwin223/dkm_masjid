@@ -36,7 +36,7 @@
                 </li>
                 <li class="flex items-center gap-2.5">
                     <i class="bi bi-envelope-fill text-amber-500 text-lg"></i>
-                    <span>info@dkm-almusabaqoh.or.id</span>
+                    <span>almusabaqoh.dkm@gmail.com </span>
                 </li>
             </ul>
         </div>

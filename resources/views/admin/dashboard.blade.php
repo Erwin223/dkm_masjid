@@ -217,13 +217,13 @@
     <div>
         <div class="cards-label">Kas Masjid</div>
         <div class="cards">
-            <div class="card">
+            <div class="card" style="background: #2563eb; color: white; border: none; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);">
                 <div>
-                    <h3>Saldo Kas</h3>
-                    <p class="card-value">{{ $saldo < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldo), 0, ',', '.') }}</p>
-                    <p class="card-sub">{{ $saldo >= 0 ? 'Kas positif' : 'Kas minus' }}</p>
+                    <h3 style="color: white;">Saldo Kas</h3>
+                    <p class="card-value" style="color: white;">{{ $saldo < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldo), 0, ',', '.') }}</p>
+                    <p class="card-sub" style="color: rgba(255,255,255,0.8);">{{ $saldo >= 0 ? 'Kas positif' : 'Kas minus' }}</p>
                 </div>
-                <i class="fa-solid fa-wallet"></i>
+                <i class="fa-solid fa-wallet" style="color: white; background: rgba(255,255,255,0.2);"></i>
             </div>
             <div class="card">
                 <div>
@@ -256,13 +256,13 @@
     <div>
         <div class="cards-label">Donasi</div>
         <div class="cards">
-            <div class="card">
+            <div class="card" style="background: #db2777; color: white; border: none; box-shadow: 0 10px 25px rgba(219, 39, 119, 0.3);">
                 <div>
-                    <h3>Saldo Donasi</h3>
-                    <p class="card-value">{{ $saldoDonasi < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldoDonasi), 0, ',', '.') }}</p>
-                    <p class="card-sub">{{ $saldoDonasi >= 0 ? 'Donasi positif' : 'Donasi minus' }}</p>
+                    <h3 style="color: white;">Saldo Donasi</h3>
+                    <p class="card-value" style="color: white;">{{ $saldoDonasi < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldoDonasi), 0, ',', '.') }}</p>
+                    <p class="card-sub" style="color: rgba(255,255,255,0.8);">{{ $saldoDonasi >= 0 ? 'Donasi positif' : 'Donasi minus' }}</p>
                 </div>
-                <i class="fa-solid fa-scale-balanced"></i>
+                <i class="fa-solid fa-scale-balanced" style="color: white; background: rgba(255,255,255,0.2);"></i>
             </div>
             <div class="card">
                 <div>
@@ -297,13 +297,13 @@
     <div>
         <div class="cards-label">Zakat</div>
         <div class="cards">
-            <div class="card">
+            <div class="card" style="background: #ea580c; color: white; border: none; box-shadow: 0 10px 25px rgba(234, 88, 12, 0.3);">
                 <div>
-                    <h3>Saldo Zakat</h3>
-                    <p class="card-value">{{ $saldoZakat < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldoZakat), 0, ',', '.') }}</p>
-                    <p class="card-sub">{{ ($totalMuzakki ?? 0) }} muzakki · {{ ($totalMustahik ?? 0) }} mustahik</p>
+                    <h3 style="color: white;">Saldo Zakat</h3>
+                    <p class="card-value" style="color: white;">{{ $saldoZakat < 0 ? '-Rp.' : 'Rp.' }}{{ number_format(abs($saldoZakat), 0, ',', '.') }}</p>
+                    <p class="card-sub" style="color: rgba(255,255,255,0.8);">{{ ($totalMuzakki ?? 0) }} muzakki · {{ ($totalMustahik ?? 0) }} mustahik</p>
                 </div>
-                <i class="fa-solid fa-scale-balanced"></i>
+                <i class="fa-solid fa-scale-balanced" style="color: white; background: rgba(255,255,255,0.2);"></i>
             </div>
             <div class="card">
                 <div>

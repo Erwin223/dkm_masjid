@@ -23,7 +23,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Tanggal <span style="color:red;">*</span></label>
-                <input type="date" name="tanggal" value="{{ old('tanggal', $donasi->tanggal->format('Y-m-d')) }}" required>
+                <input type="date" name="tanggal" value="{{ old('tanggal', \Carbon\Carbon::parse($donasi->tanggal)->format('Y-m-d')) }}" required>
             </div>
             <div class="form-group">
                 <label>Jenis Donasi <span style="color:red;">*</span></label>

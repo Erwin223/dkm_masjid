@@ -30,10 +30,9 @@
                 Portal Layanan &amp; Transparansi Pengurus
             </div>
 
-            {{-- H1 — tebal, besar, tanpa gradient text --}}
-            <h1 class="font-display text-4xl sm:text-5xl xl:text-6xl font-black text-stone-900 leading-tight tracking-tight mb-6">
-                Selamat Datang Di<br>
-                <span class="text-emerald-800">DKM Al-Musabaqoh<br>Subang</span>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight font-display">
+                Selamat Datang Di <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-300">DKM Al-Musabaqoh Subang</span>
             </h1>
 
             <p class="text-stone-600 text-base md:text-lg leading-relaxed max-w-lg mb-10">
