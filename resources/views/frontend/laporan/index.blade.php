@@ -185,7 +185,7 @@
                                 <tr class="hover:bg-emerald-50/40 transition-colors">
                                     <td class="px-6 py-5">
                                         <div class="text-base font-bold text-stone-900">
-                                            {{ $laporan->periode ?? $laporan->nama_periode ?? 'Periode belum ditentukan' }}
+                                            {{ $laporan->tanggal_arsip ? \Carbon\Carbon::parse($laporan->tanggal_arsip)->translatedFormat('d F Y') : 'Tanggal tidak tersedia' }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-5">

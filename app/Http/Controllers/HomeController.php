@@ -496,10 +496,10 @@ class HomeController extends FrontendController
                     'keterangan' => $item->deskripsi,
                     'file_path' => $item->file,
                     'nama_file_asli' => $item->nama_file_asli,
+                    'tanggal_arsip' => $item->tanggal_arsip,
                 ];
             });
 
-        // Generate monthly data for chart (last 12 months ending at $dateTo)
         $months = [];
         for ($i = 11; $i >= 0; $i--) {
             $months[] = $dateTo->copy()->subMonths($i)->startOfMonth();
