@@ -34,8 +34,7 @@ class KegiatanController extends Controller
     {
         $this->authorize('create', JadwalKegiatan::class);
 
-        $kasKeluar = KasKeluar::availableForActivity()->orderBy('tanggal', 'desc')->get();
-        return view('admin.kegiatan.jadwal_kegiatan_create', compact('kasKeluar'));
+        return view('admin.kegiatan.jadwal_kegiatan_create');
     }
 
     public function jadwalStore(StoreJadwalKegiatanRequest $request): RedirectResponse
@@ -57,18 +56,7 @@ class KegiatanController extends Controller
         $kegiatan  = JadwalKegiatan::findOrFail($id);
         $this->authorize('update', $kegiatan);
 
-        $kasKeluar = KasKeluar::query()
-            ->where(function ($query) use ($kegiatan) {
-                $query->availableForActivity();
-
-                if ($kegiatan->kas_keluar_id) {
-                    $query->orWhere('id', $kegiatan->kas_keluar_id);
-                }
-            })
-            ->orderBy('tanggal', 'desc')
-            ->get();
-
-        return view('admin.kegiatan.jadwal_kegiatan_edit', compact('kegiatan', 'kasKeluar'));
+        return view('admin.kegiatan.jadwal_kegiatan_edit', compact('kegiatan'));
     }
 
     public function jadwalUpdate(UpdateJadwalKegiatanRequest $request, $id): RedirectResponse
@@ -105,14 +93,14 @@ class KegiatanController extends Controller
             ->with('success', 'Permintaan penghapusan telah dikirim. Menunggu persetujuan ketua.');
     }
 
-    public function jadwalApprove(Request $request, int $id): RedirectResponse
+    public function jadwalApprove(Request $request, int $id, \App\Services\CashBalanceService $cashBalanceService): RedirectResponse
     {
         $kegiatan = JadwalKegiatan::findOrFail($id);
         $this->authorize('approve', $kegiatan);
 
         /** @var Admin $user */
         $user = $request->user();
-        $kegiatan->approve($user);
+        $kegiatan->approve($user, $cashBalanceService);
 
         return redirect()->route('kegiatan.jadwal')
             ->with('success', 'Kegiatan berhasil di-approve dan kini dapat tampil di website publik.');

@@ -33,17 +33,6 @@ class UpdateJadwalKegiatanRequest extends FormRequest
             'penanggung_jawab' => 'nullable|string|max:255',
             'estimasi_anggaran' => 'nullable|numeric|min:0',
             'keterangan' => 'nullable|string',
-            'kas_keluar_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('kas_keluar', 'id')->where(function ($query) use ($kegiatan) {
-                    $query->where('status', KasKeluar::STATUS_APPROVED);
-
-                    if ($kegiatan?->kas_keluar_id) {
-                        $query->orWhere('id', $kegiatan->kas_keluar_id);
-                    }
-                }),
-            ],
         ];
     }
 

@@ -101,9 +101,9 @@ class JadwalKegiatan extends Model
         return in_array($this->status, [self::STATUS_APPROVED, self::STATUS_REJECTED], true);
     }
 
-    public function approve(Admin $approver): void
+    public function approve(Admin $approver, \App\Services\CashBalanceService $cashBalanceService = null): void
     {
-        DB::transaction(function () use ($approver): void {
+        DB::transaction(function () use ($approver, $cashBalanceService): void {
             $kegiatan = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
 
             if (! $kegiatan->isPending()) {
@@ -118,6 +118,21 @@ class JadwalKegiatan extends Model
                 'approved_at' => now(),
                 'rejection_reason' => null,
             ])->save();
+
+            if ($kegiatan->estimasi_anggaran > 0) {
+                $kasKeluar = KasKeluar::create([
+                    'tanggal' => $kegiatan->tanggal,
+                    'jenis_pengeluaran' => 'Anggaran Kegiatan: ' . $kegiatan->nama_kegiatan,
+                    'nominal' => $kegiatan->estimasi_anggaran,
+                    'keterangan' => 'Pencairan otomatis anggaran untuk kegiatan ' . $kegiatan->nama_kegiatan,
+                ]);
+
+                if ($cashBalanceService) {
+                    $kasKeluar->approve($approver, $cashBalanceService);
+                }
+
+                $kegiatan->forceFill(['kas_keluar_id' => $kasKeluar->id])->save();
+            }
 
             $this->setRawAttributes($kegiatan->getAttributes(), true);
             $this->loadMissing('approver');

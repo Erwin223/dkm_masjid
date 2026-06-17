@@ -63,30 +63,7 @@
             @error('estimasi_anggaran') <span class="invalid-feedback">{{ $message }}</span> @enderror
         </div>
 
-        <div class="form-group">
-            <label>
-                <i class="fa fa-money-bill" style="color:#0f8b6d;font-size:12px;"></i>
-                Realisasi Anggaran
-                <span style="font-size:11px;color:#999;font-weight:400;">(pilih dari kas keluar approved)</span>
-            </label>
-            <select name="kas_keluar_id" id="kasSelect" onchange="tampilInfoKas()">
-                <option value="">Belum ada realisasi anggaran</option>
-                @foreach($kasKeluar as $kas)
-                    <option value="{{ $kas->id }}"
-                        data-nominal="{{ $kas->nominal }}"
-                        data-jenis="{{ $kas->jenis_pengeluaran }}"
-                        data-tgl="{{ \Carbon\Carbon::parse($kas->tanggal)->translatedFormat('d M Y') }}"
-                        {{ old('kas_keluar_id', $kegiatan->kas_keluar_id) == $kas->id ? 'selected' : '' }}>
-                        {{ \Carbon\Carbon::parse($kas->tanggal)->format('d/m/Y') }} -
-                        {{ $kas->jenis_pengeluaran }} -
-                        Rp.{{ number_format($kas->nominal, 0, ',', '.') }}
-                    </option>
-                @endforeach
-            </select>
-            <div class="kas-info" id="kasInfo"></div>
-            <div class="field-hint">Jika dana kegiatan sudah keluar, tautkan ke transaksi kas approved agar laporan tetap sinkron.</div>
-            @error('kas_keluar_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
-        </div>
+
 
         <div class="form-group">
             <label>Keterangan</label>
@@ -101,18 +78,7 @@
 </div>
 
 <script>
-function tampilInfoKas(){
-    const sel = document.getElementById('kasSelect');
-    const opt = sel.options[sel.selectedIndex];
-    const box = document.getElementById('kasInfo');
-    if(sel.value){
-        const nominal = parseInt(opt.dataset.nominal).toLocaleString('id-ID');
-        box.innerHTML = '<i class="fa fa-circle-info"></i> <b>' + opt.dataset.jenis + '</b> | Rp.' + nominal + ' | ' + opt.dataset.tgl;
-        box.style.display = 'block';
-    } else {
-        box.style.display = 'none';
-    }
-}
+
 function formatEstimasiAnggaran(){
     const input = document.getElementById('estimasiAnggaran');
     if(!input) return;
@@ -121,7 +87,6 @@ function formatEstimasiAnggaran(){
 }
 document.getElementById('estimasiAnggaran')?.addEventListener('input', formatEstimasiAnggaran);
 window.onload = function () {
-    tampilInfoKas();
     formatEstimasiAnggaran();
 };
 </script>

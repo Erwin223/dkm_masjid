@@ -46,7 +46,7 @@
                 <tr>
                     <th>No</th><th>Nama Kegiatan</th><th>Tanggal Mulai</th><th>Tanggal Berakhir</th>
                     <th>Waktu</th><th>Tempat</th><th>Penanggung Jawab</th>
-                    <th>Estimasi</th><th>Realisasi</th><th>Keterangan</th><th>Status Agenda</th>
+                    <th>Estimasi</th><th>Keterangan</th><th>Status Agenda</th>
                     <th>Status Approval</th><th>Catatan Approval</th>
                     @if(auth()->user()->role == 'ketua')
                     <th style="text-align:center;">Aksi Ketua</th>
@@ -74,17 +74,7 @@
                             <span class="anggaran-none">belum diisi</span>
                         @endif
                     </td>
-                    <td>
-                        @if($k->kasKeluar)
-                            <span class="anggaran-pill">
-                                <i class="fa fa-money-bill" style="font-size:10px;"></i>
-                                Rp.{{ number_format($k->kasKeluar->nominal, 0, ',', '.') }}
-                            </span>
-                            <div style="font-size:10px;color:#999;margin-top:2px;">{{ $k->kasKeluar->jenis_pengeluaran }}</div>
-                        @else
-                            <span class="anggaran-none">belum direalisasikan</span>
-                        @endif
-                    </td>
+
                     <td>{{ $k->keterangan ?? '-' }}</td>
                     <td>
                         @php
