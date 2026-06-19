@@ -4,17 +4,68 @@
 
 @section('content')
 
+@php
+    $heroCarouselImages = collect(\Illuminate\Support\Facades\Storage::disk('public')->files('icon'))
+        ->filter(function ($path) {
+            $fileName = strtolower(basename($path));
+            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+            return $fileName !== 'qris.jpeg'
+                && in_array($extension, ['jpg', 'jpeg', 'png', 'webp'], true);
+        })
+        ->sort()
+        ->values()
+        ->map(fn ($path) => asset('storage/' . str_replace('\\', '/', $path)))
+        ->all();
+@endphp
 
 <section id="beranda" class="w-full bg-white">
     <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[88vh]">
+        <div
+            class="relative h-72 lg:h-auto overflow-hidden order-2 lg:order-1 group"
+            data-aos="fade-right"
+            x-data="heroCarousel()"
+            x-init="start()"
+            @mouseenter="stop()"
+            @mouseleave="start()">
+            <template x-for="(slide, index) in slides" :key="slide">
+                <img
+                    :src="slide"
+                    alt="Dokumentasi Masjid Agung Al-Musabaqoh Subang"
+                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out"
+                    :class="activeSlide === index ? 'opacity-100' : 'opacity-0'"
+                    :loading="index === 0 ? 'eager' : 'lazy'">
+            </template>
 
-        <div class="relative h-72 lg:h-auto overflow-hidden order-2 lg:order-1">
-            <img
-                src="{{ asset('storage/icon/FOTO.jpeg') }}"
-                alt="Masjid Agung Al-Musabaqoh Subang"
-                class="w-full h-full object-cover"
-                loading="eager">
-            {{-- Label kota — solid, bukan overlay transparan --}}
+            <button
+                type="button"
+                x-show="slides.length > 1"
+                @click="previous()"
+                class="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 border border-white/40 bg-emerald-950/80 text-white opacity-0 transition group-hover:opacity-100 hover:bg-amber-700"
+                aria-label="Foto sebelumnya">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <button
+                type="button"
+                x-show="slides.length > 1"
+                @click="next()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 border border-white/40 bg-emerald-950/80 text-white opacity-0 transition group-hover:opacity-100 hover:bg-amber-700"
+                aria-label="Foto berikutnya">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
+            <div class="absolute bottom-14 left-0 right-0 z-10 flex justify-center gap-2" x-show="slides.length > 1">
+                <template x-for="(slide, index) in slides" :key="`dot-${slide}`">
+                    <button
+                        type="button"
+                        @click="activeSlide = index"
+                        class="h-2 transition-all"
+                        :class="activeSlide === index ? 'w-7 bg-amber-500' : 'w-2 bg-white/70 hover:bg-white'"
+                        aria-label="Pilih foto carousel">
+                    </button>
+                </template>
+            </div>
+
             <div class="absolute bottom-0 left-0 right-0 bg-emerald-950 py-3 px-6">
                 <p class="text-white text-xs font-bold uppercase tracking-widest">
                     Jl. Raden Wiranata Kusumah, Subang, Jawa Barat
@@ -22,10 +73,8 @@
             </div>
         </div>
 
-        {{-- Kolom Kanan: Teks di Blok Putih Solid --}}
-        <div class="order-1 lg:order-2 bg-white flex flex-col justify-center px-8 py-14 lg:px-16 xl:px-20">
+        <div class="order-1 lg:order-2 bg-white flex flex-col justify-center px-8 py-14 lg:px-16 xl:px-20" data-aos="fade-left" data-aos-delay="120">
 
-            {{-- Badge solid --}}
             <div class="inline-block bg-amber-100 border border-amber-300 text-amber-800 px-4 py-2 text-xs font-extrabold uppercase tracking-widest mb-8">
                 Portal Layanan &amp; Transparansi Pengurus
             </div>
@@ -39,7 +88,6 @@
                 Portal informasi resmi Masjid Agung Al-Musabaqoh Subang. Jadwal sholat presisi, kegiatan dakwah, transparansi keuangan kas, dan kanal infak sedekah digital terpercaya.
             </p>
 
-            {{-- Quick Search — border solid, tanpa glassmorphism --}}
             <div class="relative w-full max-w-lg mb-8" id="searchContainer">
                 <form class="flex flex-col sm:flex-row gap-0 w-full border-2 border-stone-900" id="quickSearchForm">
                     <div class="flex items-center px-4 flex-1 bg-white">
@@ -55,7 +103,6 @@
                     </button>
                 </form>
 
-                {{-- Search Dropdown — solid dark background --}}
                 <div
                     id="searchDropdown"
                     class="absolute top-full left-0 right-0 bg-emerald-950 border-2 border-t-0 border-stone-900 overflow-hidden z-50 hidden"
@@ -71,16 +118,15 @@
     </div>
 </section>
 
-<section class="bg-emerald-950 border-t-4 border-amber-600" id="jadwal-sholat">
+<section class="bg-emerald-950 border-t-4 border-amber-600" id="jadwal-sholat" data-aos="fade-up">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {{-- Header jadwal --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-emerald-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-emerald-800" data-aos="fade-up" data-aos-delay="100">
             <div>
                 <p class="text-amber-500 text-xs font-black uppercase tracking-widest mb-1">Berdasarkan Data Kemenag RI</p>
                 <h2 class="font-display text-2xl font-black text-white">Jadwal Waktu Sholat</h2>
             </div>
-            {{-- City Selector — solid --}}
             <div class="flex items-center gap-3 flex-wrap">
                 <div class="relative">
                     <i class="bi bi-geo-alt-fill absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 text-sm pointer-events-none"></i>
@@ -99,9 +145,8 @@
         </div>
 
         {{-- Grid Utama: Countdown + Quote --}}
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 mb-6 border border-emerald-800">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 mb-6 border border-emerald-800" data-aos="fade-up" data-aos-delay="180">
 
-            {{-- Countdown Box — solid hijau gelap, ZERO gradient --}}
             <div id="countdownBox" class="lg:col-span-5 bg-emerald-900 text-white p-7 border-b lg:border-b-0 lg:border-r border-emerald-800">
                 <div class="countdown-main w-full space-y-4">
                     <div class="flex items-center gap-2 text-stone-300 font-medium">
@@ -111,7 +156,6 @@
                 </div>
             </div>
 
-            {{-- Quote Box — solid stone background, ZERO gradient --}}
             <div class="lg:col-span-7 bg-white border-t-0 border-stone-200 p-7 flex flex-col justify-center">
                 <h3 class="text-xs font-black uppercase tracking-widest text-emerald-800 mb-4">Cahaya Hikmah</h3>
                 <p id="quoteText" class="text-stone-800 text-base md:text-lg font-medium italic leading-relaxed mb-4">
@@ -125,7 +169,7 @@
         </div>
 
         {{-- Prayer Times Row — 5 waktu sholat, solid grid --}}
-        <div id="prayerTimes" class="grid grid-cols-1 sm:grid-cols-5 border border-emerald-800 divide-y sm:divide-y-0 sm:divide-x divide-emerald-800">
+        <div id="prayerTimes" class="grid grid-cols-1 sm:grid-cols-5 border border-emerald-800 divide-y sm:divide-y-0 sm:divide-x divide-emerald-800" data-aos="fade-up" data-aos-delay="260">
             <div class="col-span-5 bg-emerald-900 py-6 text-center text-stone-300 font-semibold">
                 <span class="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin inline-block align-middle mr-2"></span>
                 Menyiapkan waktu sholat...
@@ -137,8 +181,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
     <!-- ===== JADWAL IMAM SHOLAT SECTION ===== -->
-    <section class="mt-0 mb-16" id="jadwal-imam">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-stone-200">
+    <section class="mt-0 mb-16" id="jadwal-imam" data-aos="fade-up">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-stone-200" data-aos="fade-up" data-aos-delay="100">
             <div class="space-y-1">
                 <div class="section-kicker text-amber-700 font-extrabold uppercase tracking-widest text-xs mb-1">
                     Pelayanan Ibadah Rawatib
@@ -153,7 +197,7 @@
         @if(isset($jadwalImam) && count($jadwalImam) > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             @foreach($jadwalImam as $dateString => $schedules)
-            <div class="bg-white border border-stone-200 p-6 relative overflow-hidden group">
+            <div class="bg-white border border-stone-200 p-6 relative overflow-hidden group" data-aos="fade-up" data-aos-delay="{{ 120 + ($loop->index * 80) }}">
                 {{-- Hover accent bar — solid, bukan gradient --}}
                 <div class="absolute bottom-0 left-0 w-full h-1 bg-amber-700 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
 
@@ -183,7 +227,7 @@
         </div>
         @else
         {{-- Empty State --}}
-        <div class="mt-8 flex flex-col items-center justify-center py-16 px-6 border border-dashed border-stone-300 bg-stone-50/50 text-center">
+        <div class="mt-8 flex flex-col items-center justify-center py-16 px-6 border border-dashed border-stone-300 bg-stone-50/50 text-center" data-aos="zoom-in" data-aos-delay="150">
             <div class="w-16 h-16 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center mb-5">
                 <i class="bi bi-calendar2-x text-amber-600 text-2xl"></i>
             </div>
@@ -196,7 +240,7 @@
         @endif
     </section>
 
-    <section class="overview-strip scroll-reveal mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <section class="overview-strip mt-12 grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-up">
         @php
         $statIcons = [
         'kegiatan' => 'bi-calendar-week-fill',
@@ -218,7 +262,7 @@
         }
         }
         @endphp
-        <article class="bg-white border border-stone-200 p-6 flex items-center justify-between hover:border-stone-400 transition-colors duration-200 relative overflow-hidden group">
+        <article class="bg-white border border-stone-200 p-6 flex items-center justify-between hover:border-stone-400 transition-colors duration-200 relative overflow-hidden group" data-aos="fade-up" data-aos-delay="{{ 100 + ($loop->index * 90) }}">
             <div class="absolute bottom-0 left-0 w-full h-1 bg-amber-700 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             <div class="space-y-1">
                 <span class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['label'] }}</span>
@@ -228,8 +272,8 @@
         @endforeach
     </section>
 
-        <section class="latest-news mt-16 border-t border-stone-200 pt-12" id="berita">
-        <div class="latest-news-header flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-stone-200">
+        <section class="latest-news mt-16 border-t border-stone-200 pt-12" id="berita" data-aos="fade-up">
+        <div class="latest-news-header flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-stone-200" data-aos="fade-up" data-aos-delay="100">
         <div class="space-y-1">
                 <div class="section-kicker text-amber-700 font-extrabold uppercase tracking-widest text-xs mb-1">Kabar Masjid Agung</div>
                 <h2 class="font-display text-3xl font-extrabold tracking-tight text-stone-900">Berita Masjid Terkini</h2>
@@ -241,7 +285,7 @@
 
         <div class="latest-news-grid grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             @forelse ($beritaTerbaru as $item)
-            <article class="bg-white border border-stone-200 overflow-hidden flex flex-col group">
+            <article class="bg-white border border-stone-200 overflow-hidden flex flex-col group" data-aos="fade-up" data-aos-delay="{{ 120 + ($loop->index * 90) }}">
 
                 <!-- Media cover -->
                 <div class="relative aspect-video overflow-hidden bg-stone-100">
@@ -273,13 +317,13 @@
                 </div>
             </article>
             @empty
-            <div class="col-span-3 bg-white border-2 border-dashed border-stone-250 rounded-2xl py-12 px-6 text-center text-stone-400">
+            <div class="col-span-3 bg-white border-2 border-dashed border-stone-250 rounded-2xl py-12 px-6 text-center text-stone-400" data-aos="zoom-in">
                 <p class="font-semibold text-sm">Belum ada berita yang dipublikasikan saat ini.</p>
             </div>
             @endforelse
         </div>
 
-        <div class="mt-8 flex justify-center">
+        <div class="mt-8 flex justify-center" data-aos="fade-up" data-aos-delay="180">
             <a href="{{ route('frontend.berita') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-emerald-900 hover:bg-amber-700 text-white text-sm md:text-base font-extrabold uppercase tracking-wider transition duration-200">
                 Lihat Semua Berita
             </a>
@@ -290,7 +334,7 @@
     <div class="grid grid-cols-1 gap-12 mt-20">
 
         <!-- Kegiatan Section -->
-        <section class="bg-white border border-stone-200 p-6 md:p-8" id="kegiatan">
+        <section class="bg-white border border-stone-200 p-6 md:p-8" id="kegiatan" data-aos="fade-up">
             <div class="space-y-4">
                 <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider border-l-4 border-emerald-800 pl-3">
                     Agenda Kegiatan
@@ -301,7 +345,7 @@
                 </p>
 
                 @if($nextEvent)
-                <div class="bg-emerald-950 text-white p-6 flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-800 mt-4">
+                <div class="bg-emerald-950 text-white p-6 flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-800 mt-4" data-aos="fade-up" data-aos-delay="120">
                     <div class="space-y-2">
                         <span class="inline-block bg-amber-600 text-white px-3 py-1 text-[11px] font-black uppercase tracking-wider">
                             Kegiatan Mendatang
@@ -340,7 +384,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
                     @forelse ($kegiatanCards as $item)
-                    <div class="bg-white border border-stone-200 p-5 hover:border-stone-400 transition-colors duration-200">
+                    <div class="bg-white border border-stone-200 p-5 hover:border-stone-400 transition-colors duration-200" data-aos="fade-up" data-aos-delay="{{ 120 + ($loop->index * 80) }}">
                         <div class="space-y-2">
                             <span class="block text-[10px] font-bold text-emerald-800 uppercase tracking-widest">{{ $item['title'] }}</span>
                             <b class="block font-display text-xl font-extrabold text-stone-900">{{ $item['value'] }}</b>
@@ -350,7 +394,7 @@
                         </div>
                     </div>
                     @empty
-                    <div class="col-span-3 bg-stone-50 border border-stone-150 rounded-2xl p-8 text-center text-stone-400">
+                    <div class="col-span-3 bg-stone-50 border border-stone-150 rounded-2xl p-8 text-center text-stone-400" data-aos="zoom-in">
                         <strong class="block font-display text-base font-bold text-stone-700">Belum Ada Agenda Terdekat</strong>
                         <span class="text-xs text-stone-500">Silakan kembali lagi nanti atau hubungi pengurus untuk informasi kegiatan.</span>
                     </div>
@@ -360,7 +404,7 @@
         </section>
 
         <!-- Laporan Keuangan Section -->
-        <section class="bg-white border border-stone-200 p-6 md:p-8 mt-12" id="laporan">
+        <section class="bg-white border border-stone-200 p-6 md:p-8 mt-12" id="laporan" data-aos="fade-up">
             <div class="space-y-4">
                 <div class="text-xs font-bold text-blue-800 uppercase tracking-wider border-l-4 border-blue-600 pl-3 mb-4">
                     Transparansi Kas
@@ -379,7 +423,7 @@
                         $isKeluar = str_contains(strtolower($item['title']), 'keluar');
                         $accentColor = $isMasuk ? 'emerald' : ($isKeluar ? 'red' : 'blue');
                         @endphp
-                        <div class="bg-white border border-stone-200 p-5">
+                        <div class="bg-white border border-stone-200 p-5" data-aos="fade-up" data-aos-delay="{{ 120 + ($loop->index * 80) }}">
                             <div class="space-y-2">
                                 <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">{{ $item['title'] }}</span>
                                 <b class="block font-display text-xl md:text-2xl font-extrabold {{ $accentColor === 'emerald' ? 'text-emerald-700' : ($accentColor === 'red' ? 'text-red-700' : 'text-blue-700') }}">{{ $item['value'] }}</b>
@@ -392,7 +436,7 @@
                     </div>
 
                     <!-- Sparkline Chart -->
-                    <div class="bg-white border border-stone-200 p-5 flex flex-col justify-between">
+                    <div class="bg-white border border-stone-200 p-5 flex flex-col justify-between" data-aos="fade-left" data-aos-delay="220">
                         <div>
                             <span class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Tren Kas 6 Bulan Terakhir</span>
                             <div id="chart-sparkline" class="w-full"></div>
@@ -409,7 +453,7 @@
         </section>
 
         <!-- Donasi Section -->
-        <section class="bg-white border border-stone-200 p-6 md:p-8 mt-12" id="donasi">
+        <section class="bg-white border border-stone-200 p-6 md:p-8 mt-12" id="donasi" data-aos="fade-up">
             <div class="space-y-4">
                 <div class="text-xs font-bold text-amber-800 uppercase tracking-wider border-l-4 border-amber-600 pl-3 mb-4">
                     Ladang Amal Jariah
@@ -421,7 +465,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
                     @foreach ($donasiCards as $item)
-                    <div class="bg-white border border-stone-200 p-5">
+                    <div class="bg-white border border-stone-200 p-5" data-aos="fade-up" data-aos-delay="{{ 120 + ($loop->index * 80) }}">
                         <div class="space-y-2">
                             <span class="block text-[10px] font-bold text-amber-800 uppercase tracking-widest">{{ $item['title'] }}</span>
                             <b class="block font-display text-xl md:text-2xl font-extrabold text-stone-900">{{ $item['value'] }}</b>
@@ -434,7 +478,7 @@
                 </div>
 
                 <!-- Zakat Calculator Card -->
-                        <article class="bg-white border border-amber-200 p-6 md:p-8 mt-8">
+                        <article class="bg-white border border-amber-200 p-6 md:p-8 mt-8" data-aos="fade-up" data-aos-delay="180">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                         <div class="lg:col-span-6 space-y-3">
                             <span class="inline-block bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1.5 text-xs font-bold uppercase tracking-wider">
@@ -476,6 +520,31 @@
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
+        window.heroCarouselImages = @json($heroCarouselImages);
+
+        function heroCarousel() {
+            return {
+                activeSlide: 0,
+                slides: window.heroCarouselImages || [],
+                timer: null,
+                next() {
+                    this.activeSlide = this.activeSlide === this.slides.length - 1 ? 0 : this.activeSlide + 1;
+                },
+                previous() {
+                    this.activeSlide = this.activeSlide === 0 ? this.slides.length - 1 : this.activeSlide - 1;
+                },
+                start() {
+                    if (this.slides.length <= 1 || this.timer) return;
+                    this.timer = setInterval(() => this.next(), 4500);
+                },
+                stop() {
+                    if (!this.timer) return;
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+            };
+        }
+
         const quotes = @json($quotes);
         const quickLinks = @json($quickLinks);
         const defaultCity = @json($defaultCity);
