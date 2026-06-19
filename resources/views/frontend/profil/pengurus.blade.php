@@ -8,7 +8,7 @@
         title="Susunan Pengurus"
         accent="Lengkap DKM"
         subtitle="Daftar pengurus inti dan statistik anggota divisi pengelola Masjid Al-Musabaqoh."
-        :bg-image="asset('storage/icon/FOTO.jpeg')"
+        :bg-image="asset('storage/icon/foto.webp')"
         icon="bi-people"
         badge-icon="bi-people"
     />

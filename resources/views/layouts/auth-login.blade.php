@@ -13,7 +13,7 @@
             min-height: 100vh;
             background:
                 linear-gradient(rgba(10, 24, 17, 0.35), rgba(10, 24, 17, 0.35)),
-                url('{{ asset('storage/icon/FOTO.jpeg') }}') center/cover no-repeat fixed;
+                url('{{ asset('storage/icon/foto.webp') }}') center/cover no-repeat fixed;
         }
 
         .container {

@@ -1,5 +1,5 @@
 @php
-    $heroImage = $heroImage ?? asset('storage/icon/FOTO.jpeg');
+    $heroImage = $heroImage ?? asset('storage/icon/foto.webp');
 @endphp
 
 <style>

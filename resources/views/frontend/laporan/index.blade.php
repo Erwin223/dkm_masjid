@@ -16,7 +16,7 @@
 
     <x-hero-banner
         title="Laporan Keuangan Masjid"
-        :bg-image="asset('storage/icon/FOTO.jpeg')"
+        :bg-image="asset('storage/icon/foto.webp')"
         class="border-b border-emerald-900/40"
     />
 
@@ -24,11 +24,8 @@
         <div class="mb-8 max-w-3xl" data-aos="fade-up">
             <p class="text-sm font-bold uppercase tracking-[0.24em] text-amber-600">Transparansi Dana Umat</p>
             <h2 class="mt-3 text-2xl font-black tracking-tight text-emerald-950 sm:text-3xl">
-                Ringkasan kas dan arsip laporan yang mudah dibaca
+                Ringkasan kas dan arsip laporan keuangan masjid yang dapat diakses publik setiap saat.
             </h2>
-            <p class="mt-4 text-base leading-8 text-stone-600 sm:text-lg">
-                Halaman ini menampilkan ringkasan dana masuk, dana keluar, serta saldo akhir. Dokumen laporan berkala dapat diunduh langsung oleh jamaah.
-            </p>
         </div>
 
         <section class="mb-10 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm" data-aos="fade-up" data-aos-delay="40">

@@ -12,7 +12,7 @@
         title="Galeri"
         accent="Masjid Al-Musabaqoh"
         subtitle="Foto-foto kegiatan ditampilkan dengan tampilan yang rapi agar mudah dibaca dan nyaman saat dibuka di ponsel maupun desktop."
-        :bg-image="asset('storage/icon/FOTO.jpeg')"
+        :bg-image="asset('storage/icon/foto.webp')"
         icon="bi-images"
         badge-icon="bi-images"
         cta-label="Lihat Galeri Lengkap"
@@ -24,7 +24,7 @@
             @forelse ($galeriItems as $index => $item)
                 @php
                     $tanggal = \Illuminate\Support\Carbon::parse($item['tanggal'] ?? ($item->tanggal ?? now()))->translatedFormat('d M Y');
-                    $thumb = $item['thumbnail'] ?? ($item->gambar ?? asset('storage/icon/foto.jpeg'));
+                    $thumb = $item['thumbnail'] ?? ($item->gambar ?? asset('storage/icon/foto.webp'));
                     $judul = $item['judul'] ?? ($item->judul ?? '');
                     $deskripsi = $item['deskripsi'] ?? ($item->keterangan ?? '');
                 @endphp

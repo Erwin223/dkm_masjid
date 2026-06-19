@@ -351,7 +351,7 @@
                     >
                 @else
                     <img 
-                        src="{{ asset('storage/icon/FOTO.jpeg') }}" 
+                        src="{{ asset('storage/icon/foto.webp') }}" 
                         alt="Default"
                         class="w-full h-auto object-cover"
                     >
@@ -427,7 +427,7 @@
                                     >
                                 @else
                                     <img 
-                                        src="{{ asset('storage/icon/FOTO.jpeg') }}" 
+                                        src="{{ asset('storage/icon/foto.webp') }}" 
                                         alt="Default"
                                     >
                                 @endif

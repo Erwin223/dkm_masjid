@@ -7,7 +7,7 @@
         $sejarah = $profil?->sejarah ?? 'Masjid ini berdiri sebagai pusat ibadah dan pembinaan umat yang tumbuh bersama kebutuhan jamaah di lingkungan sekitar. Dalam perjalanannya, masjid terus berupaya menghadirkan suasana yang nyaman, tertib, dan bermanfaat untuk kegiatan ibadah, dakwah, dan sosial kemasyarakatan.';
         $visi = $profil?->visi ?? 'Menjadi masjid yang makmur, bersih, tertib, dan menjadi pusat pembinaan umat yang ramah bagi seluruh lapisan jamaah.';
         $misi = $profil?->misi ?? '1. Menyelenggarakan ibadah berjamaah dengan tertib dan khusyuk. 2. Menghidupkan kajian, dakwah, dan pembinaan generasi muda. 3. Mengelola masjid secara amanah, transparan, dan profesional. 4. Menjadi pusat layanan sosial yang mudah diakses jamaah.';
-        $backgroundImage = asset('storage/icon/FOTO.jpeg');
+        $backgroundImage = asset('storage/icon/foto.webp');
         $pengurus = $pengurus ?? [];
 
         // Parse missions to list
@@ -53,12 +53,12 @@
                 <div data-aos="fade-up" data-aos-delay="100" class="relative w-full">
                     @php
                         $carouselImages = [
-                            asset('storage/icon/foto.jpeg'),
-                            asset('storage/icon/foto2.jpeg'),
-                            asset('storage/icon/foto3.jpeg'),
-                            asset('storage/icon/foto4.jpeg'),
-                            asset('storage/icon/foto5.jpeg'),
-                            asset('storage/icon/foto6.jpeg'),
+                            asset('storage/icon/foto.webp'),
+                            asset('storage/icon/foto2.webp'),
+                            asset('storage/icon/foto3.webp'),
+                            asset('storage/icon/foto4.webp'),
+                            asset('storage/icon/foto5.webp'),
+                            asset('storage/icon/foto6.webp'),
                         ];
                     @endphp
                     <div x-data="{ 

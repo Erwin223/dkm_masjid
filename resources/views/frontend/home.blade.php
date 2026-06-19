@@ -17,7 +17,12 @@
         ->values()
         ->map(fn ($path) => asset('storage/' . str_replace('\\', '/', $path)))
         ->all();
+    $heroPreloadImage = $heroCarouselImages[0] ?? asset('storage/icon/foto.webp');
 @endphp
+
+@push('styles')
+    <link rel="preload" as="image" href="{{ $heroPreloadImage }}" fetchpriority="high">
+@endpush
 
 <section id="beranda" class="w-full bg-white">
     <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[88vh]">
@@ -28,14 +33,13 @@
             x-init="start()"
             @mouseenter="stop()"
             @mouseleave="start()">
-            <template x-for="(slide, index) in slides" :key="slide">
-                <img
-                    :src="slide"
-                    alt="Dokumentasi Masjid Agung Al-Musabaqoh Subang"
-                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out"
-                    :class="activeSlide === index ? 'opacity-100' : 'opacity-0'"
-                    :loading="index === 0 ? 'eager' : 'lazy'">
-            </template>
+            <img
+                :src="currentSlide"
+                alt="Dokumentasi Masjid Agung Al-Musabaqoh Subang"
+                class="absolute inset-0 w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high">
 
             <button
                 type="button"
@@ -518,7 +522,6 @@
 @endsection
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         window.heroCarouselImages = @json($heroCarouselImages);
 
@@ -527,14 +530,25 @@
                 activeSlide: 0,
                 slides: window.heroCarouselImages || [],
                 timer: null,
+                get currentSlide() {
+                    return this.slides[this.activeSlide] || '';
+                },
                 next() {
                     this.activeSlide = this.activeSlide === this.slides.length - 1 ? 0 : this.activeSlide + 1;
+                    this.preloadNext();
                 },
                 previous() {
                     this.activeSlide = this.activeSlide === 0 ? this.slides.length - 1 : this.activeSlide - 1;
+                    this.preloadNext();
+                },
+                preloadNext() {
+                    if (this.slides.length <= 1) return;
+                    const image = new Image();
+                    image.src = this.slides[(this.activeSlide + 1) % this.slides.length];
                 },
                 start() {
                     if (this.slides.length <= 1 || this.timer) return;
+                    this.preloadNext();
                     this.timer = setInterval(() => this.next(), 4500);
                 },
                 stop() {
@@ -1097,9 +1111,37 @@
             });
         }
 
-        function renderSparkline() {
+        let apexChartsLoader = null;
+
+        function loadApexCharts() {
+            if (window.ApexCharts) {
+                return Promise.resolve();
+            }
+
+            if (apexChartsLoader) {
+                return apexChartsLoader;
+            }
+
+            apexChartsLoader = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/apexcharts';
+                script.async = true;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+
+            return apexChartsLoader;
+        }
+
+        async function renderSparkline() {
             const sparklineData = @json($sparkline_data ?? []);
             if (sparklineData.length === 0) return;
+
+            const chartElement = document.querySelector("#chart-sparkline");
+            if (!chartElement) return;
+
+            await loadApexCharts();
 
             const labels = sparklineData.map(item => item.label);
             const pemasukan = sparklineData.map(item => item.pemasukan);
@@ -1154,14 +1196,38 @@
                 }
             };
 
-            const chart = new ApexCharts(document.querySelector("#chart-sparkline"), options);
+            const chart = new ApexCharts(chartElement, options);
             chart.render();
+        }
+
+        function initSparklineWhenVisible() {
+            const chartElement = document.querySelector("#chart-sparkline");
+            if (!chartElement) return;
+
+            if (!('IntersectionObserver' in window)) {
+                renderSparkline();
+                return;
+            }
+
+            const chartObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+
+                    chartObserver.unobserve(entry.target);
+                    renderSparkline();
+                });
+            }, {
+                rootMargin: '200px 0px',
+                threshold: 0.01,
+            });
+
+            chartObserver.observe(chartElement);
         }
 
         rotateQuotes();
         loadPrayerSchedule();
         startEventCountdown();
         initZakatCalculator();
-        renderSparkline();
+        initSparklineWhenVisible();
     </script>
-    @endpush
+@endpush

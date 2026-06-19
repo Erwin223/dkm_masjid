@@ -8,7 +8,7 @@
         title="Layanan Donasi & Zakat"
         accent="Masjid Agung"
         subtitle="Salurkan infak, sedekah, dan zakat Anda dengan mudah dan aman untuk kemakmuran masjid dan kesejahteraan umat."
-        :bg-image="asset('storage/icon/FOTO.jpeg')"
+        :bg-image="asset('storage/icon/foto.webp')"
         icon="bi-heart-fill"
         badge-icon="bi-heart-fill"
         cta-label="Mulai Berdonasi"

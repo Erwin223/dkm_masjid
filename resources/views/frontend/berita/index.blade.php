@@ -12,7 +12,7 @@
         title="Berita"
         accent="Masjid Al-Musabaqoh"
         subtitle="Informasi kegiatan masjid yang tertata, mudah dibaca, dan nyaman diikuti oleh seluruh jamaah."
-        :bg-image="asset('storage/icon/FOTO.jpeg')"
+        :bg-image="asset('storage/icon/foto.webp')"
         icon="bi-newspaper"
         badge-icon="bi-journal-text"
         cta-label="Lihat Berita Terbaru"
@@ -24,7 +24,7 @@
             @forelse ($beritaItems as $index => $item)
                 @php
                     $tanggal = \Illuminate\Support\Carbon::parse($item['tanggal'] ?? ($item->tanggal ?? now()))->translatedFormat('d M Y');
-                    $thumb = $item['thumbnail'] ?? ($item->gambar ?? ($item->thumbnail ?? asset('storage/icon/foto.jpeg')));
+                    $thumb = $item['thumbnail'] ?? ($item->gambar ?? ($item->thumbnail ?? asset('storage/icon/foto.webp')));
                     $judul = $item['judul'] ?? ($item->judul ?? '');
                     $excerpt = $item['excerpt'] ?? ($item->sinopsis ?? ($item->isi_berita ?? ''));
                     $url = $item['url'] ?? ($item->url ?? route('frontend.berita.show', $item['id'] ?? $item->id ?? '#'));

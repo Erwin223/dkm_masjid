@@ -12,7 +12,7 @@
         title="Jadwal Kegiatan"
         accent="Masjid Al-Musabaqoh"
         subtitle="Informasi lengkap mengenai kajian, sholat berjamaah, dan kegiatan sosial kemasyarakatan yang kami selenggarakan untuk mendekatkan diri kepada Allah SWT."
-        :bg-image="asset('storage/icon/FOTO.jpeg')"
+        :bg-image="asset('storage/icon/foto.webp')"
         icon="bi-calendar-week"
         badge-icon="bi-calendar-check"
         cta-label="Lihat Jadwal Lengkap"
