@@ -33,13 +33,16 @@
             x-init="start()"
             @mouseenter="stop()"
             @mouseleave="start()">
-            <img
-                :src="currentSlide"
-                alt="Dokumentasi Masjid Agung Al-Musabaqoh Subang"
-                class="absolute inset-0 w-full h-full object-cover"
-                loading="eager"
-                decoding="async"
-                fetchpriority="high">
+            <template x-for="(slide, index) in slides" :key="index">
+                <img
+                    :src="slide"
+                    alt="Dokumentasi Masjid Agung Al-Musabaqoh Subang"
+                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+                    :class="activeSlide === index ? 'opacity-100' : 'opacity-0'"
+                    :loading="index === 0 ? 'eager' : 'lazy'"
+                    :decoding="index === 0 ? 'async' : 'auto'"
+                    :fetchpriority="index === 0 ? 'high' : 'auto'">
+            </template>
 
             <button
                 type="button"
