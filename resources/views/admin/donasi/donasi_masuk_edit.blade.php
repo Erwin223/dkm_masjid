@@ -6,9 +6,8 @@
 
 @php
     $selectedJenis = old('jenis_donasi', $donasi->jenis_donasi);
-    $isBarang = in_array($selectedJenis, ['Barang', 'Makanan', 'Pakaian'], true);
+    $isBarang = in_array($selectedJenis, ['Barang', 'Makanan', 'Pakaian', 'Lainnya'], true);
     $jumlahValue = (float) old('jumlah', $donasi->jumlah);
-    $totalValue = (float) old('total', $donasi->total);
 @endphp
 
 <div class="don-nav">
@@ -87,10 +86,10 @@
         </div>
 
         <div class="mode-box" id="barangBoxMasuk" @if(! $isBarang) hidden @endif>
-            <div class="mode-title">Input Donasi Barang</div>
+            <div class="mode-title">Input Donasi Barang / Non-Uang</div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Jumlah Barang <span style="color:red;">*</span></label>
+                    <label>Jumlah <span style="color:red;">*</span></label>
                     <input type="number" step="0.01" min="0" id="jumlahBarangMasukDisplay"
                         value="{{ $isBarang ? $jumlahValue : '' }}" placeholder="Contoh: 10" oninput="syncDonasiMasukBarang()">
                 </div>
@@ -101,22 +100,12 @@
                     @error('satuan') <span class="invalid-feedback">{{ $message }}</span> @enderror
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:0;">
-                <label>Nominal (Rp) <span style="color:red;">*</span></label>
-                <div style="position:relative;">
-                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
-                    <input type="text" id="nominalBarangMasukDisplay"
-                        value="{{ $isBarang ? number_format($totalValue, 0, ',', '.') : '' }}"
-                        placeholder="0" style="padding-left:32px;" oninput="formatRupiah(this, 'totalMasukHidden')">
-                </div>
-                <div class="mode-note"><i class="fa fa-box"></i> Simpan jumlah fisik barang beserta estimasi nilai rupiahnya.</div>
-            </div>
+            <div class="mode-note" style="margin-bottom:0;"><i class="fa fa-box"></i> Catat jumlah fisik barang/donasi yang diterima.</div>
         </div>
 
         <input type="hidden" name="jumlah" id="jumlahMasukHidden" value="{{ $isBarang ? $jumlahValue : round($jumlahValue) }}">
-        <input type="hidden" name="total" id="totalMasukHidden" value="{{ round($totalValue) }}">
+        <input type="hidden" name="total" id="totalMasukHidden" value="0">
         @error('jumlah') <span class="invalid-feedback">{{ $message }}</span> @enderror
-        @error('total') <span class="invalid-feedback">{{ $message }}</span> @enderror
 
         <div class="form-group">
             <label>Keterangan</label>
@@ -205,7 +194,7 @@ function toggleDonasiMasukMode() {
 }
 
 function isBarangJenisMasuk() {
-    return ['Barang', 'Makanan', 'Pakaian'].includes(document.getElementById('jenisDonasiMasuk').value);
+    return ['Barang', 'Makanan', 'Pakaian', 'Lainnya'].includes(document.getElementById('jenisDonasiMasuk').value);
 }
 
 window.onload = function() {

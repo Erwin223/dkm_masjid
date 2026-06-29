@@ -12,7 +12,7 @@ use App\Notifications\ApprovalRequested;
 
 class DonasiController extends Controller
 {
-    private const JENIS_BARANG = ['Barang', 'Makanan', 'Pakaian'];
+    private const JENIS_BARANG = ['Barang', 'Makanan', 'Pakaian', 'Lainnya'];
 
     // ==================== DONASI MASUK ====================
 
@@ -50,7 +50,6 @@ class DonasiController extends Controller
         if ($isBarang) {
             $request->validate([
                 'satuan' => 'required|string|max:50',
-                'total'  => 'required|numeric|min:0',
             ]);
         }
 
@@ -62,9 +61,7 @@ class DonasiController extends Controller
         }
 
         $jumlah = $this->normalizeNumber($payload['jumlah'] ?? 0);
-        $total = $isBarang
-            ? $this->normalizeNumber($payload['total'] ?? 0)
-            : $jumlah;
+        $total = $isBarang ? 0 : $jumlah;
 
         DonasiMasuk::create([
             'donatur_id'      => $request->donatur_id ?: null,
@@ -110,7 +107,6 @@ class DonasiController extends Controller
         if ($isBarang) {
             $request->validate([
                 'satuan' => 'required|string|max:50',
-                'total'  => 'required|numeric|min:0',
             ]);
         }
 
@@ -121,9 +117,7 @@ class DonasiController extends Controller
         }
 
         $jumlah = $this->normalizeNumber($payload['jumlah'] ?? 0);
-        $total = $isBarang
-            ? $this->normalizeNumber($payload['total'] ?? 0)
-            : $jumlah;
+        $total = $isBarang ? 0 : $jumlah;
 
         DonasiMasuk::findOrFail($id)->update([
             'donatur_id'      => $request->donatur_id ?: null,

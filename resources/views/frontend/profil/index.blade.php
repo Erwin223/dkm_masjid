@@ -110,8 +110,8 @@
                 <!-- Text Content Third -->
                 <div data-aos="fade-up" data-aos-delay="200" class="w-full">
                     <div class="sejarah-copy max-w-4xl mx-auto text-left">
-                        <p class="text-lg sm:text-xl leading-relaxed text-stone-800 text-justify whitespace-pre-line font-medium">
-                            {{ $sejarah }}
+                        <p class="text-lg sm:text-xl leading-relaxed text-stone-800 text-justify font-medium">
+                            {!! nl2br(e(preg_replace('/\n{2,}/', "\n", trim($sejarah)))) !!}
                         </p>
                     </div>
                 </div>
@@ -217,7 +217,7 @@
                                     {{ $item['jabatan'] ?? 'Pengurus DKM' }}
                                 </p>
                                 <p class="mt-4 text-base leading-relaxed text-stone-700">
-                                    {{ $item['tugas'] ?? 'Deskripsi tugas belum diisi oleh admin.' }}
+                                    {!! nl2br(e($item['tugas'] ?? 'Deskripsi tugas belum diisi oleh admin.')) !!}
                                 </p>
                                 
                                 @if(!empty($item['no_hp']))
