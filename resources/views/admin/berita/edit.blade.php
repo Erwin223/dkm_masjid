@@ -49,14 +49,20 @@
 
         <div class="form-group">
             <label>Gambar</label>
-            @if($data->gambar)
+            @if(is_array($data->gambar) && count($data->gambar) > 0)
+                <div style="margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                    @foreach($data->gambar as $g)
+                        <img class="thumb" src="{{ asset('storage/'.$g) }}" alt="gambar" style="max-height:100px; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                    @endforeach
+                </div>
+            @elseif(is_string($data->gambar) && !empty($data->gambar))
                 <div style="margin-bottom:10px;">
-                    <img class="thumb" src="{{ asset('storage/'.$data->gambar) }}" alt="gambar">
+                    <img class="thumb" src="{{ asset('storage/'.$data->gambar) }}" alt="gambar" style="max-height:100px; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                 </div>
             @endif
-            <input type="file" name="gambar" accept="image/*">
+            <input type="file" name="gambar[]" accept="image/*" multiple>
             <div style="font-size:12px;color:#999;margin-top:6px;">
-                *Kosongkan jika tidak ingin mengganti gambar.
+                *Pilih beberapa file sekaligus jika ingin menambahkan banyak foto. Kosongkan jika tidak ingin mengganti gambar lama. (Upload baru akan menimpa gambar lama)
             </div>
         </div>
 

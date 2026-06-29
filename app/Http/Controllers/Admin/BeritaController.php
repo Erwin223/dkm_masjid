@@ -26,20 +26,22 @@ class BeritaController extends Controller
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'penulis' => 'required|string|max:255',
-            'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'gambar.*' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             'judul' => 'required|string|max:255',
             'isi_berita' => 'required|string',
         ]);
 
-        $gambar = null;
+        $gambarPaths = [];
         if ($request->hasFile('gambar')) {
-            $gambar = $request->file('gambar')->store('berita', 'public');
+            foreach ($request->file('gambar') as $file) {
+                $gambarPaths[] = $file->store('berita', 'public');
+            }
         }
 
         Berita::create([
             'tanggal' => $validated['tanggal'],
             'penulis' => $validated['penulis'],
-            'gambar' => $gambar,
+            'gambar' => !empty($gambarPaths) ? $gambarPaths : null,
             'judul' => $validated['judul'],
             'sinopsis' => $validated['sinopsis'] ?? null,
             'isi_berita' => $validated['isi_berita'],
@@ -60,7 +62,7 @@ class BeritaController extends Controller
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'penulis' => 'required|string|max:255',
-            'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'gambar.*' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             'judul' => 'required|string|max:255',
             'sinopsis' => 'nullable|string|max:500',
             'isi_berita' => 'required|string',
@@ -68,18 +70,28 @@ class BeritaController extends Controller
 
         $data = Berita::findOrFail($id);
 
-        $gambar = $data->gambar;
+        $gambarPaths = $data->gambar;
         if ($request->hasFile('gambar')) {
-            if ($data->gambar && Storage::disk('public')->exists($data->gambar)) {
+            if (is_array($data->gambar)) {
+                foreach ($data->gambar as $oldPath) {
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+            } elseif ($data->gambar && Storage::disk('public')->exists($data->gambar)) {
                 Storage::disk('public')->delete($data->gambar);
             }
-            $gambar = $request->file('gambar')->store('berita', 'public');
+            
+            $gambarPaths = [];
+            foreach ($request->file('gambar') as $file) {
+                $gambarPaths[] = $file->store('berita', 'public');
+            }
         }
 
         $data->update([
             'tanggal' => $validated['tanggal'],
             'penulis' => $validated['penulis'],
-            'gambar' => $gambar,
+            'gambar' => $gambarPaths,
             'judul' => $validated['judul'],
             'sinopsis' => $validated['sinopsis'] ?? null,
             'isi_berita' => $validated['isi_berita'],
@@ -92,7 +104,13 @@ class BeritaController extends Controller
     {
         $data = Berita::findOrFail($id);
 
-        if ($data->gambar && Storage::disk('public')->exists($data->gambar)) {
+        if (is_array($data->gambar)) {
+            foreach ($data->gambar as $oldPath) {
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+        } elseif ($data->gambar && Storage::disk('public')->exists($data->gambar)) {
             Storage::disk('public')->delete($data->gambar);
         }
 

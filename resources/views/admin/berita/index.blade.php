@@ -57,7 +57,9 @@
                     <td>{{ \Carbon\Carbon::parse($b->tanggal)->translatedFormat('d M Y') }}</td>
                     <td>{{ $b->penulis }}</td>
                     <td>
-                        @if($b->gambar)
+                        @if(is_array($b->gambar) && count($b->gambar) > 0)
+                            <img class="thumb" src="{{ asset('storage/'.$b->gambar[0]) }}" alt="gambar">
+                        @elseif(is_string($b->gambar) && !empty($b->gambar))
                             <img class="thumb" src="{{ asset('storage/'.$b->gambar) }}" alt="gambar">
                         @else
                             <div class="thumb" style="display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;">

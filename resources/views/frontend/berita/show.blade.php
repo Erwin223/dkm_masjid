@@ -341,8 +341,41 @@
             </header>
 
             <!-- Article Hero Image -->
-            <div class="article-hero-image mb-12" data-aos="zoom-in" data-aos-delay="100">
-                @if($berita->gambar)
+            <div class="article-hero-image mb-12 relative" data-aos="zoom-in" data-aos-delay="100">
+                @if(is_array($berita->gambar) && count($berita->gambar) > 0)
+                    <div x-data="{ activeSlide: 0, slides: {{ count($berita->gambar) }} }" class="relative group">
+                        <!-- Slides -->
+                        <div class="overflow-hidden relative w-full bg-stone-100" style="aspect-ratio: 16/9;">
+                            @foreach($berita->gambar as $index => $g)
+                                <div x-show="activeSlide === {{ $index }}" x-transition.opacity.duration.500ms class="absolute inset-0 w-full h-full">
+                                    <img 
+                                        src="{{ asset('storage/' . $g) }}" 
+                                        alt="{{ $berita->judul }} - Slide {{ $index + 1 }}"
+                                        class="w-full h-full object-cover"
+                                        loading="lazy"
+                                    >
+                                </div>
+                            @endforeach
+                        </div>
+                        
+                        <!-- Prev/Next Arrows -->
+                        @if(count($berita->gambar) > 1)
+                            <button @click="activeSlide = activeSlide === 0 ? slides - 1 : activeSlide - 1" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition z-10 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                <i class="bi bi-chevron-left text-xl leading-none"></i>
+                            </button>
+                            <button @click="activeSlide = activeSlide === slides - 1 ? 0 : activeSlide + 1" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition z-10 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                <i class="bi bi-chevron-right text-xl leading-none"></i>
+                            </button>
+                            
+                            <!-- Indicators -->
+                            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                                @foreach($berita->gambar as $index => $g)
+                                    <button @click="activeSlide = {{ $index }}" :class="activeSlide === {{ $index }} ? 'bg-white w-6' : 'bg-white/60 hover:bg-white/80 w-2'" class="h-2 rounded-full transition-all duration-300"></button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @elseif(is_string($berita->gambar) && !empty($berita->gambar))
                     <img 
                         src="{{ asset('storage/' . $berita->gambar) }}" 
                         alt="{{ $berita->judul }}"
@@ -363,7 +396,7 @@
 
             <!-- Article Content Body -->
             <div class="article-content bg-white p-8 md:p-10 rounded-xl border border-stone-100 shadow-md" data-aos="fade-up" data-aos-delay="200">
-                {!! $berita->isi_berita !!}
+                {!! nl2br(e($berita->isi_berita)) !!}
             </div>
 
             <!-- Share & Back CTA -->

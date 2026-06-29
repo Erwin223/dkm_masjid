@@ -201,7 +201,6 @@ class DonasiController extends Controller
         if ($isBarang) {
             $request->validate([
                 'satuan'  => 'required|string|max:50',
-                'nominal' => 'required|numeric|min:0',
             ]);
         }
 
@@ -211,7 +210,7 @@ class DonasiController extends Controller
             'tujuan'       => $request->tujuan,
             'jumlah'       => $this->normalizeNumber($payload['jumlah'] ?? 0),
             'satuan'       => $isBarang ? trim((string) $request->satuan) : null,
-            'nominal'      => $isBarang ? $this->normalizeNumber($payload['nominal'] ?? 0) : null,
+            'nominal'      => null,
             'keterangan'   => $request->keterangan,
         ]);
 
@@ -256,7 +255,6 @@ class DonasiController extends Controller
         if ($isBarang) {
             $request->validate([
                 'satuan'  => 'required|string|max:50',
-                'nominal' => 'required|numeric|min:0',
             ]);
         }
 
@@ -266,7 +264,7 @@ class DonasiController extends Controller
             'tujuan'       => $request->tujuan,
             'jumlah'       => $this->normalizeNumber($payload['jumlah'] ?? 0),
             'satuan'       => $isBarang ? trim((string) $request->satuan) : null,
-            'nominal'      => $isBarang ? $this->normalizeNumber($payload['nominal'] ?? 0) : null,
+            'nominal'      => null,
             'keterangan'   => $request->keterangan,
         ]);
 

@@ -19,5 +19,9 @@ class Berita extends Model
         'sinopsis',
         'isi_berita',
     ];
+
+    protected $casts = [
+        'gambar' => 'array',
+    ];
 }
 

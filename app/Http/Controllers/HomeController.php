@@ -394,7 +394,14 @@ class HomeController extends FrontendController
             'tanggal' => $item->tanggal,
             'judul' => $item->judul,
             'excerpt' => $item->sinopsis ?: Str::limit(strip_tags((string) $item->isi_berita), 140),
-            'thumbnail' => $item->gambar ? asset('storage/' . ltrim($item->gambar, '/')) : asset('favicon.ico'),
+            'thumbnail' => (function() use ($item) {
+                if (is_array($item->gambar) && count($item->gambar) > 0) {
+                    return asset('storage/' . ltrim($item->gambar[0], '/'));
+                } elseif (is_string($item->gambar) && !empty($item->gambar)) {
+                    return asset('storage/' . ltrim($item->gambar, '/'));
+                }
+                return asset('storage/icon/foto.webp');
+            })(),
             'slug' => Str::slug($item->judul),
             'url' => route('frontend.berita.show', $item->id),
         ]);

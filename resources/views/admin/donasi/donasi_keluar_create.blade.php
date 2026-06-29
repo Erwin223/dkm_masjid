@@ -73,16 +73,6 @@
                     @error('satuan') <span class="invalid-feedback">{{ $message }}</span> @enderror
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:0;">
-                <label>Nominal (Rp) <span style="color:red;">*</span></label>
-                <div style="position:relative;">
-                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:13px;pointer-events:none;">Rp</span>
-                    <input type="text" id="nominalBarangKeluarDisplay"
-                        value="{{ $isBarang && $nominalValue ? number_format($nominalValue, 0, ',', '.') : '' }}"
-                        placeholder="0" style="padding-left:32px;" oninput="formatRupiahKeluar(this, 'nominalKeluarHidden')">
-                </div>
-                <div class="mode-note"><i class="fa fa-box-open"></i> Catat jumlah fisik barang dan nilai nominal penyalurannya.</div>
-            </div>
         </div>
 
         <input type="hidden" name="jumlah" id="jumlahKeluarHidden" value="{{ $isBarang ? $jumlahValue : round($jumlahValue) }}">
@@ -136,7 +126,6 @@ function toggleDonasiKeluarMode() {
     } else {
         document.getElementById('satuanKeluar').value = '';
         document.getElementById('jumlahBarangKeluarDisplay').value = '';
-        document.getElementById('nominalBarangKeluarDisplay').value = '';
 
         let displayVal = document.getElementById('jumlahUangKeluarDisplay').value.toString();
         displayVal = displayVal.split(',')[0].replace(/\.\d{1,2}$/, '');

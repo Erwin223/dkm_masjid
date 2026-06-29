@@ -296,8 +296,16 @@
 
                 <!-- Media cover -->
                 <div class="relative aspect-video overflow-hidden bg-stone-100">
+                    @php
+                        $thumbUrl = $heroImage;
+                        if (is_array($item->gambar) && count($item->gambar) > 0) {
+                            $thumbUrl = asset('storage/' . ltrim($item->gambar[0], '/'));
+                        } elseif (is_string($item->gambar) && !empty($item->gambar)) {
+                            $thumbUrl = asset('storage/' . ltrim($item->gambar, '/'));
+                        }
+                    @endphp
                     <img
-                        src="{{ $item->gambar ? asset('storage/' . $item->gambar) : $heroImage }}"
+                        src="{{ $thumbUrl }}"
                         alt="{{ $item->judul }}"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     {{-- No overlay — foto tampil apa adanya --}}

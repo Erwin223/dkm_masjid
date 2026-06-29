@@ -46,7 +46,7 @@
         </div>
  <div class="form-group">
             <label>Gambar (Opsional)</label>
-            <input type="file" name="gambar" accept="image/*">
+            <input type="file" name="gambar[]" accept="image/*" multiple>
             <div style="font-size:12px;color:#999;margin-top:6px;">
                 *Format yang didukung: JPG, JPEG, PNG. Maksimal 2MB.
             </div>
