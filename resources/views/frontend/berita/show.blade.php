@@ -452,7 +452,13 @@
                         >
                             <!-- Image Container -->
                             <div class="related-article-image">
-                                @if($item->gambar)
+                                @if(is_array($item->gambar) && count($item->gambar) > 0)
+                                    <img 
+                                        src="{{ asset('storage/' . $item->gambar[0]) }}" 
+                                        alt="{{ $item->judul }}"
+                                        loading="lazy"
+                                    >
+                                @elseif(is_string($item->gambar) && !empty($item->gambar))
                                     <img 
                                         src="{{ asset('storage/' . $item->gambar) }}" 
                                         alt="{{ $item->judul }}"

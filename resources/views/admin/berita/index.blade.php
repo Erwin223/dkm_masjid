@@ -76,7 +76,7 @@
                             @method('DELETE')
                             <button type="button" onclick="hapus('del-berita-{{ $b->id }}')" style="border:none;background:none;cursor:pointer;">
                                 <i class="fa fa-trash" style="color:red;"></i>
-                            </button>e
+                            </button>
                         </form>
                     </td>
                     <td style="text-align:center;">
